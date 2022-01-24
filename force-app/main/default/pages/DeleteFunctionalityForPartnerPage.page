@@ -1,0 +1,2 @@
+<apex:page controller="DeleteFunctionalityForPartnrExtension" action="{!deleteRecord}">
+</apex:page>
