@@ -118,6 +118,8 @@ public class InventoryInformationController {
                 AND AcctSeedERP__Quantity_Needed__c > 0
                 GROUP BY AcctSeedERP__Product__c, AcctSeedERP__Sales_Order__c
             ];
+
+            System.debug('SELECT AcctSeedERP__Product__c product, SUM(AcctSeedERP__Quantity_Needed__c) quantity, AcctSeedERP__Sales_Order__c salesorder FROM AcctSeedERP__Sales_Order_Line__c WHERE AcctSeedERP__Sales_Order__r.AcctSeedERP__Status__c =Open AND AcctSeedERP__Product__c = :'+ProductId+'ND AcctSeedERP__Quantity_Needed__c > 0 GROUP BY AcctSeedERP__Product__c, AcctSeedERP__Sales_Order__c' );
         }
         
         return QuantityOnSalesOrders;
