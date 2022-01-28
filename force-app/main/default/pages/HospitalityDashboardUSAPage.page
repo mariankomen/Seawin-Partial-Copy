@@ -2614,30 +2614,27 @@
         Visualforce.remoting.timeout = 120000;
 
         Visualforce.remoting.Manager.invokeAction(
-        '{!$RemoteAction.HospitalityDashboardUSAController.Pipeline_Last_12_Months_By_Lead_Source}',
+        '{!$RemoteAction.HospitalityDashboardUSAController.Pipeline_Last_12_Months_By_Lead_Source_fix}',
             function(result, event){
 
                 if (event.status) {
-                    for (var key in result) {
-
-                        mainArray = new Array(); 
-
-                        result[key].forEach(buildarray);
-                        
-                        function buildarray(item, index) {
-
-                            subArray = new Array();
-            
-                            subArray.push(item.valueindex, item.amount);
-                            mainArray.push(subArray);
+                    let final = []
+                    const cur_month = new Date().getMonth()+1    
+                    for(let char in result){
+                        let cur_item = result[char]
+                        let cur_arr = []
+                        for(let item in cur_item){
+                            cur_arr.push([+item-cur_month-1, cur_item[item]])
                         }
+                        final.push({
+                            name: char,
+                            custom: char,
+                            data: cur_arr
+                        })
 
-                        midArray = {name:key, data:mainArray, custom:key};
-            
-                        TotalPipelineByLeadSourceData.push(midArray);
-                    }
+                    }    
 
-                    RenderCompanyPipelineLast12MonthsByLeadSource(TotalPipelineByLeadSourceData);
+                    RenderCompanyPipelineLast12MonthsByLeadSource(final);
                 } else if (event.type === 'exception') {
                     
                         console.log('Exception has occured in Pipeline Last 12 Months By Lead Source...');
