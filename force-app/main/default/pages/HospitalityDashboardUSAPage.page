@@ -2276,22 +2276,31 @@
                     //let CompanyTotalPipelineDataT = result;
                     let final = []
                     let data = []
-                    let currentMonth = new Date().getMonth();
-                    // let CompanyTotalPipelineDataT = JSON.parse('{"4":5568246.88,"3":5622340.23,"9":10923704.36,"2":3327783.23,"10":13194140.62,"8":11691021.10,"5":5288263.40,"6":5814371.86,"7":7077755.70,"11":14284140.54,"12":15260676.99,"1":14758809.19}')
-                    let CompanyTotalPipelineDataT = result
-                    let currentYear = Object.entries(CompanyTotalPipelineDataT).slice(0, currentMonth+1)
-                    let lastYear = Object.entries(CompanyTotalPipelineDataT).slice(currentMonth+1)
-                    lastYear.push(...currentYear)
-                    for(let i = 0; i<12; i++){
-                        if(lastYear[i]){
-                            data.push([i,lastYear[i][1]])
-                        }
+                    let currentMonth = new Date().getMonth()+1;
+                    let test = JSON.parse('{"4":1854881.52,"7":13666101.79,"6":18113728.71,"11":47407535.98,"3":4596935.56,"9":36453118.23,"5":16302367.62,"13":10951902.25,"10":71801132.20,"12":114314054.04,"8":19008612.39}')
+                    for(let char in test){
+                        data.push([char-currentMonth-1, test[char]])
                     }
-
                     final.push({
                         name: "companydata",
                         data: data
                     })
+
+                    // let final = []
+                    // const cur_month = new Date().getMonth()+1    
+                    // for(let char in result){
+                    //     let cur_item = result[char]
+                    //     let cur_arr = []
+                    //     for(let item in cur_item){
+                    //         cur_arr.push([+item-cur_month-1, cur_item[item]])
+                    //     }
+                    //     final.push({
+                    //         name: char,
+                    //         custom: char,
+                    //         data: cur_arr
+                    //     })
+
+                    // }
                     console.log('final:: ',final)
                     RenderCompanyTotalPipelineLast12Months(final);
                 } else if (event.type === 'exception') {
@@ -2396,7 +2405,7 @@
                                 var CurrentMonth = parseInt(d.getMonth()) + 1;
                                 
                                 var YearIndex = (CategArray[1]).replace("'", "");
-                                
+                                console.log('YearIndex: ',YearIndex)
                                 var month = parseInt(MonthArray.indexOf(CategArray[0]) + 1);
                                 
                                 var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;

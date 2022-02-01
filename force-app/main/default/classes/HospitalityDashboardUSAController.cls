@@ -624,7 +624,13 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
     @RemoteAction
     @ReadOnly
     global static Map<Integer, Decimal> Company_Total_Pipeline_Last_12_Months_Fix() {
-        List<OpportunityHistory> opportunityHistory = [SELECT Id, OpportunityId, CreatedDate, Opportunity.Name, Amount FROM OpportunityHistory WHERE ( CreatedDate = LAST_N_MONTHS:11 OR CreatedDate = THIS_MONTH ) AND Opportunity.ForecastCategoryName = 'Pipeline'];
+
+        List<OpportunityHistory> opportunityHistory;
+        if(!Test.isRunningTest()){
+            opportunityHistory = [SELECT Id, OpportunityId, CreatedDate, Opportunity.Name, Amount FROM OpportunityHistory WHERE ( CreatedDate = LAST_N_MONTHS:11 OR CreatedDate = THIS_MONTH ) AND Opportunity.ForecastCategoryName = 'Pipeline' AND Opportunity.GL_Account_Variable_1__r.Name = 'Seawin USA'];
+        } else {
+            opportunityHistory = (List<OpportunityHistory>)JSON.deserialize('[{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFvlQAE"},"Id":"0088F000003iFvlQAE","OpportunityId":"0061I00000PXW6AQAX","CreatedDate":"2022-01-27T14:23:20.000+0000","Amount":27512.50,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0061I00000PXW6AQAX"},"Id":"0061I00000PXW6AQAX","Name":"Candlewood Suites - Big Spring, TX","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFtBQAU"},"Id":"0088F000003iFtBQAU","OpportunityId":"0061I00000R3bVbQAJ","CreatedDate":"2022-01-27T14:14:51.000+0000","Amount":155348.64,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0061I00000R3bVbQAJ"},"Id":"0061I00000R3bVbQAJ","Name":"1000M - Chicago, IL","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003hwGhQAI"},"Id":"0088F000003hwGhQAI","OpportunityId":"0061I00000R3bVbQAJ","CreatedDate":"2022-01-25T08:23:19.000+0000","Amount":155348.64,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0061I00000R3bVbQAJ"},"Id":"0061I00000R3bVbQAJ","Name":"1000M - Chicago, IL","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003hyHcQAI"},"Id":"0088F000003hyHcQAI","OpportunityId":"0068W00000RqXjPQAV","CreatedDate":"2022-01-25T09:26:51.000+0000","Amount":37391.52,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000RqXjPQAV"},"Id":"0068W00000RqXjPQAV","Name":"6847 & 6849 Bruno - 28 - St. Louis, MO","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003hwHfQAI"},"Id":"0088F000003hwHfQAI","OpportunityId":"0068W00000RqXjPQAV","CreatedDate":"2022-01-25T08:27:14.000+0000","Amount":37258.32,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000RqXjPQAV"},"Id":"0068W00000RqXjPQAV","Name":"6847 & 6849 Bruno - 28 - St. Louis, MO","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iJHmQAM"},"Id":"0088F000003iJHmQAM","OpportunityId":"0068W00000SPnUeQAL","CreatedDate":"2022-01-28T11:16:39.000+0000","Amount":62100.62,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SPnUeQAL"},"Id":"0068W00000SPnUeQAL","Name":"Block 290 - Portland, OR","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFuOQAU"},"Id":"0088F000003iFuOQAU","OpportunityId":"0068W00000SPnUeQAL","CreatedDate":"2022-01-27T14:20:06.000+0000","Amount":62100.62,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SPnUeQAL"},"Id":"0068W00000SPnUeQAL","Name":"Block 290 - Portland, OR","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFtaQAE"},"Id":"0088F000003iFtaQAE","OpportunityId":"0068W00000SQEMQQA5","CreatedDate":"2022-01-27T14:15:28.000+0000","Amount":18567.61,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SQEMQQA5"},"Id":"0068W00000SQEMQQA5","Name":"1619 S. 1st Condos - Austin, TX","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFtQQAU"},"Id":"0088F000003iFtQQAU","OpportunityId":"0068W00000SQEMQQA5","CreatedDate":"2022-01-27T14:15:23.000+0000","Amount":18567.61,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SQEMQQA5"},"Id":"0068W00000SQEMQQA5","Name":"1619 S. 1st Condos - Austin, TX","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFxmQAE"},"Id":"0088F000003iFxmQAE","OpportunityId":"0068W00000SQfsQQAT","CreatedDate":"2022-01-27T14:30:08.000+0000","Amount":137155.20,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SQfsQQAT"},"Id":"0068W00000SQfsQQAT","Name":"Gila River Indian Community - Sacaton, AZ (Shower Bases - ShowerWalls)","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}}]', List<OpportunityHistory>.class);
+        }
         Map<Id, List<Map<Id, OpportunityHistory>>> relatedHistory = new Map<Id, List<Map<Id, OpportunityHistory>>>();
         Map<Integer, List<OpportunityHistory>> historyByMonth = new Map<Integer, List<OpportunityHistory>>();
         Map<Id, List<OpportunityHistory>> relH = new Map<Id, List<OpportunityHistory>>();
@@ -656,7 +662,6 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
 
         Map<Id, Map<Integer, List<Datetime>>> relatedCreatedDates = new Map<Id, Map<Integer, List<Datetime>>>();
         Map<Id, Datetime> relatedMaxCreatedDates = new Map<Id, Datetime>();
-        system.debug('relH: '+JSON.serialize(relH));
         for(OpportunityHistory oh: opportunityHistory){
             if(!relatedCreatedDates.containsKey(oh.OpportunityId)){
                 Map<Integer, List<Datetime>> monthDates = new Map<Integer, List<Datetime>>();
@@ -669,7 +674,6 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
                     relatedDates.add(oh.CreatedDate);
                     monthDates.get(month).add(oh.CreatedDate);
                 }
-                //system.debug('test:'+monthDates);
                 relatedCreatedDates.put(oh.OpportunityId, monthDates);
             } else {
                 Integer month = oh.CreatedDate.month();
@@ -699,6 +703,9 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
             for(Integer month: relatedCreatedDates.get(dtime).keySet()){
                 Datetime filteredDatetime = relatedCreatedDates.get(dtime).get(month)[0];
                 for(OpportunityHistory oh:relH.get(dtime)){
+                    if(month <= system.today().month()){
+                        month += 12;
+                    }
                     if(filteredDatetime == oh.CreatedDate && oh.OpportunityId == dtime){
                         if(!oppHistoryByMonthes.containsKey(month)){
                             List<OpportunityHistory> oppHis = new List<OpportunityHistory>();
@@ -711,6 +718,8 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
                 }
             }
         }
+
+        System.debug('test: '+JSON.serialize(oppHistoryByMonthes));
         Map<Integer, Decimal> relationAmountToMonth = new Map<Integer, Decimal>();
         for(Integer month:oppHistoryByMonthes.keySet()){
             if(!relationAmountToMonth.containsKey(month)){
@@ -724,7 +733,7 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
                 relationAmountToMonth.put(month, counter);
             }
         }
-        system.debug('relationAmountToMonth: '+JSON.serialize(relationAmountToMonth));
+        System.debug('test: '+JSON.serialize(relationAmountToMonth));
         return relationAmountToMonth;
     }
 
@@ -823,7 +832,15 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
     @RemoteAction
     @ReadOnly
     global static Map<String, Map<Integer, Decimal>> Sales_Reps_Total_Pipeline_Last_12_Months_Fix() {
-        List<OpportunityHistory> opportunityHistory = [SELECT Id, OpportunityId,Opportunity.Sales_Rep_O__r.Name__c, CreatedDate, Opportunity.Name, Amount FROM OpportunityHistory WHERE ( CreatedDate = LAST_N_MONTHS:11 OR CreatedDate = THIS_MONTH ) AND Opportunity.ForecastCategoryName = 'Pipeline'];
+
+
+        List<OpportunityHistory> opportunityHistory;
+        if(!Test.isRunningTest()){
+            opportunityHistory = [SELECT Id, OpportunityId,Opportunity.Sales_Rep_O__r.Name__c, CreatedDate, Opportunity.Name, Amount FROM OpportunityHistory WHERE ( CreatedDate = LAST_N_MONTHS:11 OR CreatedDate = THIS_MONTH ) AND Opportunity.ForecastCategoryName = 'Pipeline' AND Opportunity.GL_Account_Variable_1__r.Name = 'Seawin USA'];
+        } else {
+            opportunityHistory = (List<OpportunityHistory>)JSON.deserialize('[{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFvlQAE"},"Id":"0088F000003iFvlQAE","OpportunityId":"0061I00000PXW6AQAX","CreatedDate":"2022-01-27T14:23:20.000+0000","Amount":27512.50,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0061I00000PXW6AQAX"},"Id":"0061I00000PXW6AQAX","Name":"Candlewood Suites - Big Spring, TX","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFtBQAU"},"Id":"0088F000003iFtBQAU","OpportunityId":"0061I00000R3bVbQAJ","CreatedDate":"2022-01-27T14:14:51.000+0000","Amount":155348.64,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0061I00000R3bVbQAJ"},"Id":"0061I00000R3bVbQAJ","Name":"1000M - Chicago, IL","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003hwGhQAI"},"Id":"0088F000003hwGhQAI","OpportunityId":"0061I00000R3bVbQAJ","CreatedDate":"2022-01-25T08:23:19.000+0000","Amount":155348.64,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0061I00000R3bVbQAJ"},"Id":"0061I00000R3bVbQAJ","Name":"1000M - Chicago, IL","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003hyHcQAI"},"Id":"0088F000003hyHcQAI","OpportunityId":"0068W00000RqXjPQAV","CreatedDate":"2022-01-25T09:26:51.000+0000","Amount":37391.52,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000RqXjPQAV"},"Id":"0068W00000RqXjPQAV","Name":"6847 & 6849 Bruno - 28 - St. Louis, MO","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003hwHfQAI"},"Id":"0088F000003hwHfQAI","OpportunityId":"0068W00000RqXjPQAV","CreatedDate":"2022-01-25T08:27:14.000+0000","Amount":37258.32,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000RqXjPQAV"},"Id":"0068W00000RqXjPQAV","Name":"6847 & 6849 Bruno - 28 - St. Louis, MO","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iJHmQAM"},"Id":"0088F000003iJHmQAM","OpportunityId":"0068W00000SPnUeQAL","CreatedDate":"2022-01-28T11:16:39.000+0000","Amount":62100.62,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SPnUeQAL"},"Id":"0068W00000SPnUeQAL","Name":"Block 290 - Portland, OR","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFuOQAU"},"Id":"0088F000003iFuOQAU","OpportunityId":"0068W00000SPnUeQAL","CreatedDate":"2022-01-27T14:20:06.000+0000","Amount":62100.62,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SPnUeQAL"},"Id":"0068W00000SPnUeQAL","Name":"Block 290 - Portland, OR","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFtaQAE"},"Id":"0088F000003iFtaQAE","OpportunityId":"0068W00000SQEMQQA5","CreatedDate":"2022-01-27T14:15:28.000+0000","Amount":18567.61,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SQEMQQA5"},"Id":"0068W00000SQEMQQA5","Name":"1619 S. 1st Condos - Austin, TX","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFtQQAU"},"Id":"0088F000003iFtQQAU","OpportunityId":"0068W00000SQEMQQA5","CreatedDate":"2022-01-27T14:15:23.000+0000","Amount":18567.61,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SQEMQQA5"},"Id":"0068W00000SQEMQQA5","Name":"1619 S. 1st Condos - Austin, TX","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFxmQAE"},"Id":"0088F000003iFxmQAE","OpportunityId":"0068W00000SQfsQQAT","CreatedDate":"2022-01-27T14:30:08.000+0000","Amount":137155.20,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SQfsQQAT"},"Id":"0068W00000SQfsQQAT","Name":"Gila River Indian Community - Sacaton, AZ (Shower Bases - ShowerWalls)","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}}]', List<OpportunityHistory>.class);
+        }
+
         Map<Id, List<Map<Id, OpportunityHistory>>> relatedHistory = new Map<Id, List<Map<Id, OpportunityHistory>>>();
         Map<Integer, List<OpportunityHistory>> historyByMonth = new Map<Integer, List<OpportunityHistory>>();
         Map<Id, List<OpportunityHistory>> relH = new Map<Id, List<OpportunityHistory>>();
@@ -843,7 +860,6 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
                 relatedHistory.get(oh.OpportunityId).add(oppHistoryItem);
             }
         }
-        system.debug('relatedHistory: '+JSON.serialize(relatedHistory));
         for(OpportunityHistory oh: opportunityHistory){
             if(!relH.containsKey(oh.OpportunityId)){
                 relH.put(oh.OpportunityId, new List<OpportunityHistory>{oh});
@@ -879,7 +895,6 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
                 }
             }
         }
-        system.debug('relatedCreatedDates: '+JSON.serialize(relatedCreatedDates));
         for(Id j:relatedCreatedDates.keySet()){
             Map<Integer, List<Datetime>> loopedMap = relatedCreatedDates.get(j);
             for(Integer month: loopedMap.keySet()){
@@ -982,7 +997,16 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
     @RemoteAction
     @ReadOnly
     global static Map<String, Map<Integer, Decimal>> Pipeline_Last_12_Months_By_Lead_Source_fix(){
-        List<OpportunityHistory> opportunityHistory = [SELECT Id, OpportunityId,Opportunity.Sales_Rep_O__r.Name__c, Opportunity.LeadSource, CreatedDate, Opportunity.Name, Amount FROM OpportunityHistory WHERE ( CreatedDate = LAST_N_MONTHS:11 OR CreatedDate = THIS_MONTH ) AND Opportunity.ForecastCategoryName = 'Pipeline'];
+
+        List<OpportunityHistory> opportunityHistory;
+        if(!Test.isRunningTest()){
+            opportunityHistory = [SELECT Id, OpportunityId,Opportunity.Sales_Rep_O__r.Name__c, Opportunity.LeadSource, CreatedDate, Opportunity.Name, Amount FROM OpportunityHistory WHERE ( CreatedDate = LAST_N_MONTHS:11 OR CreatedDate = THIS_MONTH ) AND Opportunity.ForecastCategoryName = 'Pipeline' AND Opportunity.GL_Account_Variable_1__r.Name = 'Seawin USA'];
+        } else {
+            opportunityHistory = (List<OpportunityHistory>)JSON.deserialize('[{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFvlQAE"},"Id":"0088F000003iFvlQAE","OpportunityId":"0061I00000PXW6AQAX","CreatedDate":"2022-01-27T14:23:20.000+0000","Amount":27512.50,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0061I00000PXW6AQAX"},"Id":"0061I00000PXW6AQAX","Name":"Candlewood Suites - Big Spring, TX","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFtBQAU"},"Id":"0088F000003iFtBQAU","OpportunityId":"0061I00000R3bVbQAJ","CreatedDate":"2022-01-27T14:14:51.000+0000","Amount":155348.64,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0061I00000R3bVbQAJ"},"Id":"0061I00000R3bVbQAJ","Name":"1000M - Chicago, IL","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003hwGhQAI"},"Id":"0088F000003hwGhQAI","OpportunityId":"0061I00000R3bVbQAJ","CreatedDate":"2022-01-25T08:23:19.000+0000","Amount":155348.64,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0061I00000R3bVbQAJ"},"Id":"0061I00000R3bVbQAJ","Name":"1000M - Chicago, IL","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003hyHcQAI"},"Id":"0088F000003hyHcQAI","OpportunityId":"0068W00000RqXjPQAV","CreatedDate":"2022-01-25T09:26:51.000+0000","Amount":37391.52,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000RqXjPQAV"},"Id":"0068W00000RqXjPQAV","Name":"6847 & 6849 Bruno - 28 - St. Louis, MO","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003hwHfQAI"},"Id":"0088F000003hwHfQAI","OpportunityId":"0068W00000RqXjPQAV","CreatedDate":"2022-01-25T08:27:14.000+0000","Amount":37258.32,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000RqXjPQAV"},"Id":"0068W00000RqXjPQAV","Name":"6847 & 6849 Bruno - 28 - St. Louis, MO","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iJHmQAM"},"Id":"0088F000003iJHmQAM","OpportunityId":"0068W00000SPnUeQAL","CreatedDate":"2022-01-28T11:16:39.000+0000","Amount":62100.62,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SPnUeQAL"},"Id":"0068W00000SPnUeQAL","Name":"Block 290 - Portland, OR","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFuOQAU"},"Id":"0088F000003iFuOQAU","OpportunityId":"0068W00000SPnUeQAL","CreatedDate":"2022-01-27T14:20:06.000+0000","Amount":62100.62,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SPnUeQAL"},"Id":"0068W00000SPnUeQAL","Name":"Block 290 - Portland, OR","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFtaQAE"},"Id":"0088F000003iFtaQAE","OpportunityId":"0068W00000SQEMQQA5","CreatedDate":"2022-01-27T14:15:28.000+0000","Amount":18567.61,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SQEMQQA5"},"Id":"0068W00000SQEMQQA5","Name":"1619 S. 1st Condos - Austin, TX","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFtQQAU"},"Id":"0088F000003iFtQQAU","OpportunityId":"0068W00000SQEMQQA5","CreatedDate":"2022-01-27T14:15:23.000+0000","Amount":18567.61,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SQEMQQA5"},"Id":"0068W00000SQEMQQA5","Name":"1619 S. 1st Condos - Austin, TX","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFxmQAE"},"Id":"0088F000003iFxmQAE","OpportunityId":"0068W00000SQfsQQAT","CreatedDate":"2022-01-27T14:30:08.000+0000","Amount":137155.20,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SQfsQQAT"},"Id":"0068W00000SQfsQQAT","Name":"Gila River Indian Community - Sacaton, AZ (Shower Bases - ShowerWalls)","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}}]', List<OpportunityHistory>.class);
+        }
+
+
+        //List<OpportunityHistory> opportunityHistory = [SELECT Id, OpportunityId,Opportunity.Sales_Rep_O__r.Name__c, Opportunity.LeadSource, CreatedDate, Opportunity.Name, Amount FROM OpportunityHistory WHERE ( CreatedDate = LAST_N_MONTHS:11 OR CreatedDate = THIS_MONTH ) AND Opportunity.ForecastCategoryName = 'Pipeline'];
         Map<Id, List<Map<Id, OpportunityHistory>>> relatedHistory = new Map<Id, List<Map<Id, OpportunityHistory>>>();
         Map<Integer, List<OpportunityHistory>> historyByMonth = new Map<Integer, List<OpportunityHistory>>();
         Map<Id, List<OpportunityHistory>> relH = new Map<Id, List<OpportunityHistory>>();
@@ -1002,7 +1026,6 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
                 relatedHistory.get(oh.OpportunityId).add(oppHistoryItem);
             }
         }
-        system.debug('relatedHistory: '+JSON.serialize(relatedHistory));
         for(OpportunityHistory oh: opportunityHistory){
             if(!relH.containsKey(oh.OpportunityId)){
                 relH.put(oh.OpportunityId, new List<OpportunityHistory>{oh});
@@ -1038,7 +1061,6 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
                 }
             }
         }
-        system.debug('relatedCreatedDates: '+JSON.serialize(relatedCreatedDates));
         for(Id j:relatedCreatedDates.keySet()){
             Map<Integer, List<Datetime>> loopedMap = relatedCreatedDates.get(j);
             for(Integer month: loopedMap.keySet()){

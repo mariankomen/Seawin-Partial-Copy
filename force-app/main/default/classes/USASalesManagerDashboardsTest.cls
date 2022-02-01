@@ -929,7 +929,9 @@ public class USASalesManagerDashboardsTest {
         HospitalityDashboardUSAController.Active_Opportunities_By_Stage();
         HospitalityDashboardUSAController.Sales_Forecast_Pipeline();
         HospitalityDashboardUSAController.Sales_Forecast_Pipeline_By_Lead_Source();
-        
+        HospitalityDashboardUSAController.Company_Total_Pipeline_Last_12_Months_Fix();
+        HospitalityDashboardUSAController.Sales_Reps_Total_Pipeline_Last_12_Months_Fix();
+        HospitalityDashboardUSAController.Pipeline_Last_12_Months_By_Lead_Source_fix();
         HospitalityDashboardUSAController.Lost_Opportunities();
         HospitalityDashboardUSAController.Lost_Opportunities_by_Sales_Rep_Team();
         HospitalityDashboardUSAController.Loss_Reasons();
