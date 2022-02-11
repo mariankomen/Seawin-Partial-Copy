@@ -11,14 +11,17 @@ public class BillingPDFExtension {
     public AcctSeed__Billing__c bill {get; set;}
     public map<id, OpportunityLineItem> TotalMap {get; set;}
     
+    public List<AcctSeed__Billing_Cash_Receipt__c> payments {get; set;}
     
     public BillingPDFExtension(ApexPages.StandardController std){
+
+        billingId = apexpages.currentpage().getparameters().get('id') != null ? apexpages.currentpage().getparameters().get('id') : (Id)std.getId();
         
         terms = 'Not Applicable';
         
         firstbilling = false;
         deposit = 0.00;
-        billingId = (Id)std.getId();
+        //billingId = (Id)std.getId();
         bill = new AcctSeed__Billing__c();
         TotalMap = new map<id, opportunityLineitem>();
         
@@ -161,9 +164,11 @@ public class BillingPDFExtension {
             footerUrl = getImageURL(glData[0].Billing_Footer__c);
             terms = getFilteredTerms(glData[0].Billing_Terms__c);
         }
+
+        payments = [SELECT AcctSeed__Billing__c, CreatedDate, AcctSeed__Cash_Receipt__c, AcctSeed__Accounting_Period__c, AcctSeed__Adjustment_Amount__c, AcctSeed__Adjustment_GL_Account__c, AcctSeed__Applied_Amount__c, AcctSeed__Period_Applied__c, AcctSeed__Applied_Date__c, AcctSeed__Status__c, Name, Id FROM AcctSeed__Billing_Cash_Receipt__c WHERE AcctSeed__Billing__c =:billingId];
     }
     
-    
+
     public string getImageURL(string url){
         
         try{
@@ -173,7 +178,6 @@ public class BillingPDFExtension {
                 String imageTag = imgMatcher.group();
                 imageURL= imageTag.substringBetween(' src="', '"');
             }
-            
             return imageURL.unescapeHtml4();
         }
         catch(Exception e){

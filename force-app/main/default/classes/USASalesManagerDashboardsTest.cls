@@ -950,6 +950,12 @@ public class USASalesManagerDashboardsTest {
 
         Test.stopTest();
     }
+
+    @isTest static void negleged_opp_helper_Test(){
+        Test.startTest();
+        ListOfRecordsHelper.negleged_opp_helper();
+        Test.stopTest();
+    }
     @isTest static void WholesaleDistributionDashboardUSA(){
         Test.startTest();
      	WholesaleDistributionDashboardUSACtrl ext = new WholesaleDistributionDashboardUSACtrl();

@@ -369,11 +369,12 @@
             
             //amount = RectifyAmount(parseFloat(actual), parseFloat(billedAmount), parseFloat(amount));
 			
-            if(entered != '' && (entered > 100 || entered < 1)){
-                alert('Incorrect percentage.');
-                document.getElementById(id).value = '';
-                amount = 0;
-            }else if((actual < 0 && unbilledAmount > amount) || (actual > 0 && amount > unbilledAmount)){
+            // if(entered != '' && (entered > 100 || entered < 1)){
+            //     alert('Incorrect percentage.');
+            //     document.getElementById(id).value = '';
+            //     amount = 0;
+            // }else 
+            if((actual < 0 && unbilledAmount > amount) || (actual > 0 && amount > unbilledAmount)){
                 alert('For the entered percentage, the Amount to Bill cannot be more than the Unbilled Amount. Please enter a smaller percentage.');
                 document.getElementById(id).value = '';
                 amount = 0;

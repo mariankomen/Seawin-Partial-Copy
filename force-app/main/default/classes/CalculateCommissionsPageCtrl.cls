@@ -9,13 +9,13 @@ public without sharing class CalculateCommissionsPageCtrl {
         get{
 
             User usr = [select contactId from user where id =: userInfo.getUserId() limit 1];
-
+            system.debug('hello: '+usr);
             return usr.contactId == null ? '' : '/sales';
         }
     }
 
     public CalculateCommissionsPageCtrl(){
-
+        system.debug('communityUrl: '+communityUrl);
         NoDataExists = false;
 
         soId = ApexPages.currentPage().getParameters().get('id');
@@ -36,13 +36,13 @@ public without sharing class CalculateCommissionsPageCtrl {
         PageReference page = null;
 
         if(cashReceipts.isEmpty() && MemoReceipts.isEmpty()){ // if nothing is found...
-
+            system.debug('IF');
             NoDataExists = true;
             ApexPages.Message myMsg = new ApexPages.Message(ApexPages.Severity.ERROR, 'No payment exists for this sales order.');
             ApexPages.addMessage(myMsg);
         }else{
                 Boolean success = CalculateCommissionsHandler.PartialCommissions(soId); // this method will create either all commissions or which are missing
-
+                system.debug('ELSE');
                 if(!success){
 
                     NoDataExists = true;

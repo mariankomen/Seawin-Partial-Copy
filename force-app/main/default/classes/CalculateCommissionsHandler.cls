@@ -91,7 +91,7 @@ public class CalculateCommissionsHandler {
                         
                     }
                 }
-                
+                system.debug('commisions: '+commissions);
                 if(!commissions.isEmpty()) insert commissions;
             }
         }

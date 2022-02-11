@@ -2277,7 +2277,7 @@
                     let final = []
                     let data = []
                     let currentMonth = new Date().getMonth()+1;
-                    let test = JSON.parse('{"4":1854881.52,"7":13666101.79,"6":18113728.71,"11":47407535.98,"3":4596935.56,"9":36453118.23,"5":16302367.62,"13":10951902.25,"10":71801132.20,"12":114314054.04,"8":19008612.39}')
+                    let test = JSON.parse('{"12":15169283.31,"11":17296323.15,"10":7384576.09,"9":11018218.08,"8":3629015.92,"7":6202842.66,"6":5239944.77,"5":4201609.34,"4":6698280.31,"3":7138167.69,"14":11818682.79,"13":18617916.34}')
                     for(let char in test){
                         data.push([char-currentMonth-1, test[char]])
                     }
@@ -4836,38 +4836,30 @@
     Visualforce.remoting.Manager.invokeAction(
     '{!$RemoteAction.HospitalityDashboardUSAController.Neglected_Opportunities}',
         function(result, event){
+
             if (event.status) {
-                
-                for (var key in result) {
+                console.log('result negl: ',JSON.stringify(result))
 
-                    mainArray = new Array();
-                    mainCustomArray = new Array();
-
-                    var percentActive = '0:0:0';
-
-                    result[key].forEach(buildarray);
-
-                    function buildarray(item, index) {
-
-                        subArray = new Array();
-
-                        customArray = new Array();
-                        
-                        percentActive = item.amount + ':' + parseInt(item.misc) + ':' + 
-                        (((item.amount / parseInt(item.misc)) * 100).toFixed(2)); 
-
-                        subArray.push(item.valueindex, item.amount);
-                        customArray.push(item.valueindex, percentActive);
-                        mainCustomArray.push(customArray);
-                        mainArray.push(subArray);
-
-                    }
-
-                    midArray = {name:key, data:mainArray, custom:mainCustomArray};
-                    NeglectedOpptyData.push(midArray);
+                const main = []
+                for(let char in result){
+                    const data_key = [];
+                    const custom_key = [];
+                    result[char].forEach(el => {
+                        let percent = +((el.amount*100)/el.misc).toFixed(2);
+                        let custom_str = [el.amount, el.misc, percent].join(':');
+                        data_key.push([el.valueindex, percent]);
+                        custom_key.push([el.valueindex, custom_str]);
+                    })
+                    data_key.sort((a, b) => b[0] - a[0]).reverse()
+                    main.push({
+                        name: char,
+                        data: data_key,
+                        custom: custom_key
+                    })
                 }
-
-                RenderChartNeglectedOpportunities(NeglectedOpptyData);
+                console.log('NeglectedOpptyData: ', JSON.stringify(NeglectedOpptyData))
+                RenderChartNeglectedOpportunities(main);
+                // RenderChartNeglectedOpportunities(NeglectedOpptyData);
             } else if (event.type === 'exception') {
                 
                     console.log('Exception has occured in Neglected Opportunities...');

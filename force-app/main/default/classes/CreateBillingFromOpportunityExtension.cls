@@ -328,7 +328,7 @@ public class CreateBillingFromOpportunityExtension {
             String errorMsg = ex.getMessage();
 
             string OnlyMsg = errorMsg.substringBetween(', ', ':');
-
+            system.debug('ERROROROROROR: '+ex.getMessage());
             if(OnlyMsg != null){
 
                 OnlyMsg = OnlyMsg.capitalize();

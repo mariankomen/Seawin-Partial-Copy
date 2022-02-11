@@ -116,7 +116,7 @@ public without sharing class SalesOrderPDFController {
         
        List<AcctSeed__Billing__c> CreditMemo_Billings = [SELECT Id, Name, 
                        AcctSeed__Billing__c.AcctSeed__Customer__r.name, 
-                       AcctSeed__Date__c, AcctSeed__Total__c 
+                       AcctSeed__Date__c, AcctSeed__Total__c, AcctSeed__Credit_Memo_Applied_Amount__c 
                        FROM AcctSeed__Billing__c where acctseederp__sales_order__c =:soId
                       and AcctSeed__Type__c = 'Credit Memo'];
         
@@ -124,7 +124,7 @@ public without sharing class SalesOrderPDFController {
             
             for(AcctSeed__Billing__c b : CreditMemo_Billings){
                 
-                wrapper w = new wrapper(b, b.AcctSeed__Total__c);
+                wrapper w = new wrapper(b, b.AcctSeed__Credit_Memo_Applied_Amount__c);
                 
                 CreditMemos.add(w);
                 

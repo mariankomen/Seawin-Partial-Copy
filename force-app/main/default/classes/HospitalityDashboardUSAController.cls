@@ -620,121 +620,77 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
 
         return ForecastMapLocal;
     }
-
+//{"14":7633247.10,"13":77690802.92,"10":74956470.38,"8":102570564.51,"4":75052685.96,"12":82298474.18,"11":81784221.33,"7":77440954.22,"6":79907043.20,"9":86008120.31,"5":68365968.90,"3":78412266.82}
     @RemoteAction
     @ReadOnly
     global static Map<Integer, Decimal> Company_Total_Pipeline_Last_12_Months_Fix() {
 
-        List<OpportunityHistory> opportunityHistory;
-        if(!Test.isRunningTest()){
-            opportunityHistory = [SELECT Id, OpportunityId, CreatedDate, Opportunity.Name, Amount FROM OpportunityHistory WHERE ( CreatedDate = LAST_N_MONTHS:11 OR CreatedDate = THIS_MONTH ) AND Opportunity.ForecastCategoryName = 'Pipeline' AND Opportunity.GL_Account_Variable_1__r.Name = 'Seawin USA'];
-        } else {
-            opportunityHistory = (List<OpportunityHistory>)JSON.deserialize('[{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFvlQAE"},"Id":"0088F000003iFvlQAE","OpportunityId":"0061I00000PXW6AQAX","CreatedDate":"2022-01-27T14:23:20.000+0000","Amount":27512.50,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0061I00000PXW6AQAX"},"Id":"0061I00000PXW6AQAX","Name":"Candlewood Suites - Big Spring, TX","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFtBQAU"},"Id":"0088F000003iFtBQAU","OpportunityId":"0061I00000R3bVbQAJ","CreatedDate":"2022-01-27T14:14:51.000+0000","Amount":155348.64,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0061I00000R3bVbQAJ"},"Id":"0061I00000R3bVbQAJ","Name":"1000M - Chicago, IL","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003hwGhQAI"},"Id":"0088F000003hwGhQAI","OpportunityId":"0061I00000R3bVbQAJ","CreatedDate":"2022-01-25T08:23:19.000+0000","Amount":155348.64,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0061I00000R3bVbQAJ"},"Id":"0061I00000R3bVbQAJ","Name":"1000M - Chicago, IL","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003hyHcQAI"},"Id":"0088F000003hyHcQAI","OpportunityId":"0068W00000RqXjPQAV","CreatedDate":"2022-01-25T09:26:51.000+0000","Amount":37391.52,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000RqXjPQAV"},"Id":"0068W00000RqXjPQAV","Name":"6847 & 6849 Bruno - 28 - St. Louis, MO","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003hwHfQAI"},"Id":"0088F000003hwHfQAI","OpportunityId":"0068W00000RqXjPQAV","CreatedDate":"2022-01-25T08:27:14.000+0000","Amount":37258.32,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000RqXjPQAV"},"Id":"0068W00000RqXjPQAV","Name":"6847 & 6849 Bruno - 28 - St. Louis, MO","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iJHmQAM"},"Id":"0088F000003iJHmQAM","OpportunityId":"0068W00000SPnUeQAL","CreatedDate":"2022-01-28T11:16:39.000+0000","Amount":62100.62,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SPnUeQAL"},"Id":"0068W00000SPnUeQAL","Name":"Block 290 - Portland, OR","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFuOQAU"},"Id":"0088F000003iFuOQAU","OpportunityId":"0068W00000SPnUeQAL","CreatedDate":"2022-01-27T14:20:06.000+0000","Amount":62100.62,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SPnUeQAL"},"Id":"0068W00000SPnUeQAL","Name":"Block 290 - Portland, OR","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFtaQAE"},"Id":"0088F000003iFtaQAE","OpportunityId":"0068W00000SQEMQQA5","CreatedDate":"2022-01-27T14:15:28.000+0000","Amount":18567.61,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SQEMQQA5"},"Id":"0068W00000SQEMQQA5","Name":"1619 S. 1st Condos - Austin, TX","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFtQQAU"},"Id":"0088F000003iFtQQAU","OpportunityId":"0068W00000SQEMQQA5","CreatedDate":"2022-01-27T14:15:23.000+0000","Amount":18567.61,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SQEMQQA5"},"Id":"0068W00000SQEMQQA5","Name":"1619 S. 1st Condos - Austin, TX","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}},{"attributes":{"type":"OpportunityHistory","url":"/services/data/v53.0/sobjects/OpportunityHistory/0088F000003iFxmQAE"},"Id":"0088F000003iFxmQAE","OpportunityId":"0068W00000SQfsQQAT","CreatedDate":"2022-01-27T14:30:08.000+0000","Amount":137155.20,"Opportunity":{"attributes":{"type":"Opportunity","url":"/services/data/v53.0/sobjects/Opportunity/0068W00000SQfsQQAT"},"Id":"0068W00000SQfsQQAT","Name":"Gila River Indian Community - Sacaton, AZ (Shower Bases - ShowerWalls)","GL_Account_Variable_1__c":"a0A1I000002RthzUAC","RecordTypeId":"0121I000000JpUCQA0"}}]', List<OpportunityHistory>.class);
-        }
-        Map<Id, List<Map<Id, OpportunityHistory>>> relatedHistory = new Map<Id, List<Map<Id, OpportunityHistory>>>();
-        Map<Integer, List<OpportunityHistory>> historyByMonth = new Map<Integer, List<OpportunityHistory>>();
-        Map<Id, List<OpportunityHistory>> relH = new Map<Id, List<OpportunityHistory>>();
+        Map<Id, OpportunityHistory> oppHistory = new Map<Id, OpportunityHistory>([SELECT Id, OpportunityId, StageName, Amount, CreatedDate FROM OpportunityHistory WHERE ( CreatedDate = LAST_N_MONTHS:11 OR CreatedDate = THIS_MONTH) AND Opportunity.GL_Account_Variable_1__r.Name = 'Seawin USA' AND Opportunity.RecordType.Name = 'Seawin USA Hospitality' AND StageName IN ('Proposal', 'Follow up', 'Negotiation','Pre-Order', 'Closed Won', 'Closed Lost') ORDER BY CreatedDate ASC]);
 
-        for(OpportunityHistory oh:opportunityHistory){
-            if(!relatedHistory.containsKey(oh.OpportunityId)){
-                Map<Id, OpportunityHistory> oppHistoryItem = new Map<Id, OpportunityHistory>();
-                oppHistoryItem.put(oh.Id, oh);
-                List<Map<Id, OpportunityHistory>> stepan = new List<Map<Id, OpportunityHistory>>();
-                stepan.add(oppHistoryItem);
-                relatedHistory.put(oh.OpportunityId, stepan);
+        Map<Id, Map<Integer, OpportunityHistory>> oppHistory_month = new Map<Id, Map<Integer, OpportunityHistory>>();
+        Map<Id, Integer> closed_opportunities = new Map<Id, Integer>();
+        Integer month = 1;
+
+        List<String> closed_stages = new List<String>{'Closed Won', 'Closed Lost'};
+        for(Id oppId: oppHistory.keySet()){
+            OpportunityHistory curOpp = oppHistory.get(oppId);
+            month = curOpp.CreatedDate.month();
+            if(month <= system.today().month()){
+                month += 12;
+            }
+            if(!oppHistory_month.containsKey(curOpp.OpportunityId)){
+                Map<Integer, OpportunityHistory> opHistoryMap = new Map<Integer, OpportunityHistory>(); 
+                opHistoryMap.put(month, curOpp);
+                oppHistory_month.put(curOpp.OpportunityId, opHistoryMap);
             } else {
-                Map<Id, OpportunityHistory> oppHistoryItem = new Map<Id, OpportunityHistory>();
-                oppHistoryItem.put(oh.Id, oh);
-                List<Map<Id, OpportunityHistory>> stepan = new List<Map<Id, OpportunityHistory>>();
-                stepan.add(oppHistoryItem);
-                relatedHistory.get(oh.OpportunityId).add(oppHistoryItem);
-            }
-
-        }
-
-        for(OpportunityHistory oh: opportunityHistory){
-            if(!relH.containsKey(oh.OpportunityId)){
-                relH.put(oh.OpportunityId, new List<OpportunityHistory>{oh});
-            } else {
-                relH.get(oh.OpportunityId).add(oh);
+                Map<Integer, OpportunityHistory> opHistoryMap = oppHistory_month.get(curOpp.OpportunityId);
+                opHistoryMap.put(month, curOpp);
+                oppHistory_month.put(curOpp.OpportunityId, opHistoryMap);
             }
         }
-
-        Map<Id, Map<Integer, List<Datetime>>> relatedCreatedDates = new Map<Id, Map<Integer, List<Datetime>>>();
-        Map<Id, Datetime> relatedMaxCreatedDates = new Map<Id, Datetime>();
-        for(OpportunityHistory oh: opportunityHistory){
-            if(!relatedCreatedDates.containsKey(oh.OpportunityId)){
-                Map<Integer, List<Datetime>> monthDates = new Map<Integer, List<Datetime>>();
-                List<Datetime> relatedDates = new List<Datetime>();
-                Integer month = oh.CreatedDate.month();
-                if(!monthDates.containsKey(month)){
-                    relatedDates.add(oh.CreatedDate);
-                    monthDates.put(month, relatedDates);
-                } else {
-                    relatedDates.add(oh.CreatedDate);
-                    monthDates.get(month).add(oh.CreatedDate);
-                }
-                relatedCreatedDates.put(oh.OpportunityId, monthDates);
-            } else {
-                Integer month = oh.CreatedDate.month();
-                List<Datetime> relatedDates = new List<Datetime>();
-                if(!relatedCreatedDates.get(oh.OpportunityId).containsKey(month)){
-                    relatedDates.add(oh.CreatedDate);
-                    relatedCreatedDates.get(oh.OpportunityId).put(month, relatedDates);
-                } else {
-                    relatedCreatedDates.get(oh.OpportunityId).get(month).add(oh.CreatedDate);
-
-                }
-            }
-        }
-
-        for(Id j:relatedCreatedDates.keySet()){
-            Map<Integer, List<Datetime>> loopedMap = relatedCreatedDates.get(j);
-            for(Integer month: loopedMap.keySet()){
-                loopedMap.get(month).sort();
-                Datetime loopFilteredDate = loopedMap.get(month)[loopedMap.get(month).size() - 1];
-                loopedMap.get(month).clear();
-                loopedMap.get(month).add(loopFilteredDate);
-            }
-        }
-
-        Map<Integer, List<OpportunityHistory>> oppHistoryByMonthes = new Map<Integer, List<OpportunityHistory>>();
-        for(Id dtime: relatedCreatedDates.keySet()){
-            for(Integer month: relatedCreatedDates.get(dtime).keySet()){
-                Datetime filteredDatetime = relatedCreatedDates.get(dtime).get(month)[0];
-                for(OpportunityHistory oh:relH.get(dtime)){
-                    if(month <= system.today().month()){
-                        month += 12;
-                    }
-                    if(filteredDatetime == oh.CreatedDate && oh.OpportunityId == dtime){
-                        if(!oppHistoryByMonthes.containsKey(month)){
-                            List<OpportunityHistory> oppHis = new List<OpportunityHistory>();
-                            oppHis.add(oh);
-                            oppHistoryByMonthes.put(month, oppHis);
-                        } else {
-                            oppHistoryByMonthes.get(month).add(oh);
+        
+        for(Id oppId:oppHistory_month.keySet()){
+            for(Integer i = 1; i<=24; i++){
+                if(oppHistory_month.get(oppId).containsKey(i)){
+                    month = i;
+                    if(closed_stages.contains(oppHistory_month.get(oppId).get(month).StageName) ){
+                        if(!closed_opportunities.containsKey(oppId)){
+                            closed_opportunities.put(oppId, month);
                         }
+                        
+                    } else if(closed_opportunities.containsKey(oppId)) {
+                        closed_opportunities.remove(oppId);
                     }
                 }
             }
         }
+        List<Opportunity> opport = [SELECT Id, StageName, Amount, CreatedDate FROM Opportunity WHERE Id NOT IN:oppHistory_month.keySet() AND GL_Account_Variable_1__r.Name = 'Seawin USA' AND RecordType.Name = 'Seawin USA Hospitality' AND ForecastCategoryName = 'Pipeline'];
 
-        System.debug('test: '+JSON.serialize(oppHistoryByMonthes));
-        Map<Integer, Decimal> relationAmountToMonth = new Map<Integer, Decimal>();
-        for(Integer month:oppHistoryByMonthes.keySet()){
-            if(!relationAmountToMonth.containsKey(month)){
-                Decimal counter = 0.00;
-                for(OpportunityHistory oh:oppHistoryByMonthes.get(month)){
-                    if(oh.Amount != null){
-                        counter += oh.Amount;
-                    }
-
-                }
-                relationAmountToMonth.put(month, counter);
+        Decimal last_opp_sum = 0.00;
+        for(Opportunity o:opport){
+            if(o.Amount != null){
+                last_opp_sum += o.Amount;
             }
         }
-        System.debug('test: '+JSON.serialize(relationAmountToMonth));
-        return relationAmountToMonth;
+        Map<Integer, Decimal> monthSum = new Map<Integer, Decimal>();
+        for(Id oppId:oppHistory_month.keySet()){
+            Decimal sum = last_opp_sum;
+            month = 1;
+            for(Integer m: oppHistory_month.get(oppId).keySet()){
+                if(oppHistory_month.get(oppId).get(m).Amount != null && (!closed_opportunities.containsKey(oppId) || (closed_opportunities.containsKey(oppId) && closed_opportunities.get(oppId) < m ))){
+                    sum += oppHistory_month.get(oppId).get(m).Amount;
+                }
+                if(!monthSum.containsKey(m)){
+                    monthSum.put(m, sum);
+                } else {
+                    sum += monthSum.get(m);
+                    monthSum.put(m, sum);
+                }
+                sum = last_opp_sum;
+            }
+        }
+        System.debug('monthsum: '+JSON.serialize(monthSum));
+        return monthSum;
     }
 
 
@@ -2989,186 +2945,189 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
     @RemoteAction
     @ReadOnly
     global static map<string, List<ValuesWrapper>> Neglected_Opportunities() {
+        system.debug('ListOfRecordsHelper.negleged_opp_helper();: '+JSON.serialize(ListOfRecordsHelper.negleged_opp_helper()));
+        return ListOfRecordsHelper.negleged_opp_helper();
+        // List<String> Months = Months();
 
-        List<String> Months = Months();
+        // List<String> Last12MonthsList_Horizontal = Last12MonthsList_Horizontal();
 
-        List<String> Last12MonthsList_Horizontal = Last12MonthsList_Horizontal();
+        // Set<string> Active_SalesReps = Active_SalesReps();
 
-        Set<string> Active_SalesReps = Active_SalesReps();
+        // Date OnlyStartDate = Only_Start_Date();
+        // Date OnlyEndDate = Only_End_Date();
 
-        Date OnlyStartDate = Only_Start_Date();
-        Date OnlyEndDate = Only_End_Date();
+        // Date d = getTodayDate();
 
-        Date d = getTodayDate();
-
-        Date Last_Thirty_Days = date.today() - 30; // Today minus 30 days, will give us a date before 30 days
+        // Date Last_Thirty_Days = date.today() - 30; // Today minus 30 days, will give us a date before 30 days
         
-        List<Opportunity> NegData = [
-            SELECT
-            id,
-            name,
-            sales_Rep_o__r.name,
-            LastModifiedDate,
-            LastActivityDate,
-            LastModifiedBy.Name,
-            HasOverdueTask,
-            HasOpenActivity
-            FROM Opportunity
-            WHERE
-            Parent_Opportunity__c = NULL
-            AND sales_Rep_o__r.name IN :Active_SalesReps
-            AND RecordType.name = 'Seawin USA Hospitality'
-            AND GL_Account_Variable_1__r.Name = 'Seawin USA'
-            AND ForecastCategoryName = 'Pipeline'
-            AND ((LastActivityDate < :Last_Thirty_Days and LastActivityDate >=:OnlyStartDate 
-            and LastActivityDate <=:OnlyEndDate)
-                 OR (LastActivityDate = NULL
-                     AND (LastModifiedDate < :Last_Thirty_Days
-                           AND LastModifiedBy.Name != 'Murtaza Ashraf' AND
-                           LastModifiedBy.Name != 'Ashraf Murtaza'
-                           and LastModifiedDate >=:OnlyStartDate and LastModifiedDate <=:OnlyEndDate)))
-            ORDER BY sales_Rep_o__r.name
-        ];
+        // List<Opportunity> NegData = [
+        //     SELECT
+        //     id,
+        //     name,
+        //     sales_Rep_o__r.name,
+        //     LastModifiedDate,
+        //     LastActivityDate,
+        //     LastModifiedBy.Name,
+        //     HasOverdueTask,
+        //     HasOpenActivity
+        //     FROM Opportunity
+        //     WHERE
+        //     Parent_Opportunity__c = NULL
+        //     AND sales_Rep_o__r.name IN :Active_SalesReps
+        //     AND RecordType.name = 'Seawin USA Hospitality'
+        //     AND GL_Account_Variable_1__r.Name = 'Seawin USA'
+        //     AND ForecastCategoryName = 'Pipeline'
+        //     AND ((LastActivityDate < :Last_Thirty_Days and LastActivityDate >=:OnlyStartDate 
+        //     and LastActivityDate <=:OnlyEndDate)
+        //          OR (LastActivityDate = NULL
+        //              AND (LastModifiedDate < :Last_Thirty_Days
+        //                    AND LastModifiedBy.Name != 'Murtaza Ashraf' AND
+        //                    LastModifiedBy.Name != 'Ashraf Murtaza'
+        //                    and LastModifiedDate >=:OnlyStartDate and LastModifiedDate <=:OnlyEndDate)))
+        //     ORDER BY sales_Rep_o__r.name
+        // ];
+        // system.debug('OnlyStartDate: '+OnlyStartDate);
+        // system.debug('OnlyEndDate: '+OnlyEndDate);
+
+        // map<id, opportunity> QualifiedOpsMap = new Map<id, opportunity>(NegData);
         
-        map<id, opportunity> QualifiedOpsMap = new Map<id, opportunity>(NegData);
-        
-        if (!NegData.isEmpty()) {
-            for (Opportunity o : NegData) {
-                if (o.HasOverdueTask || o.HasOpenActivity) {
-                    // remove all opptys which have an open tasks
+        // if (!NegData.isEmpty()) {
+        //     for (Opportunity o : NegData) {
+        //         if (o.HasOverdueTask || o.HasOpenActivity) {
+        //             // remove all opptys which have an open tasks
                     
-                    QualifiedOpsMap.remove(o.id);
-                }
-            }
-        }
+        //             QualifiedOpsMap.remove(o.id);
+        //         }
+        //     }
+        // }
 
-        // get all pipeline opportunities
-        map<string, Integer> totalPipelineMap = new map<string, integer>();
-        for(AggregateResult agr : [
-            SELECT
-            count(id) num,
-            sales_rep_o__r.name name
-            FROM Opportunity
-            WHERE
-            Parent_Opportunity__c = NULL
-            AND sales_Rep_o__r.name IN :Active_SalesReps
-            AND RecordType.name = 'Seawin USA Hospitality'
-            AND GL_Account_Variable_1__r.Name = 'Seawin USA'
-            AND ForecastCategoryName = 'Pipeline'
-            group by sales_rep_o__r.name
-            order by sales_rep_o__r.name asc]){
+        // // get all pipeline opportunities
+        // map<string, Integer> totalPipelineMap = new map<string, integer>();
+        // for(AggregateResult agr : [
+        //     SELECT
+        //     count(id) num,
+        //     sales_rep_o__r.name name
+        //     FROM Opportunity
+        //     WHERE
+        //     Parent_Opportunity__c = NULL
+        //     AND sales_Rep_o__r.name IN :Active_SalesReps
+        //     AND RecordType.name = 'Seawin USA Hospitality'
+        //     AND GL_Account_Variable_1__r.Name = 'Seawin USA'
+        //     AND ForecastCategoryName = 'Pipeline'
+        //     group by sales_rep_o__r.name
+        //     order by sales_rep_o__r.name asc]){
 
-                totalPipelineMap.put((String)agr.get('name'), (integer)agr.get('num'));
-        }
+        //         totalPipelineMap.put((String)agr.get('name'), (integer)agr.get('num'));
+        // }
+        // map<string, List<ValuesWrapper>> NegOpptyMapLocal = new Map<string, List<ValuesWrapper>>();
+        // List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
         
-        map<string, List<ValuesWrapper>> NegOpptyMapLocal = new Map<string, List<ValuesWrapper>>();
-        List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
-        
-        if (QualifiedOpsMap.size() > 0) {
+        // if (QualifiedOpsMap.size() > 0) {
 
-            for (Opportunity o : QualifiedOpsMap.values()) {
+        //     for (Opportunity o : QualifiedOpsMap.values()) {
 
-                DateTime modifyDate = o.LastModifiedDate;
+        //         DateTime modifyDate = o.LastModifiedDate;
                 
-                Date LMD = Date.newInstance(
-                    modifyDate.year(),
-                    modifyDate.month(),
-                    modifyDate.day()
-                );
-                // shark
-                Date LAD = o.LastActivityDate;
+        //         Date LMD = Date.newInstance(
+        //             modifyDate.year(),
+        //             modifyDate.month(),
+        //             modifyDate.day()
+        //         );
+        //         // shark
+        //         Date LAD = o.LastActivityDate;
 
-                Integer year = 0;
-                Integer month = 0;
+        //         Integer year = 0;
+        //         Integer month = 0;
                 
-                Integer Modified_Neg_Days = LMD.daysBetween(d);
-                Integer Activity_Neg_Days = LAD != null ? LAD.daysBetween(d) : 0;
+        //         Integer Modified_Neg_Days = LMD.daysBetween(d);
+        //         Integer Activity_Neg_Days = LAD != null ? LAD.daysBetween(d) : 0;
 
-                // In the code below we will keep the one with most Neg days out of the three above, means the oldest
-                // For example if an opportunity has Modified_Neg_Days = 5
-                // and Activity_Neg_Days = 2, then we will keep 5 as Neg days.
+        //         // In the code below we will keep the one with most Neg days out of the three above, means the oldest
+        //         // For example if an opportunity has Modified_Neg_Days = 5
+        //         // and Activity_Neg_Days = 2, then we will keep 5 as Neg days.
 
-                Integer NegDays = 0;
+        //         Integer NegDays = 0;
 
-                if (
-                    Modified_Neg_Days > Activity_Neg_Days
-                ) {
-                    NegDays = Modified_Neg_Days;
+        //         if (
+        //             Modified_Neg_Days > Activity_Neg_Days
+        //         ) {
+        //             NegDays = Modified_Neg_Days;
 
-                    year = modifyDate.year();
-                    month = modifyDate.month();
-                } else if (
-                    Activity_Neg_Days > Modified_Neg_Days
-                ) {
-                    NegDays = Activity_Neg_Days;
-                    year = LAD.year();
-                    month = LAD.month();
-                }else if(Activity_Neg_Days == Modified_Neg_Days){
+        //             year = modifyDate.year();
+        //             month = modifyDate.month();
+        //         } else if (
+        //             Activity_Neg_Days > Modified_Neg_Days
+        //         ) {
+        //             NegDays = Activity_Neg_Days;
+        //             year = LAD.year();
+        //             month = LAD.month();
+        //         }else if(Activity_Neg_Days == Modified_Neg_Days){
 
-                    NegDays = Activity_Neg_Days;
-                    year = LAD.year();
-                    month = LAD.month();
-                }
+        //             NegDays = Activity_Neg_Days;
+        //             year = LAD.year();
+        //             month = LAD.month();
+        //         }
 
-                string salesrepName = o.Sales_Rep_O__r.name;
+        //         string salesrepName = o.Sales_Rep_O__r.name;
 
-                ValuesList = new List<ValuesWrapper>();
+        //         ValuesList = new List<ValuesWrapper>();
                 
-                ValuesWrapper vw = new ValuesWrapper(
-                                    Last12MonthsList_Horizontal.indexOf(Months[month - 1]),
-                                    Months[month - 1],
-                                    salesrepName,
-                                    1,
-                                    year,
-                                    null,
-                                    null
-                                );
+        //         ValuesWrapper vw = new ValuesWrapper(
+        //                             Last12MonthsList_Horizontal.indexOf(Months[month - 1]),
+        //                             Months[month - 1],
+        //                             salesrepName,
+        //                             1,
+        //                             year,
+        //                             null,
+        //                             null
+        //                         );
                 
-                if (NegOpptyMapLocal.containsKey(salesrepName)) {
-                    ValuesList = NegOpptyMapLocal.get(
-                        salesrepName
-                    );
+        //         if (NegOpptyMapLocal.containsKey(salesrepName)) {
+        //             ValuesList = NegOpptyMapLocal.get(
+        //                 salesrepName
+        //             );
                     
-                    Boolean IndexDoesNotExist = true;
+        //             Boolean IndexDoesNotExist = true;
                     
-                    for (ValuesWrapper vwr : ValuesList) {
-                        if (
-                            vwr.valueindex == Last12MonthsList_Horizontal.indexOf(Months[month - 1])
-                        ) {
-                            // index exists then add 1 more
-                            vwr.amount += 1;
-                            IndexDoesNotExist = false;
-                        }
-                    }
+        //             for (ValuesWrapper vwr : ValuesList) {
+        //                 if (
+        //                     vwr.valueindex == Last12MonthsList_Horizontal.indexOf(Months[month - 1])
+        //                 ) {
+        //                     // index exists then add 1 more
+        //                     vwr.amount += 1;
+        //                     IndexDoesNotExist = false;
+        //                 }
+        //             }
                     
-                    if (IndexDoesNotExist) {
-                        ValuesList.add(vw);
-                    }
-                } else {
+        //             if (IndexDoesNotExist) {
+        //                 ValuesList.add(vw);
+        //             }
+        //         } else {
                     
-                    ValuesList.add(vw);
+        //             ValuesList.add(vw);
                     
-                }
-                NegOpptyMapLocal.put(salesrepName, ValuesList);
-            }
-        }
-        if (NegOpptyMapLocal.size() > 0) {
+        //         }
+        //         NegOpptyMapLocal.put(salesrepName, ValuesList);
+        //     }
+        // }
+        // system.debug('NegOpptyMapLocal: '+JSON.serialize(NegOpptyMapLocal));
+        // if (NegOpptyMapLocal.size() > 0) {
 
-            for(string key : NegOpptyMapLocal.keyset()){
+        //     for(string key : NegOpptyMapLocal.keyset()){
 
-                List<ValuesWrapper> vws = NegOpptyMapLocal.get(key);
+        //         List<ValuesWrapper> vws = NegOpptyMapLocal.get(key);
 
-                for(ValuesWrapper vw : vws){
-                    vw.misc = Decimal.valueOf(TotalPipelineMap.get(key));
-                }
+        //         for(ValuesWrapper vw : vws){
+        //             vw.misc = Decimal.valueOf(TotalPipelineMap.get(key));
+        //         }
 
-                vws = SortIndices(vws);
+        //         vws = SortIndices(vws);
 
-                NegOpptyMapLocal.put(key, vws);
-            }
-        }
-
-        return NegOpptyMapLocal;
+        //         NegOpptyMapLocal.put(key, vws);
+        //     }
+        // }
+        // system.debug('NegOpptyMapLocal: '+JSON.serialize(NegOpptyMapLocal));
+        // return NegOpptyMapLocal;
     }
     
     @RemoteAction

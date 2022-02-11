@@ -4,6 +4,6 @@ trigger AfterOpportunityTrigger on Opportunity (after update) {
         RecordTypeSyncHandler.AfterUpdateOpportunity(Trigger.old, Trigger.new);
         ProcessApprovalOpportunityHandler.Check_Email(Trigger.old, Trigger.new);
         SyncOptionalProductsToQuoteHandler.SyncToQuote(Trigger.old, Trigger.new);
-        
+        OpportunityAfterUpdateHandler.checkAccountChanging(Trigger.old, Trigger.new);
     }
 }

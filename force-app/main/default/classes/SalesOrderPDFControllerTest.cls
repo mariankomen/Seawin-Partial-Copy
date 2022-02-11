@@ -251,7 +251,7 @@ public class SalesOrderPDFControllerTest {
         abf.AcctSeed__Default_Email_Template__c = 'Activity_Statement_Email_Template';
         
         insert abf;
-        
+        Test.startTest();
         AcctSeed__Ledger__c ledger = new AcctSeed__Ledger__c();
         
         ledger.Name = 'myLedger';
@@ -435,6 +435,7 @@ public class SalesOrderPDFControllerTest {
         memo.AcctSeed__Amount__c = -25;
         
         insert memo;
+        Test.stopTest();
     }
     
     @isTest static void SalesOrderController(){
