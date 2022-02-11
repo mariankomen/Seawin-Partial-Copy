@@ -2230,79 +2230,30 @@
 
         Visualforce.remoting.timeout = 120000;
 
-        // Visualforce.remoting.Manager.invokeAction(
-        // '{!$RemoteAction.HospitalityDashboardUSAController.Company_Total_Pipeline_Last_12_Months}',
-        //     function(result, event){
-
-        //         if (event.status) {
-        //             for (var key in result) {
-        //                 DataArray = new Array();
-
-        //                 result[key].forEach(buildarray);
-                        
-        //                 function buildarray(item, index) {
-
-        //                     var subArray = new Array();
-            
-        //                     subArray.push(item.valueindex, item.amount);
-        //                     DataArray.push(subArray);
-        //                 }
-        //             }
-
-        //             var MainArray = {name: 'companydata', data: DataArray};
-        
-        //             CompanyTotalPipelineData.push(MainArray);
-
-        //             RenderCompanyTotalPipelineLast12Months(CompanyTotalPipelineData);
-        //         } else if (event.type === 'exception') {
-                    
-        //                 console.log('Exception has occured in Company Total Pipeline Last 12 Months...');
-        //                 console.log(event.message);
-        //                 console.log(event.where);
-        //         } else {
-        //             console.log('Error occured in Company Total Pipeline Last 12 Months...');
-        //             console.log(event.message);
-        //         }
-        //     }, 
-        //     {escape: true}
-        // );
-
         Visualforce.remoting.Manager.invokeAction(
-            '{!$RemoteAction.HospitalityDashboardUSAController.Company_Total_Pipeline_Last_12_Months_Fix}',
+        '{!$RemoteAction.HospitalityDashboardUSAController.Company_Total_Pipeline_Last_12_Months}',
             function(result, event){
 
                 if (event.status) {
-                    console.log('back: ',result);
-                    //let CompanyTotalPipelineDataT = result;
-                    let final = []
-                    let data = []
-                    let currentMonth = new Date().getMonth()+1;
-                    let test = JSON.parse('{"12":15169283.31,"11":17296323.15,"10":7384576.09,"9":11018218.08,"8":3629015.92,"7":6202842.66,"6":5239944.77,"5":4201609.34,"4":6698280.31,"3":7138167.69,"14":11818682.79,"13":18617916.34}')
-                    for(let char in test){
-                        data.push([char-currentMonth-1, test[char]])
+                    for (var key in result) {
+                        DataArray = new Array();
+
+                        result[key].forEach(buildarray);
+                        
+                        function buildarray(item, index) {
+
+                            var subArray = new Array();
+            
+                            subArray.push(item.valueindex, item.amount);
+                            DataArray.push(subArray);
+                        }
                     }
-                    final.push({
-                        name: "companydata",
-                        data: data
-                    })
 
-                    // let final = []
-                    // const cur_month = new Date().getMonth()+1    
-                    // for(let char in result){
-                    //     let cur_item = result[char]
-                    //     let cur_arr = []
-                    //     for(let item in cur_item){
-                    //         cur_arr.push([+item-cur_month-1, cur_item[item]])
-                    //     }
-                    //     final.push({
-                    //         name: char,
-                    //         custom: char,
-                    //         data: cur_arr
-                    //     })
+                    var MainArray = {name: 'companydata', data: DataArray};
+        
+                    CompanyTotalPipelineData.push(MainArray);
 
-                    // }
-                    console.log('final:: ',final)
-                    RenderCompanyTotalPipelineLast12Months(final);
+                    RenderCompanyTotalPipelineLast12Months(CompanyTotalPipelineData);
                 } else if (event.type === 'exception') {
                     
                         console.log('Exception has occured in Company Total Pipeline Last 12 Months...');
@@ -2317,7 +2268,7 @@
         );
 
         function RenderCompanyTotalPipelineLast12Months(CompanyTotalPipelineData){
-            console.log('DATA::::', JSON.stringify(CompanyTotalPipelineData))
+        
             Highcharts.chart('companypipeline', {
                 credits: {
                     enabled: false
@@ -2405,7 +2356,7 @@
                                 var CurrentMonth = parseInt(d.getMonth()) + 1;
                                 
                                 var YearIndex = (CategArray[1]).replace("'", "");
-                                console.log('YearIndex: ',YearIndex)
+                                
                                 var month = parseInt(MonthArray.indexOf(CategArray[0]) + 1);
                                 
                                 var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
@@ -2441,47 +2392,30 @@
         Visualforce.remoting.timeout = 120000;
 
         Visualforce.remoting.Manager.invokeAction(
-        '{!$RemoteAction.HospitalityDashboardUSAController.Sales_Reps_Total_Pipeline_Last_12_Months_Fix}',
+        '{!$RemoteAction.HospitalityDashboardUSAController.Sales_Reps_Total_Pipeline_Last_12_Months}',
             function(result, event){
-                console.log('Pipeline Last 12 Months by Sales Rep / Team : ',JSON.stringify(result))
+
                 if (event.status) {
+                    for (var key in result) {
 
+                        mainArray = new Array(); 
 
-                    // for (var key in result) {
-
-                    //     mainArray = new Array(); 
-
-                    //     result[key].forEach(buildarray);
+                        result[key].forEach(buildarray);
                         
-                    //     function buildarray(item, index) {
+                        function buildarray(item, index) {
 
-                    //         subArray = new Array();
+                            subArray = new Array();
             
-                    //         subArray.push(item.valueindex, item.amount);
-                    //         mainArray.push(subArray);
-                    //     }
-
-                    //     midArray = {name:key, data:mainArray, custom:key};
-            
-                    //     SalesRepTotalPipelineData.push(midArray);
-                    // }
-                    let final = []
-                    const cur_month = new Date().getMonth()+1    
-                    for(let char in result){
-                        let cur_item = result[char]
-                        let cur_arr = []
-                        for(let item in cur_item){
-                            cur_arr.push([+item-cur_month-1, cur_item[item]])
+                            subArray.push(item.valueindex, item.amount);
+                            mainArray.push(subArray);
                         }
-                        final.push({
-                            name: char,
-                            custom: char,
-                            data: cur_arr
-                        })
 
-                    }    
-                    console.log('SalesRepTotalPipelineData: ',JSON.stringify(SalesRepTotalPipelineData))
-                    RenderCompanyPipelineLast12MonthsbySalesRepTeam(final);
+                        midArray = {name:key, data:mainArray, custom:key};
+            
+                        SalesRepTotalPipelineData.push(midArray);
+                    }
+
+                    RenderCompanyPipelineLast12MonthsbySalesRepTeam(SalesRepTotalPipelineData);
                 } else if (event.type === 'exception') {
                     
                         console.log('Exception has occured in Pipeline Last 12 Months by Sales Rep / Team...');
@@ -2623,27 +2557,30 @@
         Visualforce.remoting.timeout = 120000;
 
         Visualforce.remoting.Manager.invokeAction(
-        '{!$RemoteAction.HospitalityDashboardUSAController.Pipeline_Last_12_Months_By_Lead_Source_fix}',
+        '{!$RemoteAction.HospitalityDashboardUSAController.Pipeline_Last_12_Months_By_Lead_Source}',
             function(result, event){
 
                 if (event.status) {
-                    let final = []
-                    const cur_month = new Date().getMonth()+1    
-                    for(let char in result){
-                        let cur_item = result[char]
-                        let cur_arr = []
-                        for(let item in cur_item){
-                            cur_arr.push([+item-cur_month-1, cur_item[item]])
+                    for (var key in result) {
+
+                        mainArray = new Array(); 
+
+                        result[key].forEach(buildarray);
+                        
+                        function buildarray(item, index) {
+
+                            subArray = new Array();
+            
+                            subArray.push(item.valueindex, item.amount);
+                            mainArray.push(subArray);
                         }
-                        final.push({
-                            name: char,
-                            custom: char,
-                            data: cur_arr
-                        })
 
-                    }    
+                        midArray = {name:key, data:mainArray, custom:key};
+            
+                        TotalPipelineByLeadSourceData.push(midArray);
+                    }
 
-                    RenderCompanyPipelineLast12MonthsByLeadSource(final);
+                    RenderCompanyPipelineLast12MonthsByLeadSource(TotalPipelineByLeadSourceData);
                 } else if (event.type === 'exception') {
                     
                         console.log('Exception has occured in Pipeline Last 12 Months By Lead Source...');
@@ -4835,41 +4772,41 @@
 
     Visualforce.remoting.Manager.invokeAction(
     '{!$RemoteAction.HospitalityDashboardUSAController.Neglected_Opportunities}',
-        function(result, event){
+    function(result, event){
 
-            if (event.status) {
-                console.log('result negl: ',JSON.stringify(result))
+        if (event.status) {
+            console.log('result negl: ',JSON.stringify(result))
 
-                const main = []
-                for(let char in result){
-                    const data_key = [];
-                    const custom_key = [];
-                    result[char].forEach(el => {
-                        let percent = +((el.amount*100)/el.misc).toFixed(2);
-                        let custom_str = [el.amount, el.misc, percent].join(':');
-                        data_key.push([el.valueindex, percent]);
-                        custom_key.push([el.valueindex, custom_str]);
-                    })
-                    data_key.sort((a, b) => b[0] - a[0]).reverse()
-                    main.push({
-                        name: char,
-                        data: data_key,
-                        custom: custom_key
-                    })
-                }
-                console.log('NeglectedOpptyData: ', JSON.stringify(NeglectedOpptyData))
-                RenderChartNeglectedOpportunities(main);
-                // RenderChartNeglectedOpportunities(NeglectedOpptyData);
-            } else if (event.type === 'exception') {
-                
-                    console.log('Exception has occured in Neglected Opportunities...');
-                    console.log(event.message);
-                    console.log(event.where);
-            } else {
-                    console.log('Error occured in Neglected Opportunities...');
-                    console.log(event.message);
+            const main = []
+            for(let char in result){
+                const data_key = [];
+                const custom_key = [];
+                result[char].forEach(el => {
+                    let percent = +((el.amount*100)/el.misc).toFixed(2);
+                    let custom_str = [el.amount, el.misc, percent].join(':');
+                    data_key.push([el.valueindex, percent]);
+                    custom_key.push([el.valueindex, custom_str]);
+                })
+                data_key.sort((a, b) => b[0] - a[0]).reverse()
+                main.push({
+                    name: char,
+                    data: data_key,
+                    custom: custom_key
+                })
             }
-        }, 
+            console.log('NeglectedOpptyData: ', JSON.stringify(NeglectedOpptyData))
+            RenderChartNeglectedOpportunities(main);
+            // RenderChartNeglectedOpportunities(NeglectedOpptyData);
+        } else if (event.type === 'exception') {
+
+            console.log('Exception has occured in Neglected Opportunities...');
+            console.log(event.message);
+            console.log(event.where);
+        } else {
+            console.log('Error occured in Neglected Opportunities...');
+            console.log(event.message);
+        }
+        },
         {escape: true}
     );
 

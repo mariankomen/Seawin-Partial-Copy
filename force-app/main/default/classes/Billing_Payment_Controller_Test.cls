@@ -317,17 +317,5 @@ public with sharing class Billing_Payment_Controller_Test {
         bl.savePDF();
         bl.sendPDF();
         bl.back();
-
-    //     public Id recordId {get; set; }
-    // public AcctSeed__Billing__c record_info {get; set; }
-    // public String senderEmail {get {return UserInfo.getUserEmail();} set;}
-    // public Boolean ccMe {get; set;}
-    // public String ccAddresses {get; set;}
-    // public String contact_em {get; set;}
-
-    // public String recieverEmail {get; set;}
-
-    // public String emailSubject {get; set;}
-    // public String emailBody {get; set;}
     }
 }
