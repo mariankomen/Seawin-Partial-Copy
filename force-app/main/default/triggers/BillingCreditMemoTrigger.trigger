@@ -4,6 +4,5 @@ trigger BillingCreditMemoTrigger on AcctSeed__Billing_Credit_Memo__c (after inse
         
     }else if(Trigger.IsBefore && Trigger.IsDelete){
         BillingCreditMemoHandler.UpdateOnSO(Trigger.old, False);
-        
     }
 }

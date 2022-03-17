@@ -3070,7 +3070,7 @@
         Visualforce.remoting.Manager.invokeAction(
         '{!$RemoteAction.HospitalityDashboardUSAController.Newly_Submitted_Opportunities_Last_12_Months_By_Lead_Source}',
             function(result, event){
-
+                console.log('SUBMITTED LEAD SOURSE: ',JSON.stringify(result))
                 if (event.status) {
                     for (var key in result) {
 
@@ -3090,7 +3090,7 @@
                                     NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceDataCountPerMonth[item.valueindex] = amount;
                                 }
                                 else{
-                                    NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceDataCountPerMonth[item.valueindex] += amount;
+                                    if(amount) NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceDataCountPerMonth[item.valueindex] += amount;
                                 }
                             }
                         }
@@ -3100,6 +3100,7 @@
                     }
                     NewlySubmittedOpportunitiesLeadSource();
                     RenderNewlySubmittedOpportunitiesLeadSource(NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceData);
+                    // RenderNewlySubmittedOpportunitiesLeadSource(NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceData);
                 } else if (event.type === 'exception') {
                     
                         console.log('Exception has occured in Newly Submitted Opportunities by Lead Source...');
@@ -3146,6 +3147,7 @@
             },
             tooltip: {
                 formatter: function(){
+                    console.log('this.x ::::: ',this.x )
                     return '<span style="color:'+this.series.color+'; font-weight: bold">'+ this.x 
                     + '</span><br/><span style="font-weight: bold">' + this.series.name 
                     + '</span><br/># of Opportunities: ' + this.y;
@@ -4773,7 +4775,6 @@
     Visualforce.remoting.Manager.invokeAction(
     '{!$RemoteAction.HospitalityDashboardUSAController.Neglected_Opportunities}',
     function(result, event){
-
         if (event.status) {
             console.log('result negl: ',JSON.stringify(result))
 

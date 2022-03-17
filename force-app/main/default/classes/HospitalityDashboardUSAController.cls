@@ -1010,10 +1010,7 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
             AND Newly_Submitted_Quote_First_Date__c >= :Only_Start_Date
             AND Newly_Submitted_Quote_First_Date__c <= :Only_End_Date
             AND Parent_Opportunity__c = NULL
-            AND (ForecastCategoryName = 'Pipeline'
-                 OR StageName = 'Sleep'
-                 OR StageName = 'Closed Won'
-                 OR StageName = 'Closed Lost')
+            AND Type != 'Template'
             AND (NOT Name LIKE :ChangeOrder)
             AND (NOT Name LIKE :MockupOne)
             AND (NOT Name LIKE :MockupTwo)
@@ -1139,10 +1136,7 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
             AND Newly_Submitted_Quote_First_Date__c >= :Only_Start_Date
             AND Newly_Submitted_Quote_First_Date__c <= :Only_End_Date
             AND Parent_Opportunity__c = NULL
-            AND (ForecastCategoryName = 'Pipeline'
-                 OR StageName = 'Sleep'
-                 OR StageName = 'Closed Won'
-                 OR StageName = 'Closed Lost')
+            AND Type != 'Template'
             AND (NOT Name LIKE :ChangeOrder)
             AND (NOT Name LIKE :MockupOne)
             AND (NOT Name LIKE :MockupTwo)
@@ -1288,10 +1282,7 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
             AND Newly_Submitted_Quote_First_Date__c >= :Only_Start_Date
             AND Newly_Submitted_Quote_First_Date__c <= :Only_End_Date
             AND Parent_Opportunity__c = NULL
-            AND (ForecastCategoryName = 'Pipeline'
-                 OR StageName = 'Sleep'
-                 OR StageName = 'Closed Won'
-                 OR StageName = 'Closed Lost')
+            AND Type != 'Template'
             AND (NOT Name LIKE :ChangeOrder)
             AND (NOT Name LIKE :MockupOne)
             AND (NOT Name LIKE :MockupTwo)

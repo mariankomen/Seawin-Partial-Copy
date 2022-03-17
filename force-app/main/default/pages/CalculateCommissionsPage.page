@@ -5,7 +5,7 @@
             <apex:pageBlockButtons location="both">
                 <apex:commandbutton action="{!Back}" oncomplete="window.location.href = '{!communityUrl}/{!soId}'" rerender="form" value="Back"/>
             </apex:pageBlockButtons>
-            <apex:pageMessages ></apex:pageMessages>
+            <apex:pageMessages></apex:pageMessages>
         </apex:pageBlock>
     </apex:form>
 </apex:page>

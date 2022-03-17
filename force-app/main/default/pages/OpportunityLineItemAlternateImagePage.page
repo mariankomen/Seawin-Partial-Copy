@@ -32,9 +32,11 @@
         debugger;
         var prodId = '{!$CurrentPage.parameters.prodId}';
         var docId = '{!$CurrentPage.parameters.docId}';
-        
-        if(docId != "" && docId != "null"){
+        console.log('prodId: ',prodId)
+        console.log('docId: ',docId)
+        if(docId && docId ){
             document.getElementById("lblFileError").style.display = "none";
+            console.log('11111')
             window.close();
 
             window.opener.HandlePopupResult(prodId, docId);  

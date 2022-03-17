@@ -123,10 +123,12 @@ public class ProductPageExtension {
     public void alternateImages() {
         String prodID = Apexpages.currentPage().getParameters().get('prodID');
         String docId = Apexpages.currentPage().getParameters().get('docId');
-
+        system.debug('prodID: '+prodID);
+        system.debug('docId: '+docId);
         docURL = communityUrl + '/servlet/servlet.FileDownload?file=' + docId;
         
         OliAlternateImgURL.put(prodID, docURL);
+        system.debug('OliAlternateImgURL: '+OliAlternateImgURL);
     }
 
     public String getStrTabName() {
@@ -861,7 +863,18 @@ queryStr +
                             Size__c = ps.prod.Size__c,
                             PriceBookEntryId__c = ProductsPrice.containsKey(ps.prod.id) ? ProductsPrice.get(ps.prod.id).id : null,
                             GL_Account_Variable_1__c = agl,
-                            Allow_Product_Description_Change__c = ps.prod.Allow_Product_Description_Change__c
+                            Allow_Product_Description_Change__c = ps.prod.Allow_Product_Description_Change__c,
+                            Allow_Custom_Image__c = ps.prod.Allow_Custom_Image__c
+
+                            // OpportunityId = OppId,
+                            // UnitPrice = ProductsPrice.containsKey(ps.prod.id) ? ProductsPrice.get(ps.prod.id).UnitPrice : 0.00,
+                            // Product2Id = ps.prod.id,
+                            // Item_Description__c = ps.prod.Description,
+                            // Size__c = ps.prod.Size__c,
+                            // PricebookEntryId = ProductsPrice.containsKey(ps.prod.id) ? ProductsPrice.get(ps.prod.id).id : null,
+                            // AcctSeed__GL_Account_Variable_1__c = agl,
+                            // Allow_Custom_Image__c = ps.prod.Allow_Custom_Image__c,
+                            // Allow_Product_Description_Change__c = ps.prod.Allow_Product_Description_Change__c
                         );
                         if (prods.size() == 1) {
 							line.sortorder__c = HighestSort != null ? ++HighestSort : 1;
@@ -888,6 +901,7 @@ queryStr +
                                 : ps.prod.ProductImageURL__c
                             );
                         }
+
                     }
             }
             return OPO;
@@ -955,7 +969,8 @@ queryStr +
                             Item_Description__c = ps.prod.Description,
                             Size__c = ps.prod.Size__c,
                             PriceBookEntryId__c = ProductsPrice.containsKey(ps.prod.id) ? ProductsPrice.get(ps.prod.id).id : null,
-                            GL_Account_Variable_1__c = agl
+                            GL_Account_Variable_1__c = agl,
+                            Allow_Product_Description_Change__c	 = ps.prod.Allow_Product_Description_Change__c
                         );
                         if (prods.size() == 1) {
 							line.sortorder__c = HighestSort != null ? ++HighestSort : 1;
@@ -1154,9 +1169,13 @@ queryStr +
                             (Decimal)obj.get('AcctSeedERP__Quantity_Ordered__c') : section == 'pli' ? 
                                 (Decimal)obj.get('AcctSeedERP__Quantity__c') : 0.00;
             
+
+             system.debug('1172 productId: '+productId);
+             system.debug('1173 OliAlternateImgURL: '+JSON.serialize(OliAlternateImgURL));
+                                
             if(productId != null){
                 
-                if (OliAlternateImgURL.size() > 0 && section == 'oli') {
+                if (OliAlternateImgURL.size() > 0 && (section == 'oli' || section == 'opo')) {
                     if (OliAlternateImgURL.containsKey(productId)) {
                         
                         obj.put('AlternateImageURL__c', OliAlternateImgURL.get(productId));

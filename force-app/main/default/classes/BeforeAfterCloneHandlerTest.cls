@@ -32,6 +32,7 @@ public class BeforeAfterCloneHandlerTest {
         aegl.AcctSeed__Sub_Type_1__c = 'Facilities';
         aegl.AcctSeed__Sub_Type_2__c = 'Rent';
         aegl.AcctSeed__Bank__c = true;
+        aegl.GL_Account_Variable_1__c = [SELECT Id FROM AcctSeed__Accounting_Variable__c WHERE Name = 'Seawin USA' AND AcctSeed__Type__c = 'GL Account Variable 1' LIMIT 1].Id;
         insert aegl;
         
         // create product
@@ -120,6 +121,13 @@ public class BeforeAfterCloneHandlerTest {
     
     @isTest static void runTest(){   
      
+        Set<Id> ol = (new Map<Id, OpportunityLineItem>([SELECT Id FROM OpportunityLineItem])).keySet();
+        List<Opportunity> oppList = [SELECT Id FROM Opportunity];
+
+        BeforeAfterCloneHandler.ProcessAfter(oppList);
+        BeforeAfterCloneHandler.DeleteProducts(ol);
+
+
      // Dont need this because the trigger is fired when the opportunity is inserted   
      /*
      LIST<Opportunity> listOpp = [select id 

@@ -49,7 +49,7 @@ public with sharing class ListOfRecordsHelper extends MainSalesManagerDashboardU
                 }
             }
         }
-        
+        system.debug('QualifiedOpsMap after: '+QualifiedOpsMap.size());
         Map<string, Integer> totalPipelineMap = new Map<string, integer>();
         for(AggregateResult agr : [SELECT
                                     count(id) num,
@@ -152,4 +152,16 @@ public with sharing class ListOfRecordsHelper extends MainSalesManagerDashboardU
         
     }
 
+    @ReadOnly
+    @RemoteAction
+    public static void negl(){
+        system.debug('14');
+    }
+
+
+    @ReadOnly
+    @RemoteAction
+    public static void getTasks(Set<Id> opportIds){
+
+    }
 }

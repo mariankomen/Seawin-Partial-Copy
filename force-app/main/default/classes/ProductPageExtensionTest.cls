@@ -368,23 +368,23 @@ public class ProductPageExtensionTest {
         ib2.AcctSeedERP__Ledger__c = ledger.id;
         insert ib2;
         
-        AcctSeedERP__Purchase_Order_Inventory_Movement__c poim2 = new AcctSeedERP__Purchase_Order_Inventory_Movement__c();
-        poim2.AcctSeedERP__GL_Account_Variable_1__c = av.id;
-        poim2.AcctSeedERP__Inventory_Balance__c = ib2.id;
-        poim2.AcctSeedERP__Quantity__c = 2;
-        poim2.AcctSeedERP__Purchase_Order_Line__c = polList[0].id;
-        poim2.AcctSeedERP__Movement_Date__c = date.today();
-        poim2.AcctSeedERP__Unit_Cost__c = 1;
-        insert poim2;
+        // AcctSeedERP__Purchase_Order_Inventory_Movement__c poim2 = new AcctSeedERP__Purchase_Order_Inventory_Movement__c();
+        // poim2.AcctSeedERP__GL_Account_Variable_1__c = av.id;
+        // poim2.AcctSeedERP__Inventory_Balance__c = ib2.id;
+        // poim2.AcctSeedERP__Quantity__c = 2;
+        // poim2.AcctSeedERP__Purchase_Order_Line__c = polList[0].id;
+        // poim2.AcctSeedERP__Movement_Date__c = date.today();
+        // poim2.AcctSeedERP__Unit_Cost__c = 1;
+        // insert poim2;
         
-        AcctSeedERP__Sales_Order_Inventory_Movement__c soim2 = new AcctSeedERP__Sales_Order_Inventory_Movement__c();
-        soim2.AcctSeedERP__GL_Account_Variable_1__c = av.id;
-        soim2.AcctSeedERP__Inventory_Balance__c = ib2.id;
-        soim2.AcctSeedERP__Quantity__c = 1;
-        soim2.AcctSeedERP__Movement_Date__c = date.today();
-        soim2.AcctSeedERP__Sales_Order_Line__c = solines.id;
-        soim2.AcctSeedERP__Unit_Cost__c = 1;
-        insert soim2;
+        // AcctSeedERP__Sales_Order_Inventory_Movement__c soim2 = new AcctSeedERP__Sales_Order_Inventory_Movement__c();
+        // soim2.AcctSeedERP__GL_Account_Variable_1__c = av.id;
+        // soim2.AcctSeedERP__Inventory_Balance__c = ib2.id;
+        // soim2.AcctSeedERP__Quantity__c = 1;
+        // soim2.AcctSeedERP__Movement_Date__c = date.today();
+        // soim2.AcctSeedERP__Sales_Order_Line__c = solines.id;
+        // soim2.AcctSeedERP__Unit_Cost__c = 1;
+        // insert soim2;
 
     }
     

@@ -306,7 +306,40 @@ public class BillingPDFExtensionTest {
         bline2.Item_Description__c = solines.Item_Description__c;
         
         insert bline2;
+
+
+
+        AcctSeed__Accounting_Variable__c accVar_r = new AcctSeed__Accounting_Variable__c();
+        accVar_r.Name = 'Seawin USA';
+        accVar_r.AcctSeed__Type__c = 'GL Account Variable 1';
+        insert accVar_r;
+
+        Account acct_t = new Account();
+        //acct.Sales_Rep_O__c = sr.id;
+        acct_t.Name = 'myAccount';
+        acct_t.Type = 'Designer';
+        acct_t.AcctSeed__Accounting_Type__c = 'Customer';
+        acct_t.AcctSeed__GL_Account_Variable_1__c = accVar_r.Id;
+        insert acct_t;
+
+        // AcctSeed__Cash_Receipt__c cr = new AcctSeed__Cash_Receipt__c();
         
+        // cr.AcctSeed__Receipt_Date__c = Date.today();
+        // cr.AcctSeed__Account__c = acct_t.id;
+        // cr.AcctSeed__Amount__c = 30;
+        // cr.AcctSeed__Payment_Reference__c = 'Reference Test';
+        // cr.AcctSeed__GL_Account_Variable_1__c = accVar_r.id;
+        
+        // insert cr;
+        
+        // AcctSeed__Billing_Cash_Receipt__c br = new AcctSeed__Billing_Cash_Receipt__c();
+        
+        // br.AcctSeed__Applied_Amount__c = 30;
+        // br.AcctSeed__Billing__c = bill.id;
+        // br.AcctSeed__Cash_Receipt__c = cr.id;
+        // //br.AcctSeed__Period_Applied__c = ap.id;
+        
+        // insert br;
     }
     
     @isTest static void With_SalesOrder(){

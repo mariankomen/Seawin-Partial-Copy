@@ -114,4 +114,14 @@ public class AfterSalesOrderTriggerHandler {
             CalculateCommissionsHandler.Start(memoReceipts);
         }
     }
+
+    public static void UpdateRelatedBilling(List<AcctSeedERP__Sales_Order__c> data){
+        //This method used for updating fome field on billing object for run trigger which set Billing Balance field of SO
+        Map<Id, AcctSeedERP__Sales_Order__c> bill_map = new Map<Id, AcctSeedERP__Sales_Order__c>(data);
+        List<AcctSeed__Billing__c> related_bills = [SELECT Id, SalesOrderTriggerUpdate__c,AcctSeedERP__Sales_Order__c FROM AcctSeed__Billing__c WHERE AcctSeedERP__Sales_Order__c IN:bill_map.keySet()];
+        for(AcctSeed__Billing__c b:related_bills){
+            b.SalesOrderTriggerUpdate__c = '1';
+        }
+        update related_bills;
+    }
 }

@@ -2163,10 +2163,10 @@ public class ListOfRecordsController {
             
             QueryStr += ' RecordType.name = \'Seawin USA Hospitality\' and ';
             QueryStr += ' GL_Account_Variable_1__r.name = \'Seawin USA\' ';
-            QueryStr += ' AND (ForecastCategoryName = \'Pipeline\' ';
-            QueryStr += ' OR StageName = \'Sleep\' ';
-            QueryStr += ' OR StageName = \'Closed Won\' ';
-            QueryStr += ' OR StageName = \'Closed Lost\') ';
+            QueryStr += ' AND Type != \'Template\' ';
+            // QueryStr += ' OR StageName = \'Sleep\' ';
+            // QueryStr += ' OR StageName = \'Closed Won\' ';
+            // QueryStr += ' OR StageName = \'Closed Lost\') ';
             QueryStr += ' AND Parent_Opportunity__c = NULL ';
             QueryStr += ' AND (NOT Name LIKE :ChangeOrder) ';
             QueryStr += ' AND (NOT Name LIKE :MockupOne) ';
@@ -2265,10 +2265,7 @@ public class ListOfRecordsController {
             
             QueryStr += ' RecordType.name = \'Seawin USA Hospitality\' and ';
             QueryStr += ' GL_Account_Variable_1__r.name = \'Seawin USA\' ';
-            QueryStr += ' AND (ForecastCategoryName = \'Pipeline\' ';
-            QueryStr += ' OR StageName = \'Sleep\' ';
-            QueryStr += ' OR StageName = \'Closed Won\' ';
-            QueryStr += ' OR StageName = \'Closed Lost\') ';
+            QueryStr += ' AND Type != \'Template\' ';
             QueryStr += ' AND Parent_Opportunity__c = NULL ';
             QueryStr += ' AND (NOT Name LIKE :ChangeOrder) ';
             QueryStr += ' AND (NOT Name LIKE :MockupOne) ';
@@ -4032,10 +4029,7 @@ public class ListOfRecordsController {
             
             QueryStr += ' RecordType.name = \'Seawin China Hospitality\' ';
             QueryStr += ' AND (GL_Account_Variable_1__r.Name =\'Seawin China\' or GL_Account_Variable_1__r.Name =\'Seawin Hong Kong\') ';
-            QueryStr += ' AND (ForecastCategoryName = \'Pipeline\' ';
-            QueryStr += ' OR StageName = \'Sleep\' ';
-            QueryStr += ' OR StageName = \'Closed Won\' ';
-            QueryStr += ' OR StageName = \'Closed Lost\') ';
+            QueryStr += ' AND Type != \'Template\' ';
             QueryStr += ' AND Parent_Opportunity__c = NULL ';
             QueryStr += ' AND (NOT Name LIKE :ChangeOrder) ';
             QueryStr += ' AND (NOT Name LIKE :MockupOne) ';
@@ -4136,10 +4130,7 @@ public class ListOfRecordsController {
             
             QueryStr += ' RecordType.name = \'Seawin China Hospitality\' ';
             QueryStr += ' AND (GL_Account_Variable_1__r.Name =\'Seawin China\' or GL_Account_Variable_1__r.Name =\'Seawin Hong Kong\') ';
-            QueryStr += ' AND (ForecastCategoryName = \'Pipeline\' ';
-            QueryStr += ' OR StageName = \'Sleep\' ';
-            QueryStr += ' OR StageName = \'Closed Won\' ';
-            QueryStr += ' OR StageName = \'Closed Lost\') ';
+            QueryStr += ' AND Type != \'Template\' ';
             QueryStr += ' AND Parent_Opportunity__c = NULL ';
             QueryStr += ' AND (NOT Name LIKE :ChangeOrder) ';
             QueryStr += ' AND (NOT Name LIKE :MockupOne) ';

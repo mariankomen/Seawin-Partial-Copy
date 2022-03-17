@@ -1,10 +1,10 @@
 @isTest
-public with sharing class Billing_Payment_Controller_Test {
+public with sharing class CommissionManuallyControllerTest {
     
     @TestSetup
     static void makeData(){
         Profile pf = [Select Id from profile where Name = 'System Administrator']; 
-        // Profile pf = [Select Id from profile where Name = 'Sales Rep'];
+        //Profile pf = [Select Id from profile where Name = 'Sales Rep'];
         
         String orgId = UserInfo.getOrganizationId(); 
         String dateString = String.valueof(Datetime.now()).replace(' ','').replace(':','').replace('-','') ;
@@ -25,13 +25,10 @@ public with sharing class Billing_Payment_Controller_Test {
         
         insert uu1;
 
-        AcctSeed__Accounting_Variable__c av = new AcctSeed__Accounting_Variable__c();
-        
-        av.Name = 'GL Account Variable Test';
-        av.AcctSeed__Active__c = true;
-        av.AcctSeed__Type__c = 'GL Account Variable 1';
-        
-        insert av;
+        AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
+        accVar.Name = 'GL acc var1';
+        accVar.AcctSeed__Type__c = 'GL Account Variable 1';
+        insert accVar;
 
         Sales_rep__c sr = new Sales_rep__c();
         sr.Active__c = 'Yes';
@@ -66,7 +63,14 @@ public with sharing class Billing_Payment_Controller_Test {
         
         insert cont;
         
-
+        AcctSeed__GL_Account__c aegl = new AcctSeed__GL_Account__c();
+        aegl.name = 'glaccount';
+        aegl.AcctSeed__Type__c = 'Expense';
+        aegl.AcctSeed__Sub_Type_1__c = 'Facilities';
+        aegl.AcctSeed__Sub_Type_2__c = 'Rent';
+        aegl.AcctSeed__Bank__c = true;
+        aegl.GL_Account_Variable_1__c = accVar.Id;
+        insert aegl;
         
         // Gl account with bank unchecked
         AcctSeed__GL_Account__c ga = new AcctSeed__GL_Account__c();
@@ -76,7 +80,7 @@ public with sharing class Billing_Payment_Controller_Test {
         ga.AcctSeed__Sub_Type_1__c = 'Product Revenue';
         ga.AcctSeed__Sub_Type_2__c = 'Product Family 1';
         ga.AcctSeed__Bank__c = false;
-        
+        ga.GL_Account_Variable_1__c = accVar.Id;
         insert ga;
         
         // create product
@@ -103,7 +107,7 @@ public with sharing class Billing_Payment_Controller_Test {
         opp.StageName = 'Closed Won';
         opp.CloseDate = system.today();
         opp.ContactPerson__c = cont.Id;
-        opp.GL_Account_Variable_1__c = av.Id;
+        opp.GL_Account_Variable_1__c = accVar.Id;
         insert opp;
         
         // create quote
@@ -170,27 +174,17 @@ public with sharing class Billing_Payment_Controller_Test {
         abf.AcctSeed__Default_Email_Template__c = 'Activity_Statement_Email_Template';
         
         insert abf;
-        AcctSeed__GL_Account__c aegl_c = new AcctSeed__GL_Account__c();
-        aegl_c.name = 'glaccount';
-        aegl_c.AcctSeed__Type__c = 'Expense';
-        aegl_c.AcctSeed__Sub_Type_1__c = 'Facilities';
-        aegl_c.AcctSeed__Sub_Type_2__c = 'Rent';
-        aegl_c.AcctSeed__Bank__c = true;
-        aegl_c.GL_Account_Variable_1__c = av.id;
         
-        insert aegl_c;
-
         AcctSeed__Ledger__c ledger = new AcctSeed__Ledger__c();
         
         ledger.Name = 'myLedger';
         ledger.AcctSeed__Type__c = 'Transactional';
         ledger.AcctSeed__Billing_Activity_Statement_Format__c = abf.id;
         ledger.AcctSeed__Billing_Outstanding_Statement_Format__c = abf.id;
-        //ledger.AcctSeed__Default_Bank_Account__c = aegl.id;
+        ledger.AcctSeed__Default_Bank_Account__c = aegl.id;
         ledger.AcctSeed__Default_Billing_Format__c = abf.id; 
         ledger.AcctSeed__Default_Purchase_Order_Format__c = abf.id;
         ledger.AcctSeed__Default_Packing_Slip_Format__c = abf.id;
-        ledger.AcctSeed__Default_Bank_Account__c = aegl_c.Id;
         
         insert ledger;
         
@@ -213,112 +207,58 @@ public with sharing class Billing_Payment_Controller_Test {
         salesorder.AcctSeedERP__Billing_State__c='Kabul';
         salesorder.AcctSeedERP__Billing_Street__c='Lake view';
         salesorder.AcctSeedERP__Billing_City__c='Kabul';
-        salesorder.GL_Account_Variable_1__c = av.id;
+        salesorder.GL_Account_Variable_1__c = accVar.Id;
         
         insert salesorder;
-        
-        // create a sales order
-        List<AcctSeedERP__Sales_Order_Line__c> solineList = new List<AcctSeedERP__Sales_Order_Line__c>();
-        
-        AcctSeedERP__Sales_Order_Line__c solines = new AcctSeedERP__Sales_Order_Line__c(); 
-        
-        solines.AcctSeedERP__Sales_Order__c = salesorder.id;
-        solines.AcctSeedERP__Unit_Price__c = 1.1;
-        solines.AcctSeedERP_Description__c = 'This is salesorder line item';
-        solines.AcctSeedERP__Product__c = prod.id;
-        solines.AcctSeedERP__Quantity_Ordered__c = 1;
-        
-        solineList.add(solines);
-        
-        AcctSeedERP__Sales_Order_Line__c solines1 = new AcctSeedERP__Sales_Order_Line__c(); 
-        
-        solines1.AcctSeedERP__Sales_Order__c = salesorder.id;
-        solines1.AcctSeedERP__Unit_Price__c = 1.1;
-        solines1.AcctSeedERP_Description__c = 'This is salesorder line item 2';
-        solines1.AcctSeedERP__Product__c = prod.id;
-        solines1.AcctSeedERP__Quantity_Ordered__c = 1;
-        
-        solineList.add(solines1);
-        
-        insert solineList;
-        
-        AcctSeed__Accounting_Period__c ap = new AcctSeed__Accounting_Period__c();
-        
-        ap.Name = '2019-01';
-        ap.AcctSeed__Status__c = 'Open';
-        ap.AcctSeed__Start_Date__c = Date.newInstance(2019, 1, 1);
-        ap.AcctSeed__End_Date__c = Date.newInstance(2020, 12, 1);
-        
-        insert ap;
+        Sales_Order_Commissions__c commissions = new Sales_Order_Commissions__c();
+      
+        commissions.Owner__c = UserInfo.getuserId();
+        commissions.Sales_Order__c = salesorder.id;
+        commissions.Commission_Amount__c = 50;
         
         
-        
-        AcctSeed__Accounting_Variable__c av_gl_1 = new AcctSeed__Accounting_Variable__c();
-        
-        av_gl_1.Name = 'GL Account Variable Test';
-        av_gl_1.AcctSeed__Active__c = true;
-        av_gl_1.AcctSeed__Type__c = 'GL Account Variable 1';
-        
-        insert av_gl_1;
-        
-        AcctSeed__Billing__c bill = new AcctSeed__Billing__c();
-        
-        bill.AcctSeed__Status__c = 'Approved';
-        bill.AcctSeed__PDF_Email_Status__c = 'Unsent';
-        bill.AcctSeed__Billing_Format__c = abf.id;
-        bill.AcctSeedERP__Sales_Order__c = salesorder.id; 
-        bill.AcctSeed__Date__c = Date.Today();
-        bill.AcctSeed__Due_Date2__c = Date.Today();
-        bill.AcctSeed__Ledger__c = salesorder.AcctSeedERP__Ledger__c;
-        bill.AcctSeed__Opportunity__c = salesorder.AcctSeedERP__Opportunity__c;
-        bill.AcctSeed__Customer__c = salesorder.AcctSeedERP__Customer__c;
-        bill.AcctSeed__Shipping_City__c = salesorder.AcctSeedERP__Shipping_City__c;
-        bill.AcctSeed__Shipping_Contact__c = salesorder.Contact__c;
-        bill.AcctSeed__Shipping_Country__c = salesorder.AcctSeedERP__Shipping_Country__c;
-        bill.AcctSeed__Shipping_PostalCode__c = salesorder.AcctSeedERP__Shipping_PostalCode__c;
-        bill.AcctSeed__Shipping_State__c = salesorder.AcctSeedERP__Shipping_State__c;
-        bill.AcctSeed__Shipping_Street__c = salesorder.AcctSeedERP__Shipping_Street__c;
-        bill.AcctSeed__Billing_Contact__c = salesorder.Contact__c;
-        bill.AcctSeed__Billing_Country__c = salesorder.AcctSeedERP__Billing_Country__c;
-        bill.AcctSeed__Billing_PostalCode__c = salesorder.AcctSeedERP__Billing_PostalCode__c;
-        bill.AcctSeed__Billing_State__c = salesorder.AcctSeedERP__Billing_State__c;
-        bill.AcctSeed__Billing_Street__c = salesorder.AcctSeedERP__Billing_Street__c;
-        bill.AcctSeed__Billing_City__c = salesorder.AcctSeedERP__Billing_City__c;
-        bill.AcctSeed__Accounting_Period__c = ap.id;
-
-        insert bill;
-        
-        AcctSeed__Billing_Line__c bline = new AcctSeed__Billing_Line__c();
-        bline.AcctSeed__Billing__c = bill.id;
-        bline.AcctSeed__Date__c = date.today();
-        bline.AcctSeed__Hours_Units__c = 1;
-        bline.AcctSeed__Product__c = solines.AcctSeedERP__Product__c;
-        bline.AcctSeedERP__Sales_Order_Line__c = solines.id;
-        bline.AcctSeed__Rate__c = solines.AcctSeedERP__Unit_Price__c;
-        bline.Item_Description__c = solines.Item_Description__c;
-        
-        insert bline;
+        insert commissions;
     }
 
     @isTest
-    public static void Billing_Payment_Controller_test(){
-        AcctSeed__Billing__c bill = [SELECT Id FROM AcctSeed__Billing__c LIMIT 1];
-
-        ApexPages.StandardController sc = new ApexPages.StandardController(bill);
-        Billing_Payment_Controller bl = new Billing_Payment_Controller(sc);
-
-        PageReference pageRef = Page.Billing_Payment_Detail;
-        pageRef.getParameters().put('id', String.valueOf(bill.Id));
-        Test.setCurrentPage(pageRef);
-        // bl.recieverEmail = 'test@gmail.com';
-        bl.contact_em = 'test@gmail.com';
-        bl.senderEmail = 'test@gmail.com';
-        bl.emailSubject = 'test';
-        bl.templateBodyPreview = 'test_body';
-        
-        bl.ccMe = true;
-        bl.savePDF();
-        bl.sendPDF();
-        bl.back();
+    public static void CommissionManuallyControllerTest(){
+        Sales_Order_Commissions__c soc = [SELECT Id FROM Sales_Order_Commissions__c LIMIT 1];
+        AcctSeedERP__Sales_Order__c so = [SELECT Id FROM AcctSeedERP__Sales_Order__c LIMIT 1];
+        ApexPages.StandardController sc = new ApexPages.StandardController(soc);
+        CommissionManuallyController con = new CommissionManuallyController(sc);
+        PageReference pageRef = Page.CreateManualCommissionPage;
+        pageRef.getParameters().put('salesOrderId', String.valueOf(so.Id));
+        con.saveCustom();
+        con.cancel();
+        con.saveAndNew();
+    }
+    @isTest
+    public static void CommissionManuallyControllerCovTest(){
+        Sales_Order_Commissions__c soc = [SELECT Id FROM Sales_Order_Commissions__c LIMIT 1];
+        AcctSeedERP__Sales_Order__c so = [SELECT Id FROM AcctSeedERP__Sales_Order__c LIMIT 1];
+        so.Manufacturer_Rep__c = [SELECT Id FROM Account WHERE Name='myAccount' LIMIT 1].Id;
+        update so;
+        ApexPages.StandardController sc = new ApexPages.StandardController(soc);
+        CommissionManuallyController con = new CommissionManuallyController(sc);
+        PageReference pageRef = Page.CreateManualCommissionPage;
+        pageRef.getParameters().put('salesOrderId', String.valueOf(so.Id));
+        con.saveCustom();
+        con.cancel();
+        con.saveAndNew();
+    }
+    @isTest
+    public static void CommissionManuallyControllerCovNewTest(){
+        Sales_Order_Commissions__c soc = [SELECT Id FROM Sales_Order_Commissions__c LIMIT 1];
+        AcctSeedERP__Sales_Order__c so = [SELECT Id FROM AcctSeedERP__Sales_Order__c LIMIT 1];
+        so.Manufacturer_Rep__c = [SELECT Id FROM Account WHERE Name='myAccount' LIMIT 1].Id;
+        update so;
+        ApexPages.StandardController sc = new ApexPages.StandardController(soc);
+        CommissionManuallyController con = new CommissionManuallyController(sc);
+        con.commission.Commission_Amount__c = 1;
+        PageReference pageRef = Page.CreateManualCommissionPage;
+        pageRef.getParameters().put('salesOrderId', String.valueOf(so.Id));
+        con.saveCustom();
+        con.cancel();
+        con.saveAndNew();
     }
 }

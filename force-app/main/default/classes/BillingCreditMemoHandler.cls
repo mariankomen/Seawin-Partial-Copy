@@ -57,8 +57,9 @@ public class BillingCreditMemoHandler {
                             if(o.total_credit_memo__c == null) o.total_credit_memo__c = 0;
                             
                             o.total_credit_memo__c = (isInsert) ? o.total_credit_memo__c + amt : o.total_credit_memo__c - amt;
-                            
                         }
+                        system.debug('orders: '+JSON.serialize(orders));
+
                         
                         update orders;
                     }

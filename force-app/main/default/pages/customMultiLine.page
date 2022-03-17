@@ -79,15 +79,17 @@
                         <apex:inputField value="{!ol.UnitPrice}"/>
                     </apex:column>    
                     <apex:column headerValue="Size">
-                        <apex:inputField value="{!ol.Size__c}"/>
+                        <apex:inputField value="{!ol.Size__c}" rendered="{!ol.Allow_Product_Description_Change__c}"/>
+                        <apex:outputText value="{!ol.Size__c}" rendered="{!!ol.Allow_Product_Description_Change__c}"></apex:outputText>
                     </apex:column>
                     
                     <apex:column headerValue="Item Description">
-                        <apex:inputField value="{!ol.Item_Description__c}" required="true"
+                        <apex:inputField value="{!ol.Item_Description__c}" 
                                          rendered="{!ol.Allow_Product_Description_Change__c}"/>
 
-                        <apex:outputField value="{!ol.Item_Description__c}"
-                                         rendered="{!!ol.Allow_Product_Description_Change__c}"/>
+                        <apex:outputText value="{!ol.Item_Description__c}" rendered="{!!ol.Allow_Product_Description_Change__c}"></apex:outputText>
+
+
                     </apex:column>  
 
                 </apex:pageBlockTable> 
@@ -102,26 +104,28 @@
                         <apex:image value="{!ProductsWithImage[opi.Product__c]}" width="90" height="-1" alt="Not Available"
                                     rendered="{!ProductsWithImage[opi.Product__c] != 'NA'}"/>
                          <apex:outputText value="Not Available" 
-                                          rendered="{!ProductsWithImage[opi.Product__c] == 'NA'}"></apex:outputText>
+                                          rendered="{!ProductsWithImage[opi.Product__c] == 'NA'}"></apex:outputText><br/>
+                                          <apex:outputLink rendered="{!opi.Allow_Custom_Image__c}" onclick="uploadImage('{!$Page.OpportunityLineItemAlternateImagePage}','{!opi.Product__c}'); return false;" style="color:blue;margin-top:10px;display:inline-block">Add Custom Image </apex:outputLink>
                     </apex:column>
                     
                     <apex:column headerValue="Quantity">
- 
-                        <apex:inputField id="opoquantity" value="{!opi.Quantity__c}" required="true" 
-                        />
+                        <apex:inputField id="opoquantity" value="{!opi.Quantity__c}" required="true" />
                     </apex:column>
                     <apex:column headerValue="Sales Price">
                         <apex:inputField value="{!opi.UnitPrice__c}"/>
                     </apex:column>
                     <apex:column headerValue="Size">
-                        <apex:inputField value="{!opi.Size__c}"/>
+                        <!-- <apex:inputField value="{!opi.Size__c}"/> -->
+
+                        <apex:inputField value="{!opi.Size__c}" rendered="{!opi.Allow_Product_Description_Change__c}"/>
+                        <apex:outputText value="{!opi.Size__c}" rendered="{!!opi.Allow_Product_Description_Change__c}"></apex:outputText>
                     </apex:column>
 
                     <apex:column headerValue="Item Description">
                         <apex:inputField value="{!opi.Item_Description__c}" id="itemdescription" required="true" rendered="{!opi.Allow_Product_Description_Change__c}"/>
+                        <apex:outputText value="{!opi.Item_Description__c}" rendered="{!!opi.Allow_Product_Description_Change__c}"></apex:outputText>
 
-                        <apex:outputField value="{!opi.Item_Description__c}" 
-                        rendered="{!!opi.Allow_Product_Description_Change__c}"/>
+                        <!-- <apex:outputField value="{!opi.Item_Description__c}" rendered="{!!opi.Allow_Product_Description_Change__c}"/> -->
                     </apex:column>
 
                 </apex:pageBlockTable> 
@@ -149,14 +153,18 @@
                         <apex:inputField value="{!ql.UnitPrice}"/>
                     </apex:column>
                     <apex:column headerValue="Size">
-                        <apex:inputField value="{!ql.Size__c}"/>
+                        <apex:inputField value="{!ql.Size__c}" rendered="{!ql.Allow_Product_Description_Change__c}"/>
+                        <apex:outputText value="{!ql.Size__c}" rendered="{!!ql.Allow_Product_Description_Change__c}"></apex:outputText>
                     </apex:column>
 
                     <apex:column headerValue="Item Description">
-                        <apex:inputField value="{!ql.ITEM_DESCRIPTION__c}" required="true" rendered="{!ql.Allow_Product_Description_Change__c}"/>
+                        <!-- <apex:inputField value="{!ql.ITEM_DESCRIPTION__c}" required="true" rendered="{!ql.Allow_Product_Description_Change__c}"/>
 
                         <apex:outputField value="{!ql.ITEM_DESCRIPTION__c}" 
-                        rendered="{!!ql.Allow_Product_Description_Change__c}"/>
+                        rendered="{!!ql.Allow_Product_Description_Change__c}"/> -->
+
+                        <apex:inputField value="{!ql.ITEM_DESCRIPTION__c}" rendered="{!ql.Allow_Product_Description_Change__c}"/>
+                        <apex:outputText value="{!ql.ITEM_DESCRIPTION__c}" rendered="{!!ql.Allow_Product_Description_Change__c}"></apex:outputText>
                     </apex:column>
 
                 </apex:pageBlockTable> 
@@ -180,14 +188,23 @@
                         />
                         
                     </apex:column>
+                    <!-- Allow_Product_Description_Change__c -->
                     <apex:column headerValue="Sales Price">
                         <apex:inputField value="{!opqt.UnitPrice__c}"/>
                     </apex:column>
                     <apex:column headerValue="Size">
-                        <apex:inputField value="{!opqt.Size__c}"/>
+                        <apex:inputField value="{!opqt.Size__c}" rendered="{!opqt.Allow_Product_Description_Change__c}"/>
+                        <apex:outputText value="{!opqt.Size__c}" rendered="{!!opqt.Allow_Product_Description_Change__c}"></apex:outputText>
+
+
+                        <!-- <apex:inputField value="{!opqt.Size__c}"/> -->
                     </apex:column>
                     <apex:column headerValue="Item Description">
-                        <apex:inputField value="{!opqt.Item_Description__c}" required="true"/>
+                        <!-- <apex:inputField value="{!opqt.Item_Description__c}" required="true"/> -->
+                        <apex:inputField value="{!opqt.Item_Description__c}" rendered="{!opqt.Allow_Product_Description_Change__c}"/>
+                        <apex:outputText value="{!opqt.Item_Description__c}" rendered="{!!opqt.Allow_Product_Description_Change__c}"></apex:outputText>
+
+
                     </apex:column>
                 </apex:pageBlockTable> 
             </apex:outputPanel>
@@ -216,14 +233,20 @@
                         </script>
                     </apex:column>    
                     <apex:column headerValue="Size">
-                        <apex:inputField value="{!sl.Size__c}"/>
+                        <!-- <apex:inputField value="{!sl.Size__c}"/> -->
+
+                        <apex:inputField value="{!sl.Size__c}" rendered="{!sl.Allow_Product_Description_Change__c}"/>
+                        <apex:outputText value="{!sl.Size__c}" rendered="{!!sl.Allow_Product_Description_Change__c}"></apex:outputText>
                     </apex:column>
 
                     <apex:column headerValue="Item Description">
-                        <apex:inputField value="{!sl.AcctSeedERP_Description__c}" required="true" rendered="{!sl.Allow_Product_Description_Change__c}"/>
+                        <!-- <apex:inputField value="{!sl.AcctSeedERP_Description__c}" required="true" rendered="{!sl.Allow_Product_Description_Change__c}"/>
                         
                         <apex:outputField value="{!sl.AcctSeedERP_Description__c}" 
-                        rendered="{!!sl.Allow_Product_Description_Change__c}"/>
+                        rendered="{!!sl.Allow_Product_Description_Change__c}"/> -->
+
+                        <apex:inputField value="{!sl.AcctSeedERP_Description__c}" rendered="{!sl.Allow_Product_Description_Change__c}"/>
+                        <apex:outputText value="{!sl.AcctSeedERP_Description__c}" rendered="{!!sl.Allow_Product_Description_Change__c}"></apex:outputText>
                     </apex:column>
 
                 </apex:pageBlockTable> 
@@ -253,14 +276,20 @@
                         </script>
                     </apex:column>    
                     <apex:column headerValue="Size">
-                        <apex:inputField value="{!pl.Size__c}"/>
+                        <!-- <apex:inputField value="{!pl.Size__c}"/> -->
+
+                        <apex:inputField value="{!pl.Size__c}" rendered="{!pl.Allow_Product_Description_Change__c}"/>
+                        <apex:outputText value="{!pl.Size__c}" rendered="{!!pl.Allow_Product_Description_Change__c}"></apex:outputText>
                     </apex:column>
 
                     <apex:column headerValue="Item Description">
-                        <apex:inputField value="{!pl.Description__c}" required="true" rendered="{!pl.Allow_Product_Description_Change__c}"/>
+                        <!-- <apex:inputField value="{!pl.Description__c}" required="true" rendered="{!pl.Allow_Product_Description_Change__c}"/>
                         
                         <apex:outputField value="{!pl.Description__c}" 
-                        rendered="{!!pl.Allow_Product_Description_Change__c}"/>
+                        rendered="{!!pl.Allow_Product_Description_Change__c}"/> -->
+
+                        <apex:inputField value="{!pl.Description__c}" rendered="{!pl.Allow_Product_Description_Change__c}"/>
+                        <apex:outputText value="{!pl.Description__c}" rendered="{!!pl.Allow_Product_Description_Change__c}"></apex:outputText>
                     </apex:column>
 
                 </apex:pageBlockTable> 
@@ -283,7 +312,9 @@
     }
    
     function HandlePopupResult(prodId, docId) {
-        debugger;
+        console.log('prodIdprodIdprodId: ',prodId)
+        console.log('docIddocIddocId: ',docId)
+        
         altrnateImg(prodId, docId);
         
         tempAlert("Upload is successful.",3000);

@@ -14,7 +14,8 @@ trigger BeforeAfterCloneTrigger on Opportunity (before insert, after insert) {
             for(Opportunity opp : Trigger.New) {
                 
                 if(opp.isClone() && opp.Type == 'Template'){
-                    BeforeAfterCloneHandler.ProcessAfter(Trigger.New);
+//                    BeforeAfterCloneHandler.ProcessAfter(Trigger.New);
+                    BeforeAfterCloneHandler.ProcessAfterNotClonedAndTemplate(Trigger.New);
                     System.debug('after if');
                 }
                 else{

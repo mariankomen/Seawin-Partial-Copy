@@ -100,6 +100,7 @@ public class CreateSalesOrderScreenExtension {
                                                UnitPrice, SortOrder,
                                                product2.AcctSeed__Inventory_Type__c,
                                                product2.Kit_Available_Quantity__c,
+                                               Allow_Product_Description_Change__c,
                                                AcctSeed__GL_Account_Variable_1__c, 
                                                AcctSeed__GL_Account_Variable_2__c, 
                                                AcctSeed__GL_Account_Variable_3__c, 
@@ -165,7 +166,7 @@ public class CreateSalesOrderScreenExtension {
             if(!validProductIds.isEmpty())
                 validKeys = String.join(validProductIds, ';');
         }
-
+        system.debug('CREATE SO FROM PO JSON: '+JSON.serialize(linesList));
         return null;
     }
     

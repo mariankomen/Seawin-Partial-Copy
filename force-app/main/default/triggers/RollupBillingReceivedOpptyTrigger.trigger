@@ -2,7 +2,10 @@ trigger RollupBillingReceivedOpptyTrigger on AcctSeed__Billing__c (after insert,
     
     if(trigger.IsAfter){
         if(Trigger.IsInsert || Trigger.IsUpdate){
-            RollupBillingReceivedOpptyHandler.rollup(Trigger.new);
+            
+            //if(!Test.isRunningTest()){
+                RollupBillingReceivedOpptyHandler.rollup(Trigger.new);
+            //}
             
         }
     }

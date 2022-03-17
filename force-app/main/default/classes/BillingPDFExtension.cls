@@ -8,9 +8,15 @@ public class BillingPDFExtension {
     public boolean firstbilling {get; set;}
     public decimal deposit {get; set;}
     
+    /* Correct data */
+    public Decimal correct_balance {get; set;}
+    public Decimal correct_remaining_balance {get; set;}
+
+
     public AcctSeed__Billing__c bill {get; set;}
     public map<id, OpportunityLineItem> TotalMap {get; set;}
     
+    public List<AcctSeed__Billing_Cash_Receipt__c> receipts{get;set;}
     public List<AcctSeed__Billing_Cash_Receipt__c> payments {get; set;}
     
     public BillingPDFExtension(ApexPages.StandardController std){
@@ -25,7 +31,7 @@ public class BillingPDFExtension {
         bill = new AcctSeed__Billing__c();
         TotalMap = new map<id, opportunityLineitem>();
         
-        bill = [select AcctSeedERP__Sales_Order__c,Acctseed__Opportunity__c, AcctSeed__Customer__c, 
+        bill = [select AcctSeedERP__Sales_Order__c,Acctseed__Opportunity__c, AcctSeed__Customer__c, Sub_Total__c,Total_Amount_Due__c,
                 AcctSeed__Opportunity__r.Amount,
                 AcctSeedERP__Sales_Order__r.AcctSeedERP__Total__c,
                 AcctSeed__Discount_Amount__c,AcctSeed__Cash_Application_Adjustment_Amount__c,AcctSeed__Sales_Tax2__c,
@@ -35,7 +41,7 @@ public class BillingPDFExtension {
                 AcctSeed__Customer__r.Name, AcctSeed__Customer__r.AcctSeed__Billing_Terms_Name__c,
                 AcctSeedERP__Sales_Order__r.Billing_Terms_Name__c, 
                 AcctSeed__Opportunity__r.Billing_Terms_Name__c,
-                GL_Account_Variable_1__c, Billing_Deposit__c  
+                GL_Account_Variable_1__c, Billing_Deposit__c, AcctSeed__Type__c  
                 from AcctSeed__Billing__c where id=:billingId];
         
         deposit = bill.Billing_Deposit__c != null ? Decimal.ValueOf(bill.Billing_Deposit__c) : 0.00;
@@ -166,6 +172,40 @@ public class BillingPDFExtension {
         }
 
         payments = [SELECT AcctSeed__Billing__c, CreatedDate, AcctSeed__Cash_Receipt__c, AcctSeed__Accounting_Period__c, AcctSeed__Adjustment_Amount__c, AcctSeed__Adjustment_GL_Account__c, AcctSeed__Applied_Amount__c, AcctSeed__Period_Applied__c, AcctSeed__Applied_Date__c, AcctSeed__Status__c, Name, Id FROM AcctSeed__Billing_Cash_Receipt__c WHERE AcctSeed__Billing__c =:billingId];
+
+        if(!Test.isRunningTest()){
+        receipts = [SELECT Id, Name, AcctSeed__Billing__r.Name,
+                    AcctSeed__Billing__r.AcctSeed__Customer__r.name, 
+                    AcctSeed__Cash_Receipt__r.Name,
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Receipt_Date__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Account__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Accounting_Period__r.name, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Accounting_Year__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Amount__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Balance__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Bank_Account__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Bank_Deposit__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Bank_Reconciliation__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Cleared_Date__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Credit_GL_Account__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Currency_Conversion_Rate__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__GL_Account_Variable_1__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__GL_Account_Variable_2__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__GL_Account_Variable_3__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__GL_Account_Variable_4__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Ledger_Amount__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Payment_Reference__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Project_Task__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Project__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Purpose__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Status__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Applied_Amount__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Number_of_Billing_Cash_Receipts__c, 
+                    AcctSeed__Cash_Receipt__r.AcctSeed__Ledger__c,                                                          
+                    AcctSeed__Cash_Receipt__r.Payment_Method__c,                                                          
+                    AcctSeed__Accounting_Period__c, AcctSeed__Adjustment_Amount__c, AcctSeed__Adjustment_GL_Account__c, AcctSeed__Applied_Amount__c, AcctSeed__Period_Applied__c FROM AcctSeed__Billing_Cash_Receipt__c
+                    where AcctSeed__Billing__c =:billingId];
+        }
     }
     
 

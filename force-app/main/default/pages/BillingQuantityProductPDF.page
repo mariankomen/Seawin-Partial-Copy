@@ -131,9 +131,13 @@
                         <apex:image url="{!URLFOR($Resource.SeawinImages,
                                          'Header/Billing/Factory.jpg')}" width="717" height="50" 
                                          rendered="{!AcctSeed__Billing__c.GL_Account_Variable_1__c == 'Seawin China'}"/>
+                        
                         <apex:image url="{!URLFOR($Resource.SeawinImages,
                                          'Header/Billing/Hospitality.jpg')}" width="717" height="70" 
-                                         rendered="{!AcctSeed__Billing__c.GL_Account_Variable_1__c == 'Seawin USA'}"/>
+                                         rendered="{!IF(AND(AcctSeed__Billing__c.GL_Account_Variable_1__c == 'Seawin USA', AcctSeed__Billing__c.AcctSeed__Type__c == 'Invoice'),true,false)}"/>  
+                        <apex:image url="{!$Resource.Billng_CreditMemo_PDF}" width="717" height="70" 
+                                    rendered="{!IF(AND(AcctSeed__Billing__c.GL_Account_Variable_1__c == 'Seawin USA', AcctSeed__Billing__c.AcctSeed__Type__c == 'Credit Memo'),true,false)}"/>                 
+
                         <apex:image url="{!URLFOR($Resource.SeawinImages,
                                          'Header/Billing/HongKong.png')}" width="717" height="70" 
                                          rendered="{!AcctSeed__Billing__c.GL_Account_Variable_1__c == 'Seawin Hong Kong'}"/>
@@ -363,47 +367,51 @@
                 
                 
             </table>
-            <table id="itemstable" style="width:100%;">
-                <tr>
-                    <th class="header-font table-header no-border" style="width: 24%;">Product Image</th>
-                    <th class="header-font table-header no-border" style="width: 12%;">Product Code</th>
-                    <th class="header-font table-header no-border" style="width: 34%;">Item Description</th>
-                    <th class="header-font table-header no-border" style="width: 9%;">Size</th>
-                    <th class="header-font table-header no-border" style="width: 4%;">QT</th>
-                    <th class="header-font table-header no-border" style="width: 8%;">Unit Price</th>
-                    <th class="last-col header-font table-header no-border" style="width: 9%;">Total Price</th>
-                </tr>
-                <apex:variable var="trcolor" value=""/>
-                <apex:repeat value="{!billingLines}" var="item">
-                    <tr style="background-color: {!trcolor}">
-                        <td style="width: 24%;">
-                            <apex:outputPanel rendered="{!!ISBLANK(item.AcctSeed__Product__r.Product_Image_Short_URL__c)}">
-                            <img src="{!item.AcctSeed__Product__r.Product_Image_Short_URL__c}" 
-                                                     alt="{!item.AcctSeed__Product__r.name}" width="100%"/>
-                            </apex:outputPanel>
-                        </td>
-                        <td style="width: 12%;">
-                            <apex:outputText value="{!item.acctSeed__Product__r.ProductCode}" style="width: 100%;"/>
-                        </td>
-                        <td style="width: 34%;">
-                        <apex:outputField value="{!item.Item_Description__c}" style="width: 100%;"/>
-                        </td>
-                        <td style="width: 9%;">
-                        <apex:outputField value="{!item.Size_Custom__c}" style="width: 100%;"/>
-                        </td>
-                        <td style="width: 4%;">
-                        <apex:outputField value="{!item.Quantity__c}" style="width: 100%;"/>
-                        </td>
-                        <td style="width: 8%;">
-                            <apex:outputField value="{!item.Unit_Cost__c}" style="width: 100%;"/>
-                        </td>
-                        <td class="last-col" style="width: 9%;">
-                            <apex:outputField value="{!item.Total_Price__c}" style="width: 100%;"/>
-                        </td>
-                        <apex:variable var="trcolor" value="{!IF(trcolor == '', '#dddddd', '')}"/>
+            <apex:pageBlock rendered="{!if(billingLines.size > 0, true, false)}">
+                <table id="itemstable" style="width:100%;" >
+                    <!-- <apex:outputPanel > -->
+                    <tr>
+                        <th class="header-font table-header no-border" style="width: 24%;">Product Image</th>
+                        <th class="header-font table-header no-border" style="width: 12%;">Product Code</th>
+                        <th class="header-font table-header no-border" style="width: 34%;">Item Description</th>
+                        <th class="header-font table-header no-border" style="width: 9%;">Size</th>
+                        <th class="header-font table-header no-border" style="width: 4%;">QT</th>
+                        <th class="header-font table-header no-border" style="width: 8%;">Unit Price</th>
+                        <th class="last-col header-font table-header no-border" style="width: 9%;">Total Price</th>
                     </tr>
-                </apex:repeat>
-            </table>
+                    <apex:variable var="trcolor" value=""/>
+                    <apex:repeat value="{!billingLines}" var="item">
+                        <tr style="background-color: {!trcolor}">
+                            <td style="width: 24%;">
+                                <apex:outputPanel rendered="{!!ISBLANK(item.AcctSeed__Product__r.Product_Image_Short_URL__c)}">
+                                <img src="{!item.AcctSeed__Product__r.Product_Image_Short_URL__c}" 
+                                                        alt="{!item.AcctSeed__Product__r.name}" width="100%"/>
+                                </apex:outputPanel>
+                            </td>
+                            <td style="width: 12%;">
+                                <apex:outputText value="{!item.acctSeed__Product__r.ProductCode}" style="width: 100%;"/>
+                            </td>
+                            <td style="width: 34%;">
+                            <apex:outputField value="{!item.Item_Description__c}" style="width: 100%;"/>
+                            </td>
+                            <td style="width: 9%;">
+                            <apex:outputField value="{!item.Size_Custom__c}" style="width: 100%;"/>
+                            </td>
+                            <td style="width: 4%;">
+                            <apex:outputField value="{!item.Quantity__c}" style="width: 100%;"/>
+                            </td>
+                            <td style="width: 8%;">
+                                <apex:outputField value="{!item.Unit_Cost__c}" style="width: 100%;"/>
+                            </td>
+                            <td class="last-col" style="width: 9%;">
+                                <apex:outputField value="{!item.Total_Price__c}" style="width: 100%;"/>
+                            </td>
+                            <apex:variable var="trcolor" value="{!IF(trcolor == '', '#dddddd', '')}"/>
+                        </tr>
+                    </apex:repeat>
+                    <!-- </apex:outputPanel> -->
+                </table>
+            </apex:pageBlock>
             <br/>
             <div style="height: 78px; width: 100%; margin-bottom: 50px;">
                 <table style="width:300px;border-collapse:collapse;float:right">
@@ -451,6 +459,50 @@
                     </tr>
                 </table>
             </div>
+
+            <div class="clearfix"></div>
+            <apex:pageBlock title="Cash Receipts">
+                <table id="itemstable" style="width:100%; {!IF(receipts.size > 0,'','display: none;')}">
+                    <tr>
+                        <th class="header-font table-header no-border" style="width: 20%;">Cash Receipt Name</th>
+                        <th class="header-font table-header no-border" style="width: 20%;">Payment Method</th>
+                        <th class="header-font table-header no-border" style="width: 20%;">Payment Reference</th>
+                        <th class="header-font table-header no-border" style="width: 20%;">Receipt Date</th>
+                        <th class="header-font table-header no-border" style="width: 20%;">Amount</th>
+                    </tr>
+                    <apex:variable var="trcolor" value=""/>
+                    <apex:repeat value="{!receipts}" var="lst">
+                        <tr style="background-color: {!trcolor}">
+                            <td style="width: 20%;">
+                                <apex:outputText value="{!lst.AcctSeed__Cash_Receipt__r.Name}" style="width: 100%;"/>
+                            </td>
+                            <td style="width: 20%;">
+                                <apex:outputText value="{!lst.AcctSeed__Cash_Receipt__r.Payment_Method__c}" style="width: 100%;"/>
+                            </td>
+                            <td style="width: 20%;">
+                                <apex:outputText value="{!lst.AcctSeed__Cash_Receipt__r.AcctSeed__Payment_Reference__c}" style="width: 100%;"/>
+                            </td>
+                            <td style="width: 20%;">
+                                <apex:outputField value="{!lst.AcctSeed__Cash_Receipt__r.AcctSeed__Receipt_Date__c}" style="width: 100%;"/>
+                            </td>
+                            <td style="width: 20%;" class="last-col">
+                                <apex:outputField value="{!lst.AcctSeed__Applied_Amount__c}" style="width: 100%;"/>
+                            </td>
+                            <apex:variable var="trcolor" value="{!IF(trcolor == '', '#dddddd', '')}"/>
+                        </tr>
+                    </apex:repeat>
+                </table>
+                <apex:outputPanel rendered="{!IF(receipts.size > 0, false, true)}">
+                    <p>
+                        There are no receipts.
+                    </p>
+                </apex:outputPanel>
+                <br/>
+                <br/>
+            </apex:pageBlock>
+
+
+
             <!-- Terms and Conditions for Seawin China -->
             <!-- Terms and Conditions for Seawin China -->
             <apex:outputPanel rendered="{!AcctSeed__Billing__c.GL_Account_Variable_1__c == 'Seawin China' || 

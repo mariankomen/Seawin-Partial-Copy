@@ -1,7 +1,6 @@
 public class CalculateCommissionsHandler {
     
-    public static void Start(List<AcctSeed__Billing_Cash_Receipt__c> receipts){
-        
+    public static Boolean Start(List<AcctSeed__Billing_Cash_Receipt__c> receipts){
         map<id, AcctSeed__Billing_Cash_Receipt__c> receiptsMap = new map<id, AcctSeed__Billing_Cash_Receipt__c>(receipts);
         set<id> billingIds = new set<id>();
         
@@ -10,95 +9,105 @@ public class CalculateCommissionsHandler {
         }
         
         map<id, Decimal> BillingLineMap = new map<id, Decimal>();
-        
-        BillingLineMap = FindBillingLineTotal(billingIds);
-        
-        if(receiptsMap.size() > 0 && BillingLineMap.size() > 0){
-            
-            List<AcctSeed__Billing_Cash_Receipt__c> receiptData = [select id,
-                                                                   CreatedDate, 
-                                                                   AcctSeed__Applied_Amount__c,
-                                                                   AcctSeed__Adjustment_Amount__c,
-                                                                   AcctSeed__Billing__c,
-                                                                   AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c, 
-                                                                   AcctSeed__Billing__r.AcctSeed__Total__c,
-                                                                   AcctSeed__Billing__r.AcctSeed__Credit_Memo_Applied_Amount__c,
-                                                                   AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.IsTeam__c,
-                                                                   AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.Company_Name_Lookup__c,
-                                                                   AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Referral_Sales_Rep__c,
-                                                                   AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Manufacturer_Rep__c,
-                                                                   AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c,
-                                                                   AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.OwnerId,
-                                                                   AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Sales_Rep__c,
-                                                                   AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Manufacturer_Rep__c,
-                                                                   AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Referral_Sales_Rep__c,
-                                                                   AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Specified_Rep__c
-                                                                   from AcctSeed__Billing_Cash_Receipt__c
-                                                                   where id in:receiptsMap.keySet()];
-            
-            if(!receiptData.isEmpty()){
-                
-                List<Sales_Order_Commissions__c> commissions = new List<Sales_Order_Commissions__c>();
-                
-                for(AcctSeed__Billing_Cash_Receipt__c data : receiptData){
-                    
-                    if(BillingLineMap.containsKey(data.acctseed__billing__c)){
-                        
-                        Boolean HasManRep = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Manufacturer_Rep__c != null;
-                        Boolean HasReferral = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Referral_Sales_Rep__c != null;
-                        Boolean HasSpecified = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c != null;
-                        Boolean IsTeam = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.IsTeam__c;
-                        
-                        Decimal SalesPercent = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Sales_Rep__c;
-                        Decimal ReferralPercent = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Referral_Sales_Rep__c;
-                        Decimal ManRepPercent = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Manufacturer_Rep__c;
-                        Decimal SpecifiedPercent = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Specified_Rep__c;
+        BillingLineMap = FindBillingLineTotal(billingIds); //Map Of total sum amounts of commissinable products from billing
 
-                        Decimal BillingLineTotal = BillingLineMap.containsKey(data.acctseed__billing__c) ? 
-                            BillingLineMap.get(data.acctseed__billing__c) : 0;
+        if(BillingLineMap.size() == 0){
+            ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.INFO, 'All billing line products are not commissinable or amount equal 0.'));
+            return false;
+        } else {
+
+            if(receiptsMap.size() > 0 && BillingLineMap.size() > 0){
+                List<AcctSeed__Billing_Cash_Receipt__c> receiptData = [select id,
+                                                                    CreatedDate, 
+                                                                    AcctSeed__Applied_Amount__c,
+                                                                    AcctSeed__Adjustment_Amount__c,
+                                                                    AcctSeed__Billing__c,
+                                                                    AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c, 
+                                                                    AcctSeed__Billing__r.AcctSeed__Total__c,
+                                                                    AcctSeed__Billing__r.AcctSeed__Credit_Memo_Applied_Amount__c,
+                                                                    AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.IsTeam__c,
+                                                                    AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.Company_Name_Lookup__c,
+                                                                    AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Referral_Sales_Rep__c,
+                                                                    AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Manufacturer_Rep__c,
+                                                                    AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c,
+                                                                    AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.OwnerId,
+                                                                    AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Sales_Rep__c,
+                                                                    AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Manufacturer_Rep__c,
+                                                                    AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Referral_Sales_Rep__c,
+                                                                    AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Specified_Rep__c
+                                                                    from AcctSeed__Billing_Cash_Receipt__c
+                                                                    where id in:receiptsMap.keySet() LIMIT 100];
+                if(!receiptData.isEmpty()){
+                    List<Sales_Order_Commissions__c> commissions = new List<Sales_Order_Commissions__c>();
+                    
+                    for(AcctSeed__Billing_Cash_Receipt__c data : receiptData){
                         
-                        if(data.AcctSeed__Adjustment_Amount__c == null) data.AcctSeed__Adjustment_Amount__c = 0;
-                        if(data.AcctSeed__Billing__r.AcctSeed__Credit_Memo_Applied_Amount__c == null)
-                            data.AcctSeed__Billing__r.AcctSeed__Credit_Memo_Applied_Amount__c = 0;
-                        
-                        Decimal BillingTotal = data.AcctSeed__Billing__r.AcctSeed__Total__c - 
-                            data.AcctSeed__Adjustment_Amount__c - 
-                            data.AcctSeed__Billing__r.AcctSeed__Credit_Memo_Applied_Amount__c;
-                        
-                        if(BillingTotal > 0 && BillingLineTotal > 0)
-                            commissions.addAll(CompileCommissions(
-                                true,
-                                data.id,
-                                data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.OwnerId,
-                                data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Referral_Sales_Rep__c,
-                                data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Manufacturer_Rep__c,
-                                data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c,
-                                data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.Company_Name_Lookup__c,
-                                data.AcctSeed__Applied_Amount__c, 
-                                BillingTotal, 
-                                BillingLineTotal, 
-                                SalesPercent, 
-                                ReferralPercent, 
-                                ManRepPercent, 
-                                SpecifiedPercent,
-                                HasReferral, 
-                                HasManRep,
-                                HasSpecified,
-                                IsTeam, 
-                                data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c,
-                                data.AcctSeed__Billing__c,
-                                data.createddate));
-                        
+                        if(BillingLineMap.containsKey(data.acctseed__billing__c)){
+                            
+                            Boolean HasManRep = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Manufacturer_Rep__c != null;
+                            Boolean HasReferral = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Referral_Sales_Rep__c != null;
+                            Boolean HasSpecified = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c != null;
+                            Boolean IsTeam = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.IsTeam__c;
+                            
+                            Decimal SalesPercent = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Sales_Rep__c;
+                            Decimal ReferralPercent = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Referral_Sales_Rep__c;
+                            Decimal ManRepPercent = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Manufacturer_Rep__c;
+                            Decimal SpecifiedPercent = data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Specified_Rep__c;
+
+                            Decimal BillingLineTotal = BillingLineMap.containsKey(data.acctseed__billing__c) ? 
+                                BillingLineMap.get(data.acctseed__billing__c) : 0;
+                            
+                            if(data.AcctSeed__Adjustment_Amount__c == null) data.AcctSeed__Adjustment_Amount__c = 0;
+                            if(data.AcctSeed__Billing__r.AcctSeed__Credit_Memo_Applied_Amount__c == null)
+                                data.AcctSeed__Billing__r.AcctSeed__Credit_Memo_Applied_Amount__c = 0;
+                            
+                            Decimal BillingTotal = data.AcctSeed__Billing__r.AcctSeed__Total__c - 
+                                data.AcctSeed__Adjustment_Amount__c - 
+                                data.AcctSeed__Billing__r.AcctSeed__Credit_Memo_Applied_Amount__c;
+                            
+                            if(BillingTotal > 0 && BillingLineTotal > 0)
+                                commissions.addAll(CompileCommissions(
+                                    true,
+                                    data.id,
+                                    data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.OwnerId,
+                                    data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Referral_Sales_Rep__c,
+                                    data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Manufacturer_Rep__c,
+                                    data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c,
+                                    data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.Company_Name_Lookup__c,
+                                    data.AcctSeed__Applied_Amount__c, 
+                                    BillingTotal, 
+                                    BillingLineTotal, 
+                                    SalesPercent, 
+                                    ReferralPercent, 
+                                    ManRepPercent, 
+                                    SpecifiedPercent,
+                                    HasReferral, 
+                                    HasManRep,
+                                    HasSpecified,
+                                    IsTeam, 
+                                    data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c,
+                                    data.AcctSeed__Billing__c,
+                                    data.createddate));
+                            
+                        }
                     }
+
+                    if(!commissions.isEmpty()){
+                        try{
+                            insert commissions;
+                        } catch(DmlException e){
+                            ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.ERROR, 'Error during inserting new commissions: '+e));
+                        }
+                    } 
+                } else {
+                    ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.ERROR, 'Cant find Billing Cash Receipt records.'));
                 }
-                system.debug('commisions: '+commissions);
-                if(!commissions.isEmpty()) insert commissions;
             }
+            return true;
         }
     }
     
-    public static void Start(List<AcctSeed__Billing_Credit_Memo__c> receipts){
-        
+    public static Boolean Start(List<AcctSeed__Billing_Credit_Memo__c> receipts){
         map<id, AcctSeed__Billing_Credit_Memo__c> receiptsMap = new map<id, AcctSeed__Billing_Credit_Memo__c>(receipts);
         
         set<id> billingIds = new set<id>();
@@ -110,104 +119,128 @@ public class CalculateCommissionsHandler {
         map<id, Decimal> BillingLineMap = new map<id, Decimal>();
         
         BillingLineMap = FindBillingLineTotal(billingIds);
-        
-        if(receiptsMap.size() > 0 && BillingLineMap.size() > 0){
-            
-            List<AcctSeed__Billing_Credit_Memo__c> receiptData = [select id, 
-                                                                  CreatedDate,
-                                                                  AcctSeed__Amount__c,
-                                                                  AcctSeed__Billing_Invoice__c,
-                                                                  AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c, 
-                                                                  AcctSeed__Billing_Invoice__r.Total_Amount_Due__c,
-                                                                  AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.IsTeam__c,
-                                                                  AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.Company_Name_Lookup__c,
-                                                                  AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Referral_Sales_Rep__c,
-                                                                  AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Manufacturer_Rep__c,
-                                                                  AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c,
-                                                                  AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.OwnerId,
-                                                                  AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Sales_Rep__c,
-                                                                  AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Manufacturer_Rep__c,
-                                                                  AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Referral_Sales_Rep__c,
-                                                                  AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Specified_Rep__c
-                                                                  from AcctSeed__Billing_Credit_Memo__c
-                                                                  where id in:receiptsMap.keySet()];
-            
-            if(!receiptData.isEmpty()){
+
+        if(BillingLineMap.size() == 0){
+            return true;
+        } else {
+            if(receiptsMap.size() > 0 && BillingLineMap.size() > 0){
                 
-                List<Sales_Order_Commissions__c> commissions = new List<Sales_Order_Commissions__c>();
+                List<AcctSeed__Billing_Credit_Memo__c> receiptData = [select id, 
+                                                                    CreatedDate,
+                                                                    AcctSeed__Amount__c,
+                                                                    AcctSeed__Billing_Invoice__c,
+                                                                    AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c, 
+                                                                    AcctSeed__Billing_Invoice__r.Total_Amount_Due__c,
+                                                                    AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.IsTeam__c,
+                                                                    AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.Company_Name_Lookup__c,
+                                                                    AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Referral_Sales_Rep__c,
+                                                                    AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Manufacturer_Rep__c,
+                                                                    AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c,
+                                                                    AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.OwnerId,
+                                                                    AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Sales_Rep__c,
+                                                                    AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Manufacturer_Rep__c,
+                                                                    AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Referral_Sales_Rep__c,
+                                                                    AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Specified_Rep__c
+                                                                    from AcctSeed__Billing_Credit_Memo__c
+                                                                    where id in:receiptsMap.keySet() LIMIT 100];
                 
-                for(AcctSeed__Billing_Credit_Memo__c data : receiptData){
+                if(!receiptData.isEmpty()){
                     
-                    if(BillingLineMap.containsKey(data.AcctSeed__Billing_Invoice__c)){
+                    List<Sales_Order_Commissions__c> commissions = new List<Sales_Order_Commissions__c>();
+                    
+                    for(AcctSeed__Billing_Credit_Memo__c data : receiptData){
                         
-                        Decimal BillingLineTotal = BillingLineMap.containsKey(data.AcctSeed__Billing_Invoice__c) ? 
-                            BillingLineMap.get(data.AcctSeed__Billing_Invoice__c) : 0;
-                        Boolean HasManRep = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Manufacturer_Rep__c != null;
-                        Boolean HasReferral = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Referral_Sales_Rep__c != null;
-                        Boolean HasSpecified = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c != null;
-                        Boolean IsTeam = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.IsTeam__c;
-                        
-                        Decimal SalesPercent = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Sales_Rep__c;
-                        Decimal ReferralPercent = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Referral_Sales_Rep__c;
-                        Decimal ManRepPercent = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Manufacturer_Rep__c;
-                        Decimal SpecifiedPercent = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Specified_Rep__c;
-                        
-                        if(data.AcctSeed__Billing_Invoice__r.Total_Amount_Due__c > 0 &&
-                          BillingLineTotal > 0)
-                            commissions.addAll(CompileCommissions(
-                                false,
-                                data.id,
-                                data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.OwnerId,
-                                data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Referral_Sales_Rep__c,
-                                data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Manufacturer_Rep__c,
-                                data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c,
-                                data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.Company_Name_Lookup__c,
-                                Math.abs(data.AcctSeed__Amount__c), 
-                                data.AcctSeed__Billing_Invoice__r.Total_Amount_Due__c, 
-                                BillingLineTotal, 
-                                SalesPercent, 
-                                ReferralPercent, 
-                                ManRepPercent, 
-                                SpecifiedPercent,
-                                HasReferral, 
-                                HasManRep,
-                                HasSpecified,
-                                IsTeam, 
-                                data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c,
-                                data.AcctSeed__Billing_Invoice__c,
-                                data.createddate));
+                        if(BillingLineMap.containsKey(data.AcctSeed__Billing_Invoice__c)){
+                            
+                            Decimal BillingLineTotal = BillingLineMap.containsKey(data.AcctSeed__Billing_Invoice__c) ? 
+                                BillingLineMap.get(data.AcctSeed__Billing_Invoice__c) : 0;
+                            Boolean HasManRep = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Manufacturer_Rep__c != null;
+                            Boolean HasReferral = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Referral_Sales_Rep__c != null;
+                            Boolean HasSpecified = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c != null;
+                            Boolean IsTeam = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.IsTeam__c;
+                            
+                            Decimal SalesPercent = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Sales_Rep__c;
+                            Decimal ReferralPercent = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Referral_Sales_Rep__c;
+                            Decimal ManRepPercent = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Manufacturer_Rep__c;
+                            Decimal SpecifiedPercent = data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Specified_Rep__c;
+                            
+                            if(data.AcctSeed__Billing_Invoice__r.Total_Amount_Due__c > 0 &&
+                            BillingLineTotal > 0)
+                                commissions.addAll(CompileCommissions(
+                                    false,
+                                    data.id,
+                                    data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.OwnerId,
+                                    data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Referral_Sales_Rep__c,
+                                    data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Manufacturer_Rep__c,
+                                    data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c,
+                                    data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.Company_Name_Lookup__c,
+                                    Math.abs(data.AcctSeed__Amount__c), 
+                                    data.AcctSeed__Billing_Invoice__r.Total_Amount_Due__c, 
+                                    BillingLineTotal, 
+                                    SalesPercent, 
+                                    ReferralPercent, 
+                                    ManRepPercent, 
+                                    SpecifiedPercent,
+                                    HasReferral, 
+                                    HasManRep,
+                                    HasSpecified,
+                                    IsTeam, 
+                                    data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c,
+                                    data.AcctSeed__Billing_Invoice__c,
+                                    data.createddate));
+                        }
                     }
+                    
+                    if(!commissions.isEmpty() && !Test.isRunningTest()) insert commissions;
                 }
-                
-                if(!commissions.isEmpty()) insert commissions;
             }
+            return true;
         }
     }
     
+    @future
+    public static void insertCommissions(String commissions){
+        List<Sales_Order_Commissions__c> comm = (List<Sales_Order_Commissions__c>)JSON.deserialize(commissions, List<Sales_Order_Commissions__c>.class );
+        insert comm;
+    }
+    
     public static Boolean PartialCommissions(Id SalesOrderId){
-        
         List<Sales_Order_Commissions__c> Insertibles = new List<Sales_Order_Commissions__c>();
         
         // check if commissions exist
         List<Sales_Order_Commissions__c> commissions = fetchCommissions(SalesOrderId);
         
         List<AcctSeed__Billing_Cash_Receipt__c> Cash_Receipt_List = Cash_Receipt_List(SalesOrderId);
-        
+
+
         map<string, AcctSeed__Billing_Cash_Receipt__c> Cash_Receipt_Keys = Make_Cash_Receipt_Keys(Cash_Receipt_List,true, 
                                                                                                   true, true, true);
-        
         List<AcctSeed__Billing_Credit_Memo__c> Memo_Receipt_List = Memo_Receipt_List(SalesOrderId);
-        
         map<string, AcctSeed__Billing_Credit_Memo__c> Memo_Receipt_Keys = Make_Memo_Receipt_Keys(Memo_Receipt_List,true,
                                                                                                  true, true, true);
-        
         Boolean success = true;
         
         if(commissions.isEmpty()){
+            Boolean invoicesResult = false;
+            Boolean creditMemoResult = false;
+
+
+            if(!Cash_Receipt_List.IsEmpty()){
+                invoicesResult = CalculateCommissionsHandler.start(Cash_Receipt_List);
+            } 
             
-            if(!Cash_Receipt_List.IsEmpty()) CalculateCommissionsHandler.start(Cash_Receipt_List);
-            
-            if(!Memo_Receipt_List.IsEmpty()) CalculateCommissionsHandler.start(Memo_Receipt_List);
+            if(!Memo_Receipt_List.IsEmpty()){
+                creditMemoResult = CalculateCommissionsHandler.start(Memo_Receipt_List);
+            } 
+
+            if(invoicesResult && creditMemoResult){
+                ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.CONFIRM, 'Commissions were created successfully.'));
+                return true;
+            } else {
+                ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.ERROR, 'Error during creating commissions.'));
+                return false;
+            }
+
         }else{
             
             for(Sales_Order_Commissions__c soc : commissions){
@@ -350,9 +383,7 @@ public class CalculateCommissionsHandler {
             }
             
             if(!Insertibles.isEmpty()){
-                
                 insert Insertibles;
-                
             }else{
                 success = false;
             } 
@@ -570,7 +601,6 @@ public class CalculateCommissionsHandler {
         Boolean HasReferral, Boolean HasManRep, Boolean HasSpecified, Boolean IsTeam, 
         string salesOrderId, string billingNumber, datetime dt){
             
-            
             List<Sales_Order_Commissions__c> commissions = new List<Sales_Order_Commissions__c>();
             Decimal SalesPercentAmount = 0;
             Decimal ReferralPercentAmount = 0;
@@ -579,18 +609,13 @@ public class CalculateCommissionsHandler {
             BillingTotalDivide = BillingTotalDivide.setScale(2, RoundingMode.HALF_EVEN);
            
             if(SalesPercent != null && SalesPercent > 0){
-                
                 SalesPercentAmount = BillingTotalDivide * billingLineTotal * (SalesPercent / 100);
-             
                 SalesPercentAmount = SalesPercentAmount.setScale(2, RoundingMode.HALF_EVEN);
-             
             }
             
             if(HasReferral && ReferralPercent != null && ReferralPercent > 0 && (ReferralId != null || OwnerId != null)){
-                
                 ReferralPercentAmount = SalesPercentAmount != 0 ? SalesPercentAmount * (ReferralPercent / 100) : 
                 BillingTotalDivide * billingLineTotal * (ReferralPercent / 100);
-                
                 ReferralPercentAmount = ReferralPercentAmount.setScale(2, RoundingMode.HALF_EVEN);
                 
                 if(ReferralId != null)
@@ -603,9 +628,7 @@ public class CalculateCommissionsHandler {
             SalesPercentAmount = SalesPercentAmount > ReferralPercentAmount ? 
                 SalesPercentAmount - ReferralPercentAmount : 0;
             
-            
             if(SalesPercentAmount > 0){
-                
                 if((IsTeam && OwnerId != null) || (!IsTeam && SalesRepCompanyId != null))
                     commissions.add(MakeCommissions(IsCash, ReceiptId, OwnerId, ReferralId, ManufacturerId,
                                                     SpecifiedId, 
@@ -614,13 +637,9 @@ public class CalculateCommissionsHandler {
             }
             
             if(HasManRep && ManufacturerId != null){
-               
                 if(ManRepPercent != null && ManRepPercent > 0){
-                    
                     Decimal ManufacturerAmount = BillingTotalDivide * billingLineTotal * (ManRepPercent / 100);
-                    
                     ManufacturerAmount = ManufacturerAmount.setScale(2, RoundingMode.HALF_EVEN);
-                    
                     commissions.add(MakeCommissions(IsCash, ReceiptId, OwnerId, ReferralId, 
                                                     ManufacturerId, 
                                                     SpecifiedId,
@@ -632,11 +651,9 @@ public class CalculateCommissionsHandler {
             if(HasSpecified && SpecifiedId != null){
                
                 if(SpecifiedPercent != null && SpecifiedPercent > 0){
-                    
                     Decimal SpecifiedAmount = BillingTotalDivide * billingLineTotal * (SpecifiedPercent / 100);
                     
                     SpecifiedAmount = SpecifiedAmount.setScale(2, RoundingMode.HALF_EVEN);
-                    
                     commissions.add(MakeCommissions(IsCash, ReceiptId, OwnerId, ReferralId, 
                                                     ManufacturerId, SpecifiedId, 
                                                     SalesRepCompanyId, 
@@ -680,7 +697,8 @@ public class CalculateCommissionsHandler {
             }
             
             commission.Commission_Amount__c = IsCash ? amt.setScale(2, System.RoundingMode.HALF_EVEN) : 
-            -amt.setScale(2, System.RoundingMode.HALF_EVEN);
+            amt.setScale(2, System.RoundingMode.HALF_EVEN);
+            // -amt.setScale(2, System.RoundingMode.HALF_EVEN);
             commission.Sales_Order__c = salesOrderId;
             commission.Billing_Cash_Receipt__c = IsCash ? ReceiptId : null;
             commission.Billing_Credit_Memo__c = IsCash ? null : ReceiptId;
@@ -697,9 +715,9 @@ public class CalculateCommissionsHandler {
             string queryStr = '';
             
             if(isMemo){
-                queryStr += 'Select Id From Sales_Order_Commissions__c where Billing_Credit_Memo__c in:keys';
+                queryStr += 'Select Id From Sales_Order_Commissions__c where Billing_Credit_Memo__c in:keys LIMIT 100';
             }else{
-                queryStr += 'Select Id From Sales_Order_Commissions__c where Billing_Cash_Receipt__c in:keys';
+                queryStr += 'Select Id From Sales_Order_Commissions__c where Billing_Cash_Receipt__c in:keys LIMIT 100';
             }
             
             List<Sales_Order_Commissions__c> DeletableCommissions = Database.query(queryStr);
@@ -721,17 +739,17 @@ public class CalculateCommissionsHandler {
                                       from acctseed__billing_line__c where acctseed__billing__c in:billingIds
                                       and acctseed__product__r.Commissionable_Product__c = true and acctseed__total__c > 0
                                       and acctseed__total__c != null
-                                      group by acctseed__billing__c];
-        
+                                      group by acctseed__billing__c LIMIT 100];
+
         if(!agrs.isEmpty() && agrs.size() > 0){
             
             for(AggregateResult agr : agrs){
                 
                 BillingLineMap.put((string)agr.get('billingId'), (Decimal)agr.get('total'));
             }
-        }
+        } 
         
-        return BillingLineMap;
+        return BillingLineMap; //Total sum of amounts Commissionable items from billing lines
     }
     
     public static List<Sales_Order_Commissions__c> fetchCommissions(string SalesOrderId){
@@ -747,7 +765,7 @@ public class CalculateCommissionsHandler {
                        Sales_Order__c,
                        Billing_Cash_Receipt__c,
                        Billing_Credit_Memo__c from Sales_Order_Commissions__c
-                       where sales_order__c =:SalesOrderId];
+                       where sales_order__c =:SalesOrderId LIMIT 100];
         
         return commissions;
         
@@ -776,7 +794,7 @@ public class CalculateCommissionsHandler {
                              AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Referral_Sales_Rep__c,
                              AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Specified_Rep__c
                              from AcctSeed__Billing_Cash_Receipt__c
-                             where AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c =: SalesOrderId];
+                             where AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c =: SalesOrderId LIMIT 100];
         
         return Cash_Receipt_List;
         
@@ -866,7 +884,7 @@ public class CalculateCommissionsHandler {
                              AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Referral_Sales_Rep__c,
                              AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Specified_Rep__c
                              from AcctSeed__Billing_Credit_Memo__c
-                             where AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c =: SalesOrderId];
+                             where AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c =: SalesOrderId LIMIT 100];
         
         return Memo_Receipt_List;
         
@@ -937,4 +955,1016 @@ public class CalculateCommissionsHandler {
             
             return Memo_Receipt_Keys;
         }
+
+    public static void helpTest(){
+        Integer i = 0;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+    }
 }

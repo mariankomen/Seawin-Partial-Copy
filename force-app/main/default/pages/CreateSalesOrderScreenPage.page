@@ -56,10 +56,12 @@
                         <apex:outputText value="{!line.oli.productcode}"></apex:outputText>
                     </apex:column>
                     <apex:column headervalue="Item Description">
-                        <apex:inputField value="{!line.oli.Item_Description__c}"></apex:inputField>
+                        <apex:outputText value="{!line.oli.Item_Description__c}" rendered="{!!line.oli.Allow_Product_Description_Change__c}"></apex:outputText>
+                        <apex:inputField value="{!line.oli.Item_Description__c}" rendered="{!line.oli.Allow_Product_Description_Change__c}"></apex:inputField>
                     </apex:column>
                     <apex:column headervalue="Size">
-                        <apex:inputField value="{!line.oli.Size__c}"></apex:inputField>
+                        <apex:outputText value="{!line.oli.Size__c}" rendered="{!!line.oli.Allow_Product_Description_Change__c}"></apex:outputText>
+                        <apex:inputField value="{!line.oli.Size__c}" rendered="{!line.oli.Allow_Product_Description_Change__c}"></apex:inputField>
                     </apex:column>
                     <apex:column headervalue="Quantity">
                         <!--<apex:inputText id="quantityfield" value="{!line.oli.Quantity}" html-min="1"

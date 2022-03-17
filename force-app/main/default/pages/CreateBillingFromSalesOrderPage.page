@@ -84,7 +84,7 @@
                     <apex:actionRegion >
                         <apex:inputText id="billtype" title="myTitle" styleClass="align-right clearText billtypefilled" value="{!sow.billTypeVal}" style="width:80px" 
                                         required="false" onkeyup="recalculateBill(this.id, this.title,this.value, {!sow.UnbilledAmount}, {!sow.soLine.AcctSeedERP__Unit_Price__c}, {!sow.soLine.AcctSeedERP__Quantity_Ordered__c}, {!sow.quantityBilled}, {!sow.soLine.AcctSeedERP__Total__c}, {!sow.billedAmount})"
-                                        disabled="{!sow.quantityBilled == sow.soLine.AcctSeedERP__Quantity_Ordered__c}">
+                                        ><!-- disabled="{!sow.quantityBilled == sow.soLine.AcctSeedERP__Quantity_Ordered__c}" -->
                         </apex:inputText>
                     </apex:actionRegion>
                 </apex:column>

@@ -1,6 +1,22 @@
 public class RollupBillingReceivedOpptyHandler {
     // This handler was discontinued on 9 April 2021, because now the rollup is done through declarative rollup summary tool
     public static void rollup(List<AcctSeed__Billing__c> data){
+
+        // for(AcctSeed__Billing__c bill: data){
+        //     AcctSeedERP__Sales_Order__c so = [SELECT Id, Billing_Amount_Due__c FROM AcctSeedERP__Sales_Order__c WHERE Id=:bill.AcctSeedERP__Sales_Order__c ];
+        //     so.Billing_Amount_Due__c = 0.00;
+        //     List<AcctSeed__Billing__c> relatedBillings = [SELECT Id, Sub_Total__c,AcctSeed__Type__c FROM AcctSeed__Billing__c WHERE AcctSeedERP__Sales_Order__c =: so.Id AND AcctSeed__Type__c='Invoice'];
+
+        //     for(AcctSeed__Billing__c bills: relatedBillings){
+        //         so.Billing_Amount_Due__c += bills.Sub_Total__c;
+        //     }
+
+        //     update so;
+
+        // }
+
+
+
         /*
         
         set<id> opIds = new set<id>();

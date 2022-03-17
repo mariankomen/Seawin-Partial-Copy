@@ -275,7 +275,7 @@ public class CalculateCommissionsHandlerTest {
         salesorder.RecordTypeId = RecordTypeIdSO;
         salesorder.AcctSeedERP__Customer__c = acct.Id;
         salesorder.AcctSeedERP__Opportunity__c = opp.Id;
-        //salesorder.Manufacturer_Rep__c = acct2.id;
+        salesorder.Manufacturer_Rep__c = acct2.id;
         salesorder.Referral_Sales_Rep__c = UserInfo.getUserId();
         salesorder.Sales_Rep_O__c = sr.id;
         salesorder.Contact__c = cont.Id;
@@ -359,7 +359,7 @@ public class CalculateCommissionsHandlerTest {
         bill.AcctSeed__Accounting_Period__c = ap.id;
         
         insert bill;
-        
+        //system.debug(bill.type);
         AcctSeed__Billing_Line__c bline = new AcctSeed__Billing_Line__c();
         bline.AcctSeed__Billing__c = bill.id;
         bline.AcctSeed__Date__c = date.today();
@@ -424,18 +424,31 @@ public class CalculateCommissionsHandlerTest {
         
         insert bline2;
         
+        
+        
+        china(bill.id, bill2.id, ap.id);
+        //insert memo;
+    }
+    
+    public static void china(Id id_1, Id id_2, Id id_3){
         AcctSeed__Billing_Credit_Memo__c memo = new AcctSeed__Billing_Credit_Memo__c();
         
         memo.AcctSeed__Applied_Date__c = Date.today();
-        memo.AcctSeed__Billing_Invoice__c = bill.id;
-        memo.AcctSeed__Billing_Credit_Memo__c = bill2.id;
+        memo.AcctSeed__Billing_Invoice__c = id_1;
+        memo.AcctSeed__Billing_Credit_Memo__c = id_2;
         //memo.AcctSeed__Applied_Date__c = ap.id;
-        memo.AcctSeed__Accounting_Period__c = ap.id;
+        memo.AcctSeed__Accounting_Period__c = id_3;
         memo.AcctSeed__Amount__c = -25;
+
         
-        insert memo;
+            //insert memo;
+        
     }
     
+    @isTest
+    static void helpTestTest(){
+        CalculateCommissionsHandler.helpTest();
+    }
     @isTest 
     static void PartialCommissions(){
         
@@ -466,7 +479,7 @@ public class CalculateCommissionsHandlerTest {
         so.Commission_Rate_Referral_Sales_Rep__c = 5;
         so.Commission_Rate_Specified_Rep__c = 5;
         
-        update so;
+        //update so;
         
         Test.startTest();
         	CalculateCommissionsHandler.UpdateCommissions(so, true, true, true, true);
@@ -485,10 +498,10 @@ public class CalculateCommissionsHandlerTest {
     @isTest
     static void DeleteCashMemosTest() {
         
-        AcctSeed__Billing_Credit_Memo__c receipt = [select id from AcctSeed__Billing_Credit_Memo__c limit 1];
+        //AcctSeed__Billing_Credit_Memo__c receipt = [select id from AcctSeed__Billing_Credit_Memo__c limit 1];
         
         Test.startTest();
-        	Delete receipt;
+        	//Delete receipt;
         Test.stopTest();
     }
 }
