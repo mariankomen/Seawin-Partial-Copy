@@ -237,7 +237,7 @@
                                 style="font-size: 13px; color: blue">&#9660;</apex:outputPanel>
                             </apex:commandLink>
                         </apex:facet>
-                        {!p.prod.Size__c}14
+                        {!p.prod.Size__c}
                     </apex:column>
                     <!-- If Editable -->
                     <apex:column headerValue="Family" 

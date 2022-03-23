@@ -452,7 +452,7 @@ public class SalesOrderPDFControllerTest {
         ApexPages.currentPage().getParameters().put('id', so.id);
         
         SalesOrderPDFController sls = new SalesOrderPDFController();
-        
+        sls.getImageURL('<img src="test"/>');
         Test.stopTest();
         
 

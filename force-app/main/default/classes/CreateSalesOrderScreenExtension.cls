@@ -125,7 +125,7 @@ public class CreateSalesOrderScreenExtension {
 
             // else continue to show the visualforce content for line items
             for(opportunitylineitem oli : lines){
-
+                system.debug('Volodia: '+oli.Allow_Product_Description_Change__c);
                 if(oli.product2.AcctSeed__Inventory_Type__c == 'Kit') hasKits = true;
 
                 ProductIds.add(oli.product2Id);
@@ -135,19 +135,19 @@ public class CreateSalesOrderScreenExtension {
                 linesList.add(lw);
                 
             }
-
+            system.debug('JSON linesList: '+JSON.serialize(linesList));
             ibMap = InventoryCalculationHelper.Calculate(ProductIds);
 
             List<string> validProductIds = new List<String>();
-
+            system.debug('ProductIds: '+ProductIds);
             for(AcctSeed__Product_Part__c parts : [SELECT Id, Name, Kit_Product__c, 
-            Kit_Children__c,
-            Kit_Children__r.ProductCode,
-            Kit_Children__r.Description,
-            Kit_Children__r.Size__c,
-            AcctSeed__Quantity__c 
-            FROM AcctSeed__Product_Part__c 
-            where Kit_Product__c in:ProductIds]){
+                                                    Kit_Children__c,
+                                                    Kit_Children__r.ProductCode,
+                                                    Kit_Children__r.Description,
+                                                    Kit_Children__r.Size__c,
+                                                    AcctSeed__Quantity__c 
+                                                    FROM AcctSeed__Product_Part__c 
+                                                    where Kit_Product__c in:ProductIds]){
 
                 partsList = new List<AcctSeed__Product_Part__c>();
                 
@@ -162,6 +162,19 @@ public class CreateSalesOrderScreenExtension {
 
                 KitMap.put(parts.Kit_Product__c, partsList);
             }
+            system.debug('kitmap: '+JSON.serialize(KitMap));
+
+// linesList = new list<linesWrapper>();
+            for(linesWrapper lw:linesList){
+                if(KitMap.containsKey(lw.oli.Product2.Id)){
+                    for(AcctSeed__Product_Part__c pr: KitMap.get(lw.oli.Product2.Id)){
+                        pr.AcctSeed__Quantity__c = lw.oli.Quantity;
+                    }
+                }
+                
+            }
+
+
 
             if(!validProductIds.isEmpty())
                 validKeys = String.join(validProductIds, ';');
@@ -185,6 +198,7 @@ public class CreateSalesOrderScreenExtension {
         
         // get the selected opportunity line items
         Integer sortSequence = 0;
+        
         for(linesWrapper lw : linesList){
             if(lw.selected){
                 sortSequence++;
@@ -203,12 +217,14 @@ public class CreateSalesOrderScreenExtension {
                     AcctSeedERP__GL_Account_Variable_1__c = oppty.GL_Account_Variable_1__c, 
                     AcctSeedERP__GL_Account_Variable_2__c = lw.oli.AcctSeed__GL_Account_Variable_2__c, 
                     AcctSeedERP__GL_Account_Variable_3__c = lw.oli.AcctSeed__GL_Account_Variable_3__c, 
-                    AcctSeedERP__GL_Account_Variable_4__c = lw.oli.AcctSeed__GL_Account_Variable_4__c
+                    AcctSeedERP__GL_Account_Variable_4__c = lw.oli.AcctSeed__GL_Account_Variable_4__c,
+                    Allow_Product_Description_Change__c = lw.oli.Allow_Product_Description_Change__c
                 ));
                 
             }
         }
-
+        
+        system.debug('KitMap: 222'+JSON.serialize(KitMap));
         for(AcctSeed__Product_Part__c part : [SELECT Id, Name, Kit_Product__c, 
             Kit_Children__c,
             Kit_Children__r.ProductCode,
@@ -219,12 +235,13 @@ public class CreateSalesOrderScreenExtension {
             FROM AcctSeed__Product_Part__c 
             where Kit_Product__c in:ProductIds]){
                 sortSequence++;
+                system.debug('ID part: '+ JSON.serialize(part));
                 // add it to the the new sales order item list
                 slines.add(new AcctSeedERP__Sales_Order_Line__c(
                     AcctSeedERP__Product__c = part.Kit_Children__c,
                     AcctSeedERP_Description__c = part.Kit_Children__r.Description,
                     Item_description__c = part.Kit_Children__r.Description,
-                    AcctSeedERP__Quantity_Ordered__c = part.AcctSeed__Quantity__c,
+                    AcctSeedERP__Quantity_Ordered__c = KitMap.get(part.Kit_Product__c)[0].AcctSeed__Quantity__c, //part.AcctSeed__Quantity__c, //!
                     size__c = part.Kit_Children__r.Size__c,
                     AcctSeedERP__Unit_Price__c = part.Kit_Children__r.AcctSeed__Unit_Cost__c,
                     sortorder__c = sortSequence,

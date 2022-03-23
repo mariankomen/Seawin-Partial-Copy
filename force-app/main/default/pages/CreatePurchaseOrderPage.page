@@ -116,10 +116,13 @@
                             <apex:outputText value="{!LineItem.Product.ProductCode}"></apex:outputText>
                         </apex:column>
                         <apex:column headervalue="Item Description">
-                            <apex:inputField value="{!LineItem.lsline.AcctSeedERP_Description__c}"></apex:inputField>
+                            <apex:inputField value="{!LineItem.lsline.AcctSeedERP_Description__c}" rendered="{!LineItem.lsline.Allow_Product_Description_Change__c}"></apex:inputField>
+                            <apex:outputText value="{!LineItem.lsline.AcctSeedERP_Description__c}" rendered="{!!LineItem.lsline.Allow_Product_Description_Change__c}"></apex:outputText>
                         </apex:column>
                         <apex:column headervalue="Size">
-                            <apex:inputField value="{!LineItem.lsline.Size__c}"></apex:inputField>
+
+                            <apex:inputField value="{!LineItem.lsline.Size__c}" rendered="{!LineItem.lsline.Allow_Product_Description_Change__c}"></apex:inputField>
+                            <apex:outputText value="{!LineItem.lsline.Size__c}" rendered="{!!LineItem.lsline.Allow_Product_Description_Change__c}"></apex:outputText>
                         </apex:column>
                         <apex:column headervalue="Quantity Needed">
                             <apex:outputText value="{0,number, ###,###.00}">

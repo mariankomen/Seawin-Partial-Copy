@@ -277,6 +277,7 @@ public with sharing class createPurchaseOrderController {
             
             showdraftError = true;
         }
+
     }
     public PageReference create() {
         PageReference retPage = null;

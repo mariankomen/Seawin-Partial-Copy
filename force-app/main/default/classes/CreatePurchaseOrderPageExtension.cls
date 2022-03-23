@@ -63,16 +63,22 @@ public with sharing class CreatePurchaseOrderPageExtension {
                        AcctSeedERP__Product__r.AcctSeed__Inventory_Type__c = 'Raw Material')
                      ];
         
+
+        /* Get all SalesOrderLines from selected Sales Order */
+
         SalesOrderLineItems = [SELECT Id, Name, AcctSeedERP__Product__r.Name,AcctSeedERP__Unit_Price__c,
                                AcctSeedERP__Product__r.Description,AcctSeedERP__Product__r.AcctSeedERP__Default_Vendor__c,
                                AcctSeedERP__Comment__c, AcctSeedERP__Product__c, AcctSeedERP_Description__c,SortOrder__c,
                                AcctSeedERP__Product__r.AcctSeed__Unit_Cost__c, size__c, Quantity_Allocated_formula__c,
                                Quantity_Shipped_Formula__c,AcctSeedERP__Quantity_Ordered__c,AcctSeedERP__Quantity_Needed__c,
                                acctseederp__total__c, productcode__c,Quantity_Needed_Formula__c,Available_Quantity__c,
+                               Allow_Product_Description_Change__c,
+                               AcctSeedERP__Product__r.Allow_Product_Description_Change__c,
                                AcctSeederp__GL_Account_Variable_1__c, AlternateImageURL__c,
                                AcctSeederp__GL_Account_Variable_2__c, 
                                AcctSeederp__GL_Account_Variable_3__c, 
-                               AcctSeederp__GL_Account_Variable_4__c, POL_Quantity__c, QuantityFormula__c
+                               AcctSeederp__GL_Account_Variable_4__c, POL_Quantity__c, QuantityFormula__c,
+                               Kit_Children__c
                                FROM AcctSeedERP__Sales_Order_Line__c 
                                WHERE AcctSeedERP__Sales_Order__c =: salesOrderId
                                AND IsAllocated__c != 1 and isdeleted = false AND
@@ -96,8 +102,7 @@ public with sharing class CreatePurchaseOrderPageExtension {
                                       WHERE AcctSeedERP__Sales_Order__c =: salesOrderId AND 
                                       IsMaximum__c = 1];
         
-        System.debug('total Items are: ' + totalitems);
-        System.debug('SalesOrderLineItemsMaximum are: ' + SalesOrderLineItemsMaximum);
+        system.debug('SalesOrderLineItemsSalesOrderLineItems: '+JSON.serialize(SalesOrderLineItems));
         
         if(totalitems == SalesOrderLineItemsMaximum){
             
@@ -231,6 +236,8 @@ public with sharing class CreatePurchaseOrderPageExtension {
         
         Map<Id, AcctSeedERP__Purchase_Order__c> purchaseOrders = new Map<Id, AcctSeedERP__Purchase_Order__c>();
         
+
+        //Allow product change field is here !! SalesOrderLinesListing
         for (ListSalesOrderLines wp : SalesOrderLinesListing) {
             if(wp.selected){
                 if(!purchaseOrders.containsKey(wp.Product.Vendor__c)) {
@@ -311,7 +318,7 @@ public with sharing class CreatePurchaseOrderPageExtension {
             // we are making a copy of sales order lines here so we can use them in this functionality, 
             // as objects are pass by reference, so by doing
             // this we are avoiding changing the sales order lines.
-            
+            system.debug('SalesOrderLinesListingSalesOrderLinesListingSalesOrderLinesListing: '+JSON.serialize(SalesOrderLinesListing));
             for(ListSalesOrderLines wp : SalesOrderLinesListing){
                 if(wp.Product.Vendor__c == keyIs){
                     order = allOrders.get(wp.Product.Vendor__c);
@@ -337,7 +344,7 @@ public with sharing class CreatePurchaseOrderPageExtension {
                         newsol.AcctSeedERP__Product__c = wp.SalesOrderLine.AcctSeedERP__Product__c;  
                         newsol.AcctSeedERP__Unit_Price__c = wp.SalesOrderLine.AcctSeedERP__Unit_Price__c; 
                         newsol.AcctSeedERP__Quantity_Ordered__c = POLQuantity;
-                        
+                        newsol.Allow_Product_Description_Change__c = wp.SalesOrderLine.Kit_Children__c ? false : wp.SalesOrderLine.AcctSeedERP__Product__r.Allow_Product_Description_Change__c;
                         // Line Added
                         newsol.AlternateImageURL__c = wp.SalesOrderLine.AlternateImageURL__c;
                         
@@ -356,19 +363,7 @@ public with sharing class CreatePurchaseOrderPageExtension {
                 }
                 
             }
-            
-            
-            /*
-list<AcctSeedERP__Sales_Order_Line__c> sl = lineslist.deepClone(true, true, true);
 
-for(AcctSeedERP__Sales_Order_Line__c ls : sl){
-
-ls.AcctSeedERP__Quantity_Ordered__c = ls.AcctSeedERP__Quantity_Needed__c;
-
-}
-*/
-            
-            
             orderLinesMap.put(order , lineslist);
         }
         
@@ -376,6 +371,8 @@ ls.AcctSeedERP__Quantity_Ordered__c = ls.AcctSeedERP__Quantity_Needed__c;
         
         if(!orderLinesMap.IsEmpty()){
             
+            system.debug('orderLinesMap:: '+JSON.serialize(orderLinesMap));
+            system.debug('allOrders.values(): '+JSON.serialize(allOrders.values()));
             // create list of CreateDraft
             for(AcctSeedERP__Purchase_Order__c pr : allOrders.values()){
                 account acct = null;
@@ -391,6 +388,7 @@ ls.AcctSeedERP__Quantity_Ordered__c = ls.AcctSeedERP__Quantity_Needed__c;
             
             showdraft = true;
         }
+        system.debug('Drafting::: '+JSON.serialize(Drafting));
         return null;
     }
     public PageReference create() {

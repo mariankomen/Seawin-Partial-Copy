@@ -66,7 +66,7 @@
                 <apex:outputField value="{!Opp.RecordTypeId}"></apex:outputField>
 
                 <apex:inputField value="{!Opp.AccountId}" />
-                <apex:inputField value="{!Opp.Manufacturer_Rep__c}" />
+                <!-- <apex:inputField value="{!Opp.Manufacturer_Rep__c}" /> -->
                 <apex:outputField value="{!Opp.Sales_Rep_O__c}" />
 
                 <apex:inputField value="{!Opp.ContactPerson__c}" />

@@ -76,6 +76,7 @@ public class MassEditSalesOrderScreenTest
         aegl.AcctSeed__Sub_Type_1__c = 'Facilities';
         aegl.AcctSeed__Sub_Type_2__c = 'Rent';
         aegl.AcctSeed__Bank__c = true;
+        aegl.GL_Account_Variable_1__c = accVar.Id;
         insert aegl;
         
         prod.Name = 'myProduct';
@@ -198,6 +199,47 @@ public class MassEditSalesOrderScreenTest
         solineList.add(solines);
         
         insert solineList;
+
+        AcctSeed__Accounting_Variable__c glav = new AcctSeed__Accounting_Variable__c(
+          Name = 'Seawin USA',AcctSeed__Type__c = 'GL Account Variable 1');
+      
+        insert glav;
+        AcctSeed__GL_Account__c gla = new AcctSeed__GL_Account__c();
+        gla.name = '2010-Vouchers Payable';
+        gla.AcctSeed__Type__c = 'Balance Sheet';
+        gla.AcctSeed__Sub_Type_1__c = 'Liabilities';
+        gla.AcctSeed__Sub_Type_2__c = 'Current Liabilities';
+        gla.AcctSeed__Active__c = true;
+        gla.AcctSeed__Bank__c = true;
+        gla.GL_Account_Variable_1__c = glav.id;
+        
+        insert gla;
+
+        Product2 kit = new Product2();
+        
+        kit.Name = 'myProduct';
+        kit.ProductCode = 'ABC123';
+        kit.Description = 'myDescription';
+        kit.AcctSeed__Unit_Cost__c = 100;
+        kit.IsActive = true;
+        kit.Category__c = 'Shower Door';
+        kit.Sub_Category__c = 'Single Sliding';
+        kit.AcctSeed__Inventory_Type__c = 'Kit';
+        kit.AcctSeed__Expense_GL_Account__c = gla.id;
+        kit.AcctSeed__Inventory_GL_Account__c = gla.id;
+        kit.AcctSeed__Revenue_GL_Account__c = gla.id;
+        kit.AcctSeed__Inventory_Product__c = true;
+        
+        insert kit;
+
+
+        AcctSeed__Product_Part__c part = new AcctSeed__Product_Part__c();
+        
+        part.AcctSeed__Quantity__c = 1;
+        part.Kit_Children__c = prod.id;
+        part.Kit_Product__c = kit.id;
+        
+        insert part;
        
     }
     @isTest static void MassEditLines() 
@@ -241,7 +283,7 @@ public class MassEditSalesOrderScreenTest
         insert soliness;
         
         ApexPages.currentPage().getParameters().put('solId', soliness.id);
-        
+        exts.helpTest();
         exts.UpdateLine();
         exts.yes();
         
