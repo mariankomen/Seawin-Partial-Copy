@@ -9,10 +9,12 @@ public without sharing class SalesOrderPDFController {
     public Map<Id, AcctSeedERP__Sales_Order_Line__c> sol_map {get; set;}
     public List<AcctSeed__Billing_Cash_Receipt__c> receipts {get; set;}
     public List<wrapper> CreditMemos {get; set;}
+    public List<memo_wrapper> CreditMemosRelated {get; set;}
     
     public SalesOrderPDFController(){
         receipts = new List<AcctSeed__Billing_Cash_Receipt__c>();
-        // soId = std.getId();
+        CreditMemosRelated = new List<memo_wrapper>();
+        
         soId = ApexPages.currentPage().getParameters().get('id');
         sol_map = new Map<Id, AcctSeedERP__Sales_Order_Line__c>();
 
@@ -158,40 +160,16 @@ public without sharing class SalesOrderPDFController {
             for(AcctSeed__Billing__c bl : billings){
                 billIds.add(bl.id);
             }
-            
+
             // get the billing cash receipts
             receipts = [SELECT Id, Name, AcctSeed__Billing__r.Name,
                         AcctSeed__Billing__r.AcctSeed__Customer__r.name, 
                         AcctSeed__Cash_Receipt__r.Name,
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Receipt_Date__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Account__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Accounting_Period__r.name, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Accounting_Year__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Amount__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Balance__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Bank_Account__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Bank_Deposit__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Bank_Reconciliation__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Cleared_Date__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Credit_GL_Account__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Currency_Conversion_Rate__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__GL_Account_Variable_1__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__GL_Account_Variable_2__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__GL_Account_Variable_3__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__GL_Account_Variable_4__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Ledger_Amount__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Payment_Reference__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Project_Task__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Project__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Purpose__c, 
+                        AcctSeed__Cash_Receipt__r.Payment_Method__c,
+                        AcctSeed__Cash_Receipt__r.AcctSeed__Payment_Reference__c,
+                        AcctSeed__Cash_Receipt__r.AcctSeed__Receipt_Date__c,
                         AcctSeed__Cash_Receipt__r.AcctSeed__Status__c, 
                         AcctSeed__Cash_Receipt__r.AcctSeed__Applied_Amount__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Number_of_Billing_Cash_Receipts__c, 
-                        AcctSeed__Cash_Receipt__r.AcctSeed__Ledger__c,                                                          
-                        AcctSeed__Cash_Receipt__r.Payment_Method__c,                                                          
-                        AcctSeed__Accounting_Period__c, 
-                        AcctSeed__Adjustment_Amount__c, 
-                        AcctSeed__Adjustment_GL_Account__c, 
                         AcctSeed__Applied_Amount__c, 
                         AcctSeed__Period_Applied__c 
                         FROM AcctSeed__Billing_Cash_Receipt__c
@@ -209,9 +187,10 @@ public without sharing class SalesOrderPDFController {
 
     public void CheckCreditMemos(){
         
+        Set<Id> billing_credit_memo_ids = new Set<Id>();
         CreditMemos = new List<wrapper>(); 
-        
-       List<AcctSeed__Billing__c> CreditMemo_Billings = [SELECT Id, Name, 
+
+        List<AcctSeed__Billing__c> CreditMemo_Billings = [SELECT Id, Name, 
                        AcctSeed__Billing__c.AcctSeed__Customer__r.name, 
                        AcctSeed__Date__c, AcctSeed__Total__c, AcctSeed__Credit_Memo_Applied_Amount__c 
                        FROM AcctSeed__Billing__c where acctseederp__sales_order__c =:soId
@@ -220,16 +199,50 @@ public without sharing class SalesOrderPDFController {
         if(!CreditMemo_Billings.isEmpty()){
             
             for(AcctSeed__Billing__c b : CreditMemo_Billings){
-                
+                billing_credit_memo_ids.add(b.Id);
                 wrapper w = new wrapper(b, b.AcctSeed__Credit_Memo_Applied_Amount__c);
                 
                 CreditMemos.add(w);
                 
             }
-            
+
+            checkBillingCreditMemos(billing_credit_memo_ids);
         }
     }
 
+    /************************************************************************************************************
+    *   @method      : checkBillingCreditMemos
+    *   @description : non static method used to get related junction credit memos 
+    *                  with for showing them on pdf 
+    *   @return      : void
+    *   @author      : Marian Lyzhychka ©Peeklogic
+    *************************************************************************************************************/
+
+    public void checkBillingCreditMemos(Set<Id> billing_credit_memo_ids){
+        List<AcctSeed__Billing_Credit_Memo__c> all_credit_memos = [SELECT Id, Name,
+                                                                            AcctSeed__Amount__c, 
+                                                                            AcctSeed__Billing_Credit_Memo__c, 
+                                                                            AcctSeed__Billing_Invoice__c, 
+                                                                            AcctSeed__Billing_Credit_Memo__r.Name, 
+                                                                            AcctSeed__Billing_Invoice__r.Name, 
+                                                                            AcctSeed__Applied_Date__c
+                                                                            FROM  AcctSeed__Billing_Credit_Memo__c
+                                                                            WHERE AcctSeed__Billing_Credit_Memo__c IN:billing_credit_memo_ids];
+        if(!all_credit_memos.isEmpty()){
+
+            for(AcctSeed__Billing_Credit_Memo__c mem:all_credit_memos){
+                CreditMemosRelated.add(new memo_wrapper(mem, mem.AcctSeed__Amount__c));
+            }
+        }
+    }
+
+    /************************************************************************************************************
+    *   @method      : getImageURL
+    *   @description : non static method used to get src of image, from salesorder lines
+    *   @return      : void
+    *   @author      : Marian Lyzhychka ©Peeklogic
+    *************************************************************************************************************/
+    
     public string getImageURL(string url){
 
         String imageURL = '';
@@ -274,6 +287,18 @@ public without sharing class SalesOrderPDFController {
         public wrapper(acctseed__billing__c b, decimal t){
             
             billing = b;
+			total = Math.abs(t);	
+        }
+    }
+
+    public class memo_wrapper{
+
+        public AcctSeed__Billing_Credit_Memo__c bill_memo {get; set;}
+        public decimal total {get; set;}
+        
+        public memo_wrapper(AcctSeed__Billing_Credit_Memo__c b, decimal t){
+            
+            bill_memo = b;
 			total = Math.abs(t);	
         }
     }

@@ -12,8 +12,8 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>{
     public Database.QueryLocator start(Database.BatchableContext bc) {
 
         String fieldsApiNames = getOpportunityFields();
-
-        String query = 'SELECT ' + fieldsApiNames + ' FROM Opportunity WHERE DAY_ONLY(convertTimezone(CreatedDate)) = LAST_N_MONTHS:12 LIMIT 3';
+        
+        String query = 'SELECT ' + fieldsApiNames + ' FROM Opportunity WHERE ( CreatedDate = LAST_N_MONTHS:11 OR CreatedDate = THIS_MONTH ) LIMIT 15';
 
         return Database.getQueryLocator(query);
     }
@@ -36,8 +36,8 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>{
         opp_dashb.Closed_Date__c = opp.Closed_Date__c;                
         opp_dashb.Contact_Owner_Developer__c = opp.Contact_Owner_Developer__c;               
         opp_dashb.Opportunity_GL_Var_1__c = opp.GL_Account_Variable_1__c;                
-        opp_dashb.HasOpenActivities__c = opp.HasOpenActivity;                
-        opp_dashb.HasOverdueTask__c = opp.HasOverdueTask;                
+        opp_dashb.HasOpenActivities__c = checkOpenActivities(opp.Id);
+        opp_dashb.HasOverdueTask__c = checkOverdueTask(opp.Id);                
         opp_dashb.Inserting_Date__c = date.today();                
         opp_dashb.Invited__c = opp.Invited__c;                
         opp_dashb.IsApproved__c = opp.IsApproved__c;                
@@ -57,7 +57,7 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>{
         opp_dashb.Opportunity_Lead_Source__c = opp.LeadSource;
         opp_dashb.Opportunity_Locked__c = opp.Locked__c;
         opp_dashb.Opportunity_Loss_Reason__c = opp.Loss_Reason__c;
-        opp_dashb.Opportunity_Neglected_Days__c = opp.Neglected_Days__c;
+        opp_dashb.Opportunity_Neglected_Days__c = checkNeglectedDays(opp.Id);
         opp_dashb.Opportunity_Price_Level__c = opp.Price_Level__c;
         opp_dashb.Opportunity_StageName__c = opp.StageName;
         opp_dashb.Opportunity_Type__c = opp.Type;
@@ -69,6 +69,11 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>{
         opp_dashb.Special_Instruction__c = opp.Description;
         opp_dashb.Specified_Rep__c = opp.Specified_Rep__c;
         opp_dashb.Opportunity_Created_Date__c = opp.CreatedDate;
+        opp_dashb.Last_Activity_Date__c = opp.LastActivityDate;
+        opp_dashb.isNeglected__c = checkNeglect(opp.Id);
+        opp_dashb.IsWon__c = opp.IsWon;
+        opp_dashb.Last_Modified_By_Copy__c = opp.LastModifiedById;
+        opp_dashb.LastModifiedDate_Copy__c = opp.LastModifiedDate;
 
         try{
             insert opp_dashb;
@@ -103,16 +108,16 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>{
 
             if(!Test.isRunningTest()) Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
 
-
         }
     }
 
     /***********************************************************************************************************
     *   @method      : getOpportunityFields
     *   @description : public method, which return string of all Opportunity fields api names, separated by comma
-    *   @return      : -
+    *   @return      : String
     *   @author      : Marian Lyzhychka ©Peeklogic
     ***********************************************************************************************************/
+
     public String getOpportunityFields(){
         String fields = '';
         Schema.DescribeSObjectResult r = Opportunity.sObjectType.getDescribe();
@@ -123,4 +128,81 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>{
         fields = fields.removeEnd(', ');
         return fields;
     }
+
+    /***********************************************************************************************************
+    *   @method      : checkOverdueTask
+    *   @description : public method, which check does opportunity has overdue task
+    *   @return      : Boolean
+    *   @author      : Marian Lyzhychka ©Peeklogic
+    ***********************************************************************************************************/
+    
+    public Boolean checkOverdueTask(Id oppId){
+        List<Task> relatedTasks = [SELECT Id, ActivityDate, WhatID FROM Task WHERE ActivityDate < TODAY AND WhatId =:oppId];
+        
+        return relatedTasks.size() > 0 ? true : false;
+    }
+
+    /***********************************************************************************************************
+    *   @method      : checkOpenActivities
+    *   @description : public method, which check does opportunity has open Activities
+    *   @return      : Boolean
+    *   @author      : Marian Lyzhychka ©Peeklogic
+    ***********************************************************************************************************/
+
+    public Boolean checkOpenActivities(Id oppId){
+        Opportunity opportunityActivity = [SELECT (SELECT ActivityDate,
+                                                                Description,
+                                                                Subject
+                                                         FROM OpenActivities)
+                                                FROM Opportunity
+                                                WHERE Id=:oppId];
+
+        return !opportunityActivity.OpenActivities.isEmpty() ? true : false;
+    }
+
+    /***********************************************************************************************************
+    *   @method      : checkNeglect
+    *   @description : public method, which check does opportunity is Neglected
+    *   @return      : Boolean
+    *   @author      : Marian Lyzhychka ©Peeklogic
+    ***********************************************************************************************************/
+
+    public Boolean checkNeglect(Id oppId){
+        Opportunity opp = [SELECT Id, ForecastCategory FROM Opportunity WHERE Id=:oppId];
+        Boolean hasOverdueTask = checkOverdueTask(oppId);
+        Integer neglection_days = checkNeglectedDays(oppId);
+        /*
+            Opportunity is Neglected if: ForecastCategory equal 'Pipeline'
+                and days from LastModifyDate till today is more than 30
+                and Opportunity dont have not overdue, open Task
+        */
+
+        if(opp.ForecastCategory == 'Pipeline'){
+            
+            return neglection_days > 30 && hasOverdueTask == true ? true : false;
+        } else {
+            return false;
+        }
+    }
+
+    /***********************************************************************************************************
+    *   @method      : checkNeglectedDays
+    *   @description : public method, which return count of neglection days.
+    *   @return      : Integer
+    *   @author      : Marian Lyzhychka ©Peeklogic
+    ***********************************************************************************************************/
+
+    public Integer checkNeglectedDays(Id oppId){
+        Opportunity opp = [SELECT Id, LastModifiedDate, LastActivityDate, ForecastCategory FROM Opportunity WHERE Id=:oppId];
+        Datetime DT = opp.LastModifiedDate;
+        Date lastModDate = Date.NewInstance(dT.year(), dT.month(), dT.day());
+
+        Integer days_from_last_activity = opp.LastActivityDate != null ? opp.LastActivityDate.daysBetween(date.today()) : 0;
+        Integer days_from_last_modify = lastModDate.daysBetween(date.today());
+
+        Integer neglection_days = days_from_last_activity > days_from_last_modify ? days_from_last_activity : days_from_last_modify;
+
+        return neglection_days;
+    }
+
 }

@@ -26,7 +26,7 @@
                 <apex:commandButton value="Back" action="/{!so.Id}" immediate="true" />
             </apex:pageBlockButtons>
             <apex:pageBlockSection columns="2">
-                <apex:outputField value="{!so.AcctSeedERP__Customer__c}" />
+                <!-- <apex:outputField value="{!so.AcctSeedERP__Customer__c}" /> -->
                 <apex:pageBlockSectionItem >
                     <apex:outputLabel value="Issue Date" />
                     <apex:InputField value="{!temp.AcctSeed__Date__c}" />
