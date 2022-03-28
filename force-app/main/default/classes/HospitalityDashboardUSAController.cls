@@ -633,82 +633,104 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
 
         Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
         
-        List<AggregateResult> Open = [
-            SELECT
-            Sum(amount) amount,
-            calendar_month(createddate) month,
-            calendar_year(createddate) year
-            FROM opportunity
-            WHERE
-            createddate <= :Full_End_Date
-            AND Sales_Rep_o__r.Name IN :All_SalesReps
-            AND ForecastCategoryName != 'Omitted'
-            AND RecordType.Name = 'Seawin USA Hospitality'
-            AND GL_Account_Variable_1__r.Name = 'Seawin USA'
-            AND amount > 0
-            AND amount != NULL
-            GROUP BY calendar_year(createddate), calendar_month(createddate)
-            ORDER BY calendar_year(createddate), calendar_month(createddate) ASC
-        ];
+        // List<AggregateResult> opportunity_data = [
+        //     SELECT  
+        //     SUM(Amount__c) amount, 
+        //     calendar_month(Inserting_Date__c) month,
+        //     calendar_year(Inserting_Date__c) year
+        //     FROM Opportunity_Dashboard__c 
+        //     WHERE 
+        //     Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
+        //     AND Opportunity_Forecast_Category__c = 'Pipeline'
+        //     AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+        //     AND Amount__c != null
+        //     AND Sal_Rep_Team_Name__c IN:All_SalesReps
+            
+        //     GROUP BY calendar_year(Inserting_Date__c), calendar_month(Inserting_Date__c)
+        // ];
+
+
+        // system.debug('opportunity_data: '+JSON.serialize(opportunity_data));
+
+
+
+
+        // List<AggregateResult> Open = [
+        //     SELECT
+        //     Sum(amount) amount,
+        //     calendar_month(createddate) month,
+        //     calendar_year(createddate) year
+        //     FROM opportunity
+        //     WHERE
+        //     createddate <= :Full_End_Date
+        //     AND Sales_Rep_o__r.Name IN :All_SalesReps
+        //     AND ForecastCategoryName != 'Omitted'
+        //     AND RecordType.Name = 'Seawin USA Hospitality'
+        //     AND GL_Account_Variable_1__r.Name = 'Seawin USA'
+        //     AND amount > 0
+        //     AND amount != NULL
+        //     GROUP BY calendar_year(createddate), calendar_month(createddate)
+        //     ORDER BY calendar_year(createddate), calendar_month(createddate) ASC
+        // ];
         
-        // if Closed Date is 1 Oct 2019 - Will appear in Oct 2019.
-        // if Closed Date is 15 Nov 2019 - Will appear in Nov 2019.
+        // // if Closed Date is 1 Oct 2019 - Will appear in Oct 2019.
+        // // if Closed Date is 15 Nov 2019 - Will appear in Nov 2019.
         
         map<string, List<ValuesWrapper>> CompanyTotalPipelineMapLocal = new Map<string, List<ValuesWrapper>>();
         
-        String key = 'Company Total Pipeline Last 12 Months';
+        // String key = 'Company Total Pipeline Last 12 Months';
         
-        map<Integer, Decimal> Open_MonthAmountMap = new Map<Integer, Decimal>();
-        if (!Open.isEmpty()) {
-            for (AggregateResult a : Open) {
-                Integer m = (Integer) a.get('month');
-                Integer y = (Integer) a.get('year');
-                Decimal amt = (Decimal) a.get('amount');
+        // map<Integer, Decimal> Open_MonthAmountMap = new Map<Integer, Decimal>();
+        // if (!Open.isEmpty()) {
+        //     for (AggregateResult a : Open) {
+        //         Integer m = (Integer) a.get('month');
+        //         Integer y = (Integer) a.get('year');
+        //         Decimal amt = (Decimal) a.get('amount');
                 
-                Integer MonthIndex = Last12MonthsList_CombinedMap.containsKey(
-                    m +
-                    '-' +
-                    y
-                )
-                    ? Last12MonthsList_CombinedMap.get(m + '-' + y)
-                    : 0;
+        //         Integer MonthIndex = Last12MonthsList_CombinedMap.containsKey(
+        //             m +
+        //             '-' +
+        //             y
+        //         )
+        //             ? Last12MonthsList_CombinedMap.get(m + '-' + y)
+        //             : 0;
                 
-                Open_MonthAmountMap.put(
-                    MonthIndex,
-                    Open_MonthAmountMap.containsKey(MonthIndex)
-                    ? Open_MonthAmountMap.get(MonthIndex) + amt
-                    : amt
-                );
-            }
-        }
-        List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
+        //         Open_MonthAmountMap.put(
+        //             MonthIndex,
+        //             Open_MonthAmountMap.containsKey(MonthIndex)
+        //             ? Open_MonthAmountMap.get(MonthIndex) + amt
+        //             : amt
+        //         );
+        //     }
+        // }
+        // List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
         
-        Decimal TotalAmount = 0;
+        // Decimal TotalAmount = 0;
         
-        Decimal PipelineAmount = 0;
+        // Decimal PipelineAmount = 0;
         
-        for (Integer i = 0; i < 12; i++) {
-            if (Open_MonthAmountMap.containsKey(i)) {
-                PipelineAmount += Open_MonthAmountMap.get(i);
-            }
+        // for (Integer i = 0; i < 12; i++) {
+        //     if (Open_MonthAmountMap.containsKey(i)) {
+        //         PipelineAmount += Open_MonthAmountMap.get(i);
+        //     }
             
-            TotalAmount = PipelineAmount;
+        //     TotalAmount = PipelineAmount;
             
-            if (TotalAmount > 0)
-                ValuesList.add(
-                    new ValuesWrapper(i, null, null, TotalAmount, 0, null, 0)
-                );
-        }
+        //     if (TotalAmount > 0)
+        //         ValuesList.add(
+        //             new ValuesWrapper(i, null, null, TotalAmount, 0, null, 0)
+        //         );
+        // }
         
-        if (!ValuesList.isEmpty())
-            CompanyTotalPipelineMapLocal.put(key, ValuesList);
+        // if (!ValuesList.isEmpty())
+        //     CompanyTotalPipelineMapLocal.put(key, ValuesList);
         
-        //if (CompanyTotalPipelineMapLocal.size() > 0) {
-            //TotalPipelineMapLocal = this.SortByValues(TotalPipelineMapLocal);
+        // //if (CompanyTotalPipelineMapLocal.size() > 0) {
+        //     //TotalPipelineMapLocal = this.SortByValues(TotalPipelineMapLocal);
             
-           // CompanyTotalPipelineKeys = CompanyTotalPipelineMapLocal.keyset();
-           // CompanyTotalPipelineMap = CompanyTotalPipelineMapLocal;
-        //}
+        //    // CompanyTotalPipelineKeys = CompanyTotalPipelineMapLocal.keyset();
+        //    // CompanyTotalPipelineMap = CompanyTotalPipelineMapLocal;
+        // //}
         return CompanyTotalPipelineMapLocal;
     }
     
@@ -1041,39 +1063,21 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
                                 ),
                                 Months[(Integer) quoteSubmittedDate.month() - 1],
                                 Months[(Integer) quoteSubmittedDate.month() - 1],
-                                opportunitiesCount.get(
-                                    key +
-                                    quoteSubmittedDate.month() +
-                                    quoteSubmittedDate.year()
-                                ),
+                                opportunitiesCount.get(key + quoteSubmittedDate.month() + quoteSubmittedDate.year()),
                                 (Integer) quoteSubmittedDate.year(),
                                 null,
                                 null
                             );
                 
-                if (
-                    checkValueWrapper.contains(
-                        key +
-                        quoteSubmittedDate.month() +
-                        quoteSubmittedDate.year()
-                    )
-                ) {
+                if (checkValueWrapper.contains(key + quoteSubmittedDate.month() + quoteSubmittedDate.year())){
                     // do nothing
                 } else {
-                    checkValueWrapper.add(
-                        key +
-                        quoteSubmittedDate.month() +
-                        quoteSubmittedDate.year()
-                    );
+                    checkValueWrapper.add( key + quoteSubmittedDate.month() + quoteSubmittedDate.year());
                     
                     if (NewlySubmittedOpportunitiesMapLocal.containsKey(key)) {
-                        
-                        ValuesList = NewlySubmittedOpportunitiesMapLocal.get(
-                            key
-                        );
+                        ValuesList = NewlySubmittedOpportunitiesMapLocal.get(key );
                         ValuesList.add(vw);
                     } else {
-
                         ValuesList.add(vw);
                     }
                     
@@ -1084,9 +1088,7 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
         
         if (NewlySubmittedOpportunitiesMapLocal.size() > 0) {
             // sort the data
-            List<string> sortedKeys = sortedKeys(
-                NewlySubmittedOpportunitiesMapLocal
-            );
+            List<string> sortedKeys = sortedKeys(NewlySubmittedOpportunitiesMapLocal );
             //List<string> sortedKeys = this.sortedKeysIntegerParsingVersion(NewlySubmittedOpportunitiesMapLocal);
             map<string, List<ValuesWrapper>> sortedMap = new Map<string, List<ValuesWrapper>>();
             
@@ -1157,35 +1159,21 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
                 string key = (String) a.sales_rep_o__r.name;
                 key = String.isNotEmpty(key) ? key.capitalize() : key;
                 
-                Date quoteSubmittedDate = Date.valueOf(
-                    a.Newly_Submitted_Quote_First_Date__c
-                );
+                Date quoteSubmittedDate = Date.valueOf(a.Newly_Submitted_Quote_First_Date__c);
 				
 				ValuesList = new List<ValuesWrapper>();                
                 
                 ValuesWrapper vw = new ValuesWrapper(
-                                Last12MonthsList_Horizontal.indexOf(
-                                    Months[(Integer) quoteSubmittedDate.month() - 1]
-                                ),
+                                Last12MonthsList_Horizontal.indexOf(Months[(Integer) quoteSubmittedDate.month() - 1]),
                                 Months[(Integer) quoteSubmittedDate.month() - 1],
                                 Months[(Integer) quoteSubmittedDate.month() - 1],
-                                opportunitiesCount.get(
-                                    key +
-                                    quoteSubmittedDate.month() +
-                                    quoteSubmittedDate.year()
-                                ),
+                                opportunitiesCount.get( key + quoteSubmittedDate.month() + quoteSubmittedDate.year()),
                                 (Integer) quoteSubmittedDate.year(),
                                 null,
                                 null
                             );
                 
-                if (
-                    checkValueWrapper.contains(
-                        key +
-                        quoteSubmittedDate.month() +
-                        quoteSubmittedDate.year()
-                    )
-                ) {
+                if (checkValueWrapper.contains(key +quoteSubmittedDate.month() +quoteSubmittedDate.year())) {
                     // do nothing
                 } else {
                     checkValueWrapper.add(
@@ -1194,50 +1182,25 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
                         quoteSubmittedDate.year()
                     );
                     
-                    if (
-                        NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal.containsKey(
-                            key
-                        )
-                    ) {
-                        ValuesList = NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal.get(
-                            key
-                        );
+                    if(NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal.containsKey(key)){
+                        ValuesList = NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal.get(key);
                         ValuesList.add(vw);
                     } else {
-
                         ValuesList.add(vw);
                     }
-                    
-                    NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal.put(
-                            key,
-                            ValuesList
-                        );
+                    NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal.put(key,ValuesList);
                 }
             }
         }
         
-        if (
-            NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal.size() >
-            0
-        ) {
+        if (NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal.size() > 0){
             // sort the data
-            List<string> sortedKeys = sortedKeys(
-                NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal
-            );
+            List<string> sortedKeys = sortedKeys( NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal);
             map<string, List<ValuesWrapper>> sortedMap = new Map<string, List<ValuesWrapper>>();
             
             for (string s : sortedKeys) {
-                if (
-                    NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal.containskey(
-                        s
-                    )
-                ) {
-                    sortedMap.put(
-                        s,
-                        NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal.get(
-                            s
-                        )
-                    );
+                if (NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal.containskey(s)){
+                    sortedMap.put(s,NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamMapLocal.get(s));
                 }
             }
             

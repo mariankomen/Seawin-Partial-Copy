@@ -2252,7 +2252,7 @@
                     var MainArray = {name: 'companydata', data: DataArray};
         
                     CompanyTotalPipelineData.push(MainArray);
-
+                    console.log('CompanyTotalPipelineData: '+JSON.stringify(CompanyTotalPipelineData));
                     RenderCompanyTotalPipelineLast12Months(CompanyTotalPipelineData);
                 } else if (event.type === 'exception') {
                     
