@@ -2224,7 +2224,27 @@
     <script>
         /* ---------------------- Company Total Pipeline Last 12 Months ---------------------- */
         var CompanyTotalPipelineData = new Array();
-        
+
+        //Calculate map of last 12 year-month
+        function getMapLast12Month(){
+            let date = new Date();
+            date.setDate(1);
+            let year_month_obj = {};
+            for(let month = 1; month <= 12; month++){
+                let index = 12 - month;
+                let iteration_month = date.getMonth() + 1;
+                let iteration_year = date.getFullYear();
+
+                year_month_obj[index] = {
+                    month: iteration_month,
+                    year: iteration_year
+                }
+                //month_year_map[month] = year_month_obj;
+                date.setMonth(date.getMonth() - 1);
+            }
+
+            return year_month_obj;
+        }
         
         var DataArray = new Array();
 
@@ -2235,25 +2255,33 @@
             function(result, event){
 
                 if (event.status) {
-                    for (var key in result) {
-                        DataArray = new Array();
+                    const month_year_map = getMapLast12Month();
 
-                        result[key].forEach(buildarray);
-                        
-                        function buildarray(item, index) {
+                    const dashboard_arr = []
+                    const month_amount = []
+                    result.forEach(el => {
+                        for(let char in month_year_map){
+                            if(el.year == month_year_map[char].year && el.month == month_year_map[char].month){
+                                month_amount.push([char, el.amount])
+                            }
+                        }
+                    })
+                    let setted_month = []
+                    month_amount.forEach(el => {
+                        setted_month.push(el[0])
+                    })
 
-                            var subArray = new Array();
-            
-                            subArray.push(item.valueindex, item.amount);
-                            DataArray.push(subArray);
+                    for(let i = 0; i<12; i++){
+                        if(!setted_month.includes(i.toString())){
+                            month_amount.push([i.toString(), null])
                         }
                     }
-
-                    var MainArray = {name: 'companydata', data: DataArray};
-        
-                    CompanyTotalPipelineData.push(MainArray);
-                    console.log('CompanyTotalPipelineData: '+JSON.stringify(CompanyTotalPipelineData));
-                    RenderCompanyTotalPipelineLast12Months(CompanyTotalPipelineData);
+                    month_amount.sort((a, b) => b[0] - a[0]).reverse()
+                    dashboard_arr.push({
+                        name: 'companydata',
+                        data: month_amount
+                    })
+                    RenderCompanyTotalPipelineLast12Months(dashboard_arr);
                 } else if (event.type === 'exception') {
                     
                         console.log('Exception has occured in Company Total Pipeline Last 12 Months...');
@@ -2353,13 +2381,15 @@
                                 var MonthArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
                                 
                                 var CategArray = event.point.category.split(" ");
+                                console.log('CategArray: ',CategArray)
                                 var CurrentMonth = parseInt(d.getMonth()) + 1;
                                 
                                 var YearIndex = (CategArray[1]).replace("'", "");
                                 
                                 var month = parseInt(MonthArray.indexOf(CategArray[0]) + 1);
-                                
-                                var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                                let full_year = '20'
+                                // var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                                var year = full_year + YearIndex
                                 var duration = '';
 
                                 var chartName = "Company Total Pipeline Last 12 Months";
@@ -2384,7 +2414,25 @@
         
         var SalesRepTotalPipelineCategories_Temp = new Array();
         var SalesRepTotalPipelineCategories = new Array();
-        
+        function getMapLast12Month(){
+            let date = new Date();
+            date.setDate(1);
+            let year_month_obj = {};
+            for(let month = 1; month <= 12; month++){
+                let index = 12 - month;
+                let iteration_month = date.getMonth() + 1;
+                let iteration_year = date.getFullYear();
+
+                year_month_obj[index] = {
+                    month: iteration_month,
+                    year: iteration_year
+                }
+                //month_year_map[month] = year_month_obj;
+                date.setMonth(date.getMonth() - 1);
+            }
+
+            return year_month_obj;
+        }
         var mainArray = new Array(); 
         var midArray;
         var subArray = new Array();
@@ -2394,28 +2442,39 @@
         Visualforce.remoting.Manager.invokeAction(
         '{!$RemoteAction.HospitalityDashboardUSAController.Sales_Reps_Total_Pipeline_Last_12_Months}',
             function(result, event){
-
+                console.log('salrep result: '+JSON.stringify(result))
                 if (event.status) {
-                    for (var key in result) {
-
-                        mainArray = new Array(); 
-
-                        result[key].forEach(buildarray);
-                        
-                        function buildarray(item, index) {
-
-                            subArray = new Array();
-            
-                            subArray.push(item.valueindex, item.amount);
-                            mainArray.push(subArray);
+                    const month_year_map = getMapLast12Month();
+                    const sales_rep_data = []
+                    for(let char in result){
+                        const month_amount = []
+                        result[char].forEach(el => {
+                            for(let char in month_year_map){
+                                if(el.year == month_year_map[char].year && el.month == month_year_map[char].month){
+                                    month_amount.push([char, el.amount])
+                                }
+                            }
+                        })
+                        let setted_month = []
+                        month_amount.forEach(el => {
+                            setted_month.push(el[0])
+                        })
+                        for(let i = 0; i<12; i++){
+                            if(!setted_month.includes(i.toString())){
+                                month_amount.push([i.toString(), null])
+                            }
                         }
+                        month_amount.sort((a, b) => b[0] - a[0]).reverse()
 
-                        midArray = {name:key, data:mainArray, custom:key};
-            
-                        SalesRepTotalPipelineData.push(midArray);
+                        sales_rep_data.push({
+                            name: char,
+                            data: month_amount,
+                            custom: char
+                        })
+
                     }
-
-                    RenderCompanyPipelineLast12MonthsbySalesRepTeam(SalesRepTotalPipelineData);
+                    console.log('sales_rep_data: '+JSON.stringify(sales_rep_data))
+                    RenderCompanyPipelineLast12MonthsbySalesRepTeam(sales_rep_data);
                 } else if (event.type === 'exception') {
                     
                         console.log('Exception has occured in Pipeline Last 12 Months by Sales Rep / Team...');

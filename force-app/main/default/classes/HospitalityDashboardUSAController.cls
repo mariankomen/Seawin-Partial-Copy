@@ -623,7 +623,35 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
     
     @RemoteAction
     @ReadOnly
-    global static map<string, List<ValuesWrapper>> Company_Total_Pipeline_Last_12_Months() {
+    global static List<AggregateResult> Company_Total_Pipeline_Last_12_Months() {
+
+        Set<string> All_SalesReps = getAll_SalesReps();
+
+        Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
+        
+        List<AggregateResult> opportunity_data = [
+            SELECT  
+            SUM(Amount__c) amount, 
+            calendar_month(Inserting_Date__c) month,
+            calendar_year(Inserting_Date__c) year
+            FROM Opportunity_Dashboard__c 
+            WHERE 
+            Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
+            AND Opportunity_Forecast_Category__c = 'Pipeline'
+            AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+            AND Amount__c != null
+            AND Sal_Rep_Team_Name__c IN:All_SalesReps
+            
+            GROUP BY calendar_year(Inserting_Date__c), calendar_month(Inserting_Date__c)
+        ];
+        system.debug(JSON.serialize(opportunity_data));
+        
+        return opportunity_data;
+    }
+    
+    @RemoteAction
+    @ReadOnly
+    global static Map<String, List<AggregateResult>> Sales_Reps_Total_Pipeline_Last_12_Months() {
 
         DateTime Full_End_Date = Full_End_Date();
 
@@ -633,24 +661,33 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
 
         Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
         
-        // List<AggregateResult> opportunity_data = [
-        //     SELECT  
-        //     SUM(Amount__c) amount, 
-        //     calendar_month(Inserting_Date__c) month,
-        //     calendar_year(Inserting_Date__c) year
-        //     FROM Opportunity_Dashboard__c 
-        //     WHERE 
-        //     Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
-        //     AND Opportunity_Forecast_Category__c = 'Pipeline'
-        //     AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
-        //     AND Amount__c != null
-        //     AND Sal_Rep_Team_Name__c IN:All_SalesReps
+        List<AggregateResult> opp_dashboard_data = [SELECT  SUM(Amount__c) amount, 
+                                                            calendar_month(Inserting_Date__c) month,
+                                                            calendar_year(Inserting_Date__c) year,
+                                                            Sales_Rep_Team__r.Name sal_rep
+                                                            FROM Opportunity_Dashboard__c
+                                                            WHERE Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
+                                                            AND Opportunity_Forecast_Category__c = 'Pipeline'
+                                                            AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+                                                            AND Amount__c != null
+                                                            AND Sal_Rep_Team_Name__c IN:All_SalesReps
+                                                            GROUP BY Sales_Rep_Team__r.Name, 
+                                                                    calendar_year(Inserting_Date__c), 
+                                                                    calendar_month(Inserting_Date__c)];
+
+            Map<String, List<AggregateResult>> sal_rep_month = new Map<String, List<AggregateResult>>();
             
-        //     GROUP BY calendar_year(Inserting_Date__c), calendar_month(Inserting_Date__c)
-        // ];
-
-
-        // system.debug('opportunity_data: '+JSON.serialize(opportunity_data));
+            for(AggregateResult ar:opp_dashboard_data){
+                String salRepName = String.valueOf(ar.get('sal_rep'));
+                if(!sal_rep_month.containsKey(salRepName)){
+                    List<AggregateResult> sal_rep_data = new List<AggregateResult>();
+                    sal_rep_data.add(ar);
+                    sal_rep_month.put(salRepName,sal_rep_data);
+                } else{
+                    sal_rep_month.get(salRepName).add(ar);
+                }
+            }
+            system.debug('JSDA: '+JSON.serialize(sal_rep_month));
 
 
 
@@ -658,6 +695,7 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
         // List<AggregateResult> Open = [
         //     SELECT
         //     Sum(amount) amount,
+        //     Sales_Rep_o__r.Name name,
         //     calendar_month(createddate) month,
         //     calendar_year(createddate) year
         //     FROM opportunity
@@ -665,204 +703,112 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
         //     createddate <= :Full_End_Date
         //     AND Sales_Rep_o__r.Name IN :All_SalesReps
         //     AND ForecastCategoryName != 'Omitted'
-        //     AND RecordType.Name = 'Seawin USA Hospitality'
+        //     AND Recordtype.Name = 'Seawin USA Hospitality'
         //     AND GL_Account_Variable_1__r.Name = 'Seawin USA'
         //     AND amount > 0
         //     AND amount != NULL
-        //     GROUP BY calendar_year(createddate), calendar_month(createddate)
-        //     ORDER BY calendar_year(createddate), calendar_month(createddate) ASC
+        //     GROUP BY
+        //     Sales_Rep_o__r.Name,
+        //     calendar_year(createddate),
+        //     calendar_month(createddate)
+            
+        //     ORDER BY
+        //     Sales_Rep_o__r.Name,
+        //     calendar_year(createddate),
+        //     calendar_month(createddate) ASC
         // ];
         
-        // // if Closed Date is 1 Oct 2019 - Will appear in Oct 2019.
-        // // if Closed Date is 15 Nov 2019 - Will appear in Nov 2019.
+        map<string, List<ValuesWrapper>> SalesRepTotalPipelineMapLocal = new Map<string, List<ValuesWrapper>>();
+        // map<string, map<Integer, Decimal>> Open_SalesAmountMap = new Map<string, map<Integer, Decimal>>();
         
-        map<string, List<ValuesWrapper>> CompanyTotalPipelineMapLocal = new Map<string, List<ValuesWrapper>>();
+        // map<Integer, Decimal> MonthAmountMap = new Map<Integer, Decimal>();
         
-        // String key = 'Company Total Pipeline Last 12 Months';
-        
-        // map<Integer, Decimal> Open_MonthAmountMap = new Map<Integer, Decimal>();
         // if (!Open.isEmpty()) {
+        //     MonthAmountMap = new Map<Integer, Decimal>();
         //     for (AggregateResult a : Open) {
+        //         String key = (String) a.get('name');
+        //         key = String.isNotEmpty(key) ? key.capitalize() : key;
+                
         //         Integer m = (Integer) a.get('month');
         //         Integer y = (Integer) a.get('year');
         //         Decimal amt = (Decimal) a.get('amount');
                 
-        //         Integer MonthIndex = Last12MonthsList_CombinedMap.containsKey(
-        //             m +
-        //             '-' +
-        //             y
-        //         )
+        //         Date dt = Date.newInstance(y, m, 1);
+                
+        //         Integer MonthIndex = dt >= Only_Start_Date
         //             ? Last12MonthsList_CombinedMap.get(m + '-' + y)
         //             : 0;
                 
-        //         Open_MonthAmountMap.put(
-        //             MonthIndex,
-        //             Open_MonthAmountMap.containsKey(MonthIndex)
-        //             ? Open_MonthAmountMap.get(MonthIndex) + amt
-        //             : amt
-        //         );
+        //         if (Open_SalesAmountMap.containsKey(key)) {
+        //             map<integer, Decimal> maps = Open_SalesAmountMap.get(key);
+                    
+        //             maps.put(
+        //                 MonthIndex,
+        //                 MonthAmountMap.containsKey(MonthIndex)
+        //                 ? MonthAmountMap.get(MonthIndex) + amt
+        //                 : amt
+        //             );
+        //             Open_SalesAmountMap.put(key, maps);
+        //         } else {
+        //             MonthAmountMap = new Map<Integer, Decimal>();
+                    
+        //             MonthAmountMap.put(
+        //                 MonthIndex,
+        //                 MonthAmountMap.containsKey(MonthIndex)
+        //                 ? MonthAmountMap.get(MonthIndex) + amt
+        //                 : amt
+        //             );
+                    
+        //             Open_SalesAmountMap.put(key, MonthAmountMap);
+        //         }
         //     }
         // }
-        // List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
         
-        // Decimal TotalAmount = 0;
+        // Set<string> SalesRepKeys = new Set<string>(Open_SalesAmountMap.Keyset());
         
-        // Decimal PipelineAmount = 0;
-        
-        // for (Integer i = 0; i < 12; i++) {
-        //     if (Open_MonthAmountMap.containsKey(i)) {
-        //         PipelineAmount += Open_MonthAmountMap.get(i);
+        // for (String key : SalesRepKeys) {
+        //     map<Integer, Decimal> SalesRepMap_Open = Open_SalesAmountMap.get(key);
+            
+        //     List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
+            
+        //     Decimal TotalAmount = 0;
+        //     Decimal PipelineAmount = 0;
+            
+        //     for (Integer i = 0; i < 12; i++) {
+        //         if (SalesRepMap_Open != null) {
+        //             if (SalesRepMap_Open.containsKey(i)) {
+        //                 PipelineAmount += SalesRepMap_Open.get(i) == null
+        //                     ? 0
+        //                     : SalesRepMap_Open.get(i);
+        //             }
+        //         }
+                
+        //         TotalAmount = PipelineAmount;
+                
+        //         if (TotalAmount > 0)
+        //             ValuesList.add(
+        //                 new ValuesWrapper(i, null, null, TotalAmount, 0, null, 0)
+        //             );
         //     }
             
-        //     TotalAmount = PipelineAmount;
-            
-        //     if (TotalAmount > 0)
-        //         ValuesList.add(
-        //             new ValuesWrapper(i, null, null, TotalAmount, 0, null, 0)
-        //         );
+        //     SalesRepTotalPipelineMapLocal.put(key, ValuesList);
         // }
-        
-        // if (!ValuesList.isEmpty())
-        //     CompanyTotalPipelineMapLocal.put(key, ValuesList);
-        
-        // //if (CompanyTotalPipelineMapLocal.size() > 0) {
-        //     //TotalPipelineMapLocal = this.SortByValues(TotalPipelineMapLocal);
+        // if (SalesRepTotalPipelineMapLocal.size() > 0) {
+        //     List<string> sortedKeys = sortedKeys(SalesRepTotalPipelineMapLocal);
+        //     map<string, List<ValuesWrapper>> sortedMap = new Map<string, List<ValuesWrapper>>();
             
-        //    // CompanyTotalPipelineKeys = CompanyTotalPipelineMapLocal.keyset();
-        //    // CompanyTotalPipelineMap = CompanyTotalPipelineMapLocal;
-        // //}
-        return CompanyTotalPipelineMapLocal;
-    }
-    
-    @RemoteAction
-    @ReadOnly
-    global static map<string, List<ValuesWrapper>> Sales_Reps_Total_Pipeline_Last_12_Months() {
+        //     for (string s : sortedKeys) {
+        //         if (SalesRepTotalPipelineMapLocal.containskey(s)) {
+        //             sortedMap.put(s, SalesRepTotalPipelineMapLocal.get(s));
+        //         }
+        //     }
+        //     SalesRepTotalPipelineMapLocal = sortedMap;
+            
+        //     //SalesRepTotalPipelineKeys = SalesRepTotalPipelineMapLocal.keyset();
+        //     //SalesRepTotalPipelineMap = SalesRepTotalPipelineMapLocal;
+        // }
 
-        DateTime Full_End_Date = Full_End_Date();
-
-        Date Only_Start_Date = Only_Start_Date();
-
-        Set<string> All_SalesReps = getAll_SalesReps();
-
-        Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
-        
-        List<AggregateResult> Open = [
-            SELECT
-            Sum(amount) amount,
-            Sales_Rep_o__r.Name name,
-            calendar_month(createddate) month,
-            calendar_year(createddate) year
-            FROM opportunity
-            WHERE
-            createddate <= :Full_End_Date
-            AND Sales_Rep_o__r.Name IN :All_SalesReps
-            AND ForecastCategoryName != 'Omitted'
-            AND Recordtype.Name = 'Seawin USA Hospitality'
-            AND GL_Account_Variable_1__r.Name = 'Seawin USA'
-            AND amount > 0
-            AND amount != NULL
-            GROUP BY
-            Sales_Rep_o__r.Name,
-            calendar_year(createddate),
-            calendar_month(createddate)
-            
-            ORDER BY
-            Sales_Rep_o__r.Name,
-            calendar_year(createddate),
-            calendar_month(createddate) ASC
-        ];
-        
-        map<string, List<ValuesWrapper>> SalesRepTotalPipelineMapLocal = new Map<string, List<ValuesWrapper>>();
-        map<string, map<Integer, Decimal>> Open_SalesAmountMap = new Map<string, map<Integer, Decimal>>();
-        
-        map<Integer, Decimal> MonthAmountMap = new Map<Integer, Decimal>();
-        
-        if (!Open.isEmpty()) {
-            MonthAmountMap = new Map<Integer, Decimal>();
-            for (AggregateResult a : Open) {
-                String key = (String) a.get('name');
-                key = String.isNotEmpty(key) ? key.capitalize() : key;
-                
-                Integer m = (Integer) a.get('month');
-                Integer y = (Integer) a.get('year');
-                Decimal amt = (Decimal) a.get('amount');
-                
-                Date dt = Date.newInstance(y, m, 1);
-                
-                Integer MonthIndex = dt >= Only_Start_Date
-                    ? Last12MonthsList_CombinedMap.get(m + '-' + y)
-                    : 0;
-                
-                if (Open_SalesAmountMap.containsKey(key)) {
-                    map<integer, Decimal> maps = Open_SalesAmountMap.get(key);
-                    
-                    maps.put(
-                        MonthIndex,
-                        MonthAmountMap.containsKey(MonthIndex)
-                        ? MonthAmountMap.get(MonthIndex) + amt
-                        : amt
-                    );
-                    Open_SalesAmountMap.put(key, maps);
-                } else {
-                    MonthAmountMap = new Map<Integer, Decimal>();
-                    
-                    MonthAmountMap.put(
-                        MonthIndex,
-                        MonthAmountMap.containsKey(MonthIndex)
-                        ? MonthAmountMap.get(MonthIndex) + amt
-                        : amt
-                    );
-                    
-                    Open_SalesAmountMap.put(key, MonthAmountMap);
-                }
-            }
-        }
-        
-        Set<string> SalesRepKeys = new Set<string>(Open_SalesAmountMap.Keyset());
-        
-        for (String key : SalesRepKeys) {
-            map<Integer, Decimal> SalesRepMap_Open = Open_SalesAmountMap.get(key);
-            
-            List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
-            
-            Decimal TotalAmount = 0;
-            Decimal PipelineAmount = 0;
-            
-            for (Integer i = 0; i < 12; i++) {
-                if (SalesRepMap_Open != null) {
-                    if (SalesRepMap_Open.containsKey(i)) {
-                        PipelineAmount += SalesRepMap_Open.get(i) == null
-                            ? 0
-                            : SalesRepMap_Open.get(i);
-                    }
-                }
-                
-                TotalAmount = PipelineAmount;
-                
-                if (TotalAmount > 0)
-                    ValuesList.add(
-                        new ValuesWrapper(i, null, null, TotalAmount, 0, null, 0)
-                    );
-            }
-            
-            SalesRepTotalPipelineMapLocal.put(key, ValuesList);
-        }
-        if (SalesRepTotalPipelineMapLocal.size() > 0) {
-            List<string> sortedKeys = sortedKeys(SalesRepTotalPipelineMapLocal);
-            map<string, List<ValuesWrapper>> sortedMap = new Map<string, List<ValuesWrapper>>();
-            
-            for (string s : sortedKeys) {
-                if (SalesRepTotalPipelineMapLocal.containskey(s)) {
-                    sortedMap.put(s, SalesRepTotalPipelineMapLocal.get(s));
-                }
-            }
-            SalesRepTotalPipelineMapLocal = sortedMap;
-            
-            //SalesRepTotalPipelineKeys = SalesRepTotalPipelineMapLocal.keyset();
-            //SalesRepTotalPipelineMap = SalesRepTotalPipelineMapLocal;
-        }
-
-        return SalesRepTotalPipelineMapLocal;
+        return sal_rep_month;
     }
     
     @RemoteAction

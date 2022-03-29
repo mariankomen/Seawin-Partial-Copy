@@ -79,8 +79,12 @@ public class ListOfRecordsController {
     public Integer getSerialNumber() {
         return con != null ? 100 * con.getPageNumber() - 100 : 0;
     }
-            
-    
+
+    public String opp_dashb_query {get;set;}
+    public List<Opportunity_Dashboard__c> opp_dashboards {get;set;}
+
+
+
     public Boolean hasNext {
         get {
             return con.getHasNext();
@@ -233,7 +237,10 @@ public class ListOfRecordsController {
 
     public ListOfRecordsController() {
         this.BuildQuery();
-
+        opp_dashb_query = 'SELECT Id, Name, Inserting_Year__c, Inserting_Month__c,Opportunity__c,Awarded_Owner__c, Account__c, Opportunity_Lead_Source__c, Closed_Date__c, Opportunity_StageName__c, Close_Date__c, Probability__c, Amount__c,  Opportunity_Expected_Revenue__c, Opportunity_Price_Level__c, Sales_Rep_Team__c, Opportunity_Created_Date__c,Opportunity_Forecast_Category__c,Opportunity_GL_Var_1__c FROM Opportunity_Dashboard__c ';
+        opp_dashboards = new List<Opportunity_Dashboard__c>();
+        
+        
         summedupamount = 0.00;
         
         ShowState = false;
@@ -578,6 +585,7 @@ public class ListOfRecordsController {
     }
     
     public void BuildQuery() {
+        
         // Sales Orders
         String fields = AllFields.Fields(
             'AcctSeedERP__Sales_Order__c',
@@ -1898,7 +1906,9 @@ public class ListOfRecordsController {
             ShowProb = true;
             ShowOwner = true;
             ShowAwardedOwner = true;
-            
+
+            Map<string, integer> Last12MonthsList_CombinedMap = MainSalesManagerDashboardUSACtrl.Last12MonthsList_CombinedMap();
+
             String yearStr = ApexPages.currentPage().getParameters().get('year');
             String monthStr = ApexPages.currentPage().getParameters().get('month');
             
@@ -1914,31 +1924,69 @@ public class ListOfRecordsController {
             }
             
             // Monthly data
-            
+
             Date PointMonthStart = Date.newInstance(year, month, 1);
             DateTime PointMonthEnd = FindMonthEndDate(year, month);
             Date PointMonthEndClosed = Date.newInstance(year, month, Date.daysInMonth(d.year(), d.month()));
-            
-            String QueryStr = QueryOpportunities;
-            QueryStr += ' Sales_Rep_o__r.Name in:All_SalesReps_USA ';
-            QueryStr += ' and  GL_Account_Variable_1__r.Name = \'Seawin USA\' ';
-            QueryStr += ' and ForecastCategoryName =\'Pipeline\' ';
-            // QueryStr += ' and ForecastCategoryName !=\'Omitted\' ';
-            
+
+            String opportunity_dashboard_query = opp_dashb_query;
+            opportunity_dashboard_query += ' WHERE Sales_Rep_Team__r.Name IN:All_SalesReps_USA';
+            opportunity_dashboard_query += ' AND  Opportunity_GL_Var_1__r.Name = \'Seawin USA\' ';
+            opportunity_dashboard_query += ' AND Opportunity_Forecast_Category__c =\'Pipeline\' ';
+            //opportunity_dashboard_query += ' AND Amount__c != null';
+
+            String max_year;
+            String max_month;
+
             if (click == 'chart') {
-                QueryStr += ' and createddate <=:Full_End_Date';
+                Set<String> months = Last12MonthsList_CombinedMap.keySet();
+                List<String> list_months = new List<String>(months);
+                List<String> year_m = list_months[list_months.size() - 1].split('-');
+                max_year =  year_m[1];
+                max_month = year_m[0];
+                opportunity_dashboard_query += ' AND Inserting_Year__c =: max_year ';
+                opportunity_dashboard_query += ' AND Inserting_Month__c =: max_month ';
+
+                system.debug('qu: '+opportunity_dashboard_query);
             } else {
-                QueryStr += ' and createddate <=:PointMonthEnd';
+                max_year = String.valueOf(year);
+                max_month = String.valueOf(month);
+
+                opportunity_dashboard_query += ' AND Inserting_Year__c =: max_year ';
+                opportunity_dashboard_query += ' AND Inserting_Month__c =: max_month ';
             }
+
+            List<Opportunity_Dashboard__c> table_data = (List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query);
+            system.debug(JSON.serialize(table_data));
+
+
+            // system.debug('table_data: '+JSON.serialize(table_data));
+            // String QueryStr = QueryOpportunities;
+            // QueryStr += ' Sales_Rep_o__r.Name in:All_SalesReps_USA ';
+            // QueryStr += ' and  GL_Account_Variable_1__r.Name = \'Seawin USA\' ';
+            // QueryStr += ' and ForecastCategoryName =\'Pipeline\' ';
+            // // QueryStr += ' and ForecastCategoryName !=\'Omitted\' ';
             
-            QueryStr += ' order by Name';
-            Con = new ApexPages.StandardSetController(
-                Database.getQueryLocator(QueryStr)
-            );
-            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
-            Con.setPageSize(size);
+            // if (click == 'chart') {
+            //     QueryStr += ' and createddate <=:Full_End_Date';
+            // } else {
+            //     QueryStr += ' and createddate <=:PointMonthEnd';
+            // }
+            
+            // QueryStr += ' order by Name';
+            // Con = new ApexPages.StandardSetController(
+            //     Database.getQueryLocator(QueryStr)
+            // );
+            opp_dashboards = table_data;
+            calculateTotalAmount((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount__c');
+            //Con.setPageSize(size);
             // this.getOpportunities();
-            this.getOrders();
+            //this.getOrders();
+
+
+
+
+
         } else if (chart == 'Sales_Reps_Total_Pipeline_SMD_USA') {
             isOpptys = true;
             showCloseDate = true;

@@ -80,7 +80,92 @@
                     </apex:outputText>
                 </apex:column>
             </apex:pageBlockTable>
+
+
+            <!-- START OPP DASHBOARD -->
             
+            <apex:variable value="{!SerialNumber}" var="k"/>
+            <apex:pageBlockTable id="oppDashb" value="{!opp_dashboards}" var="o" rendered="{!opp_dashboards.size > 0}">
+                <apex:column headerValue="#">
+                    <apex:outputText value="{!k + 1}"></apex:outputText>
+                    <apex:variable value="{!k + 1}" var="k"/>
+                </apex:column>
+                <apex:column headerValue="Opportunity Name">
+                    <apex:outputLink value="/{!o.Id}">{!o.Name}</apex:outputLink>
+                </apex:column>
+                <apex:column headerValue="Account">
+                    <apex:outputField value="{!o.Account__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Lead Source">
+                    <apex:outputField value="{!o.Opportunity_Lead_Source__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Last Activity Date" rendered="{!showNeglectedField}">
+                    <apex:outputField value="{!o.Last_Activity_Date__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Neglected Days" rendered="{!showNeglectedField}">
+                    <apex:outputText value="{!o.Opportunity_Neglected_Days__c}"></apex:outputText> days
+                </apex:column>
+                <apex:column headerValue="Quote Submitted First Date" rendered="{!showSubmittedDate}">
+                    <apex:outputField value="{!o.Newly_Submitted_Quote_First_Date__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Closed Date" rendered="{!showClosedDate}">
+                    <apex:outputField value="{!o.Closed_Date__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Stage">
+                    <apex:outputField value="{!o.Opportunity_StageName__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Close Date" rendered="{!showCloseDate}">
+                    <apex:outputField value="{!o.Close_Date__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Forecast Category" rendered="{!ShowFC}">
+                    <apex:outputField value="{!o.Opportunity_Forecast_Category__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Awarded">
+                    <apex:outputField value="{!o.Awarded_Owner__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Loss Reason" rendered="{!showLossReason}">
+                    <apex:outputField value="{!o.Opportunity_Loss_Reason__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Probability (%)" rendered="{!ShowProb}">
+                    <apex:outputField value="{!o.Probability__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Amount">
+                    <apex:outputField value="{!o.Amount__c}"></apex:outputField>
+                </apex:column>
+                <apex:column rendered="{!ShowER}">
+                    <apex:facet name="header">
+                        Expected Revenue
+                        <img src="/s.gif" alt="Help" class="helpIcon" title="Amount * Probability%"/>
+                    </apex:facet>
+                    <apex:outputField value="{!o.Opportunity_Expected_Revenue__c}">
+                    </apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Won" rendered="{!ShowWon}">
+                    <apex:outputField value="{!o.IsWon__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Price Level">
+                    <apex:outputField value="{!o.Opportunity_Price_Level__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Sales Rep">
+                    <apex:outputField value="{!o.Sales_Rep_Team__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Last Modified By" rendered="{!ShowModBy}">
+                    <apex:outputField value="{!o.Last_Modified_By_Copy__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Last Modified Date" rendered="{!ShowModDate}">
+                    <apex:outputText value="{0, date, M'/'d'/'yyyy}">
+                        <apex:param value="{!o.LastModifiedDate_Copy__c}" /> 
+                    </apex:outputText>
+                </apex:column>
+                <apex:column headerValue="Created Date">
+                    <apex:outputText value="{0, date, M'/'d'/'yyyy}">
+                        <apex:param value="{!o.Opportunity_Created_Date__c}" /> 
+                    </apex:outputText>
+                </apex:column>
+            </apex:pageBlockTable>
+            
+
+            <!-- END OPP DASHBOARD -->
             <apex:variable value="{!SerialNumber}" var="k"/>
             <apex:pageBlockTable id="opptyblock" value="{!Opportunities}" var="o" rendered="{!Opportunities.size > 0}">
                 <apex:column headerValue="#">
@@ -160,7 +245,18 @@
                     </apex:outputText>
                 </apex:column>
             </apex:pageBlockTable>
-            
+
+
+
+
+
+
+
+
+
+
+
+
             <apex:variable value="{!SerialNumber}" var="l"/>
             <apex:pageBlockTable value="{!accounts}" var="a" rendered="{!accounts.size > 0}">
                 <apex:column headerValue="#">
@@ -333,10 +429,10 @@
                     </apex:outputText>
                 </apex:column>
             </apex:pageBlockTable>
-            <apex:outputPanel style="position: relative; top: 20px; float: right; right: 25px;"
+            <apex:outputPanel style="position: relative; top: 35px; float: right; right: 25px;"
             rendered="{!orders.size > 0 ||
                 Opportunities.size > 0 || 
-                      billings.size > 0}">
+                      billings.size > 0 || opp_dashboards.size > 0}">
                 <apex:outputLabel value="TOTAL: " 
                                   style="font-weight: bold; margin-right: 10px;"> </apex:outputLabel>
                     <apex:outputText value="{0,number, Currency}">
@@ -348,7 +444,7 @@
                 Opportunities.size > 0 ||
                 accounts.size > 0 ||
                 tasks.size > 0 || billings.size > 0
-                || leads.size > 0}">
+                || leads.size > 0} ">
                 <apex:outputtext style="font-weight: bold;" styleclass="detailText"
                                  value="Page {!pageNumber} of {!TotalPages}" rendered="{!TotalPages > 0}"></apex:outputtext>
                 <apex:panelGrid columns="5"> 
@@ -386,7 +482,7 @@
                                                      Opportunities.size < 1 &&
                                                      accounts.size < 1 &&
                                                      tasks.size < 1 && billings.size < 1
-                                                     && leads.size < 1}"></apex:pageMessage>
+                                                     && leads.size < 1 && opp_dashboards.size < 1}"></apex:pageMessage>
         </apex:pageBlock>
     </apex:form>
 </apex:page>
