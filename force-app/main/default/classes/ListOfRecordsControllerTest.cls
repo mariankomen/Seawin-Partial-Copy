@@ -391,6 +391,28 @@ public class ListOfRecordsControllerTest {
 		Test.setCreatedDate(opp2.id, Date.newInstance(2020, 11, 10));
 		Test.setCreatedDate(opp4.id, Date.newInstance(TM_Start_Year, TM_Start_Month, 10));
 		
+		List<Opportunity> opps = [SELECT Id, Name, AccountId, Type, StageName, CloseDate, ContactPerson__c, GL_Account_Variable_1__c, Sales_Rep_O__c, RecordType.Name FROM Opportunity];
+		List<Opportunity_Dashboard__c> opp_dashb = new List<Opportunity_Dashboard__c>();
+
+		for(Opportunity opportu :opps){
+			Opportunity_Dashboard__c op_d = new Opportunity_Dashboard__c();
+			op_d.Opportunity__c = opportu.Id;
+			op_d.Account__c = opportu.AccountId;
+			op_d.Opportunity_Type__c = opportu.Type;
+			op_d.Opportunity_StageName__c = opportu.StageName;
+			op_d.Close_Date__c = opportu.CloseDate;
+			op_d.Opportunity_ContactPerson__c = opportu.ContactPerson__c;
+			op_d.Opportunity_GL_Var_1__c = opportu.GL_Account_Variable_1__c;
+			op_d.Sales_Rep_Team__c = opportu.Sales_Rep_O__c;
+			op_d.RecordTypeName__c = opportu.RecordType.Name;
+			opp_dashb.add(op_d);
+		}
+		insert opp_dashb;
+
+
+
+
+
 		list<opportunitylineitem> l1List = new list<opportunitylineitem>();
 		
 		opportunitylineitem l1 = new opportunitylineitem();
@@ -1279,6 +1301,8 @@ public class ListOfRecordsControllerTest {
 		
 		ApexPages.currentPage().getParameters().put('click', 'legend');
 		ListOfRecordsController sdc2 = new ListOfRecordsController();
+		ApexPages.currentPage().getParameters().put('click', 'month-point');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
 		
 		Test.stopTest();
 		
@@ -1306,6 +1330,8 @@ public class ListOfRecordsControllerTest {
 		
 		ApexPages.currentPage().getParameters().put('click', 'legend');
 		ListOfRecordsController sdc2 = new ListOfRecordsController();
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
 		
 		Test.stopTest();
 		
@@ -1333,6 +1359,10 @@ public class ListOfRecordsControllerTest {
 		
 		ApexPages.currentPage().getParameters().put('click', 'legend');
 		ListOfRecordsController sdc2 = new ListOfRecordsController();
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
 		
 		Test.stopTest();
 		
@@ -1369,6 +1399,26 @@ public class ListOfRecordsControllerTest {
 		ListOfRecordsController sdc = new ListOfRecordsController();
 		Test.stopTest();
 		
+	}
+	@isTEst static void Newly_Submitted_Opportunities_Last_12_Months_By_Lead_Source_SMD_point(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Newly_Submitted_Opportunities_Last_12_Months_By_Lead_Source_SMD');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('click', 'point');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+		Test.stopTest();
+	}
+	@isTEst static void Newly_Submitted_Opportunities_Last_12_Months_By_Lead_Source_SMD_legend(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Newly_Submitted_Opportunities_Last_12_Months_By_Lead_Source_SMD');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+		Test.stopTest();
 	}
 	@isTEst static void New_Customers_Last_12_Months_by_Type_SMD(){
 		
@@ -1435,6 +1485,15 @@ public class ListOfRecordsControllerTest {
 		ApexPages.currentPage().getParameters().put('click', 'chart');
 		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
 		ListOfRecordsController sdc = new ListOfRecordsController();
+		
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc1 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+		
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
 		Test.stopTest();
 		
 	}

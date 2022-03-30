@@ -904,6 +904,25 @@ public class USASalesManagerDashboardsTest {
         blineList.add(bline2);
         
         insert blineList;
+
+
+        List<Opportunity> opps = [SELECT Id, Name, AccountId, Type, StageName, CloseDate, ContactPerson__c, GL_Account_Variable_1__c, Sales_Rep_O__c, RecordType.Name FROM Opportunity];
+		List<Opportunity_Dashboard__c> opp_dashb = new List<Opportunity_Dashboard__c>();
+
+		for(Opportunity opportu :opps){
+			Opportunity_Dashboard__c op_d = new Opportunity_Dashboard__c();
+			op_d.Opportunity__c = opportu.Id;
+			op_d.Account__c = opportu.AccountId;
+			op_d.Opportunity_Type__c = opportu.Type;
+			op_d.Opportunity_StageName__c = opportu.StageName;
+			op_d.Close_Date__c = opportu.CloseDate;
+			op_d.Opportunity_ContactPerson__c = opportu.ContactPerson__c;
+			op_d.Opportunity_GL_Var_1__c = opportu.GL_Account_Variable_1__c;
+			op_d.Sales_Rep_Team__c = opportu.Sales_Rep_O__c;
+			op_d.RecordTypeName__c = opportu.RecordType.Name;
+			opp_dashb.add(op_d);
+		}
+		insert opp_dashb;
     }
     @isTest static void BillingAgingDashboardUSA(){
         Test.startTest();
@@ -935,6 +954,7 @@ public class USASalesManagerDashboardsTest {
         HospitalityDashboardUSAController.Newly_Submitted_Opportunities();
         HospitalityDashboardUSAController.Newly_Submitted_Opportunities_Last_Twelve_Months_By_Sales_Rep_Team();
         HospitalityDashboardUSAController.Newly_Submitted_Opportunities_Last_12_Months_By_Lead_Source();
+        HospitalityDashboardUSAController.Team_Quota_YTD_Check();
         
         HospitalityDashboardUSAController.New_Customers_Last_12_Months_By_Type();
         HospitalityDashboardUSAController.Tasks_Completion();
@@ -946,6 +966,8 @@ public class USASalesManagerDashboardsTest {
         HospitalityDashboardUSAController.Pipeline_Last_12_Months_By_Lead_Source();
 
         Test.stopTest();
+        HospitalityDashboardUSAController.neglectedWrapper negl = new HospitalityDashboardUSAController.neglectedWrapper(1,1,1,1,'test');
+
     }
 
     @isTest static void negleged_opp_helper_Test(){

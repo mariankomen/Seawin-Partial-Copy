@@ -2577,7 +2577,8 @@
                                 
                                 var month = parseInt(MonthArray.indexOf(CategArray[0]) + 1);
                                 
-                                var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                                //var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                                var year = '20' + YearIndex
                                 var duration = '';
 
                                 var chartName = "Pipeline Last 12 Months by Sales Rep / Team";
@@ -2620,26 +2621,38 @@
             function(result, event){
 
                 if (event.status) {
-                    for (var key in result) {
-
-                        mainArray = new Array(); 
-
-                        result[key].forEach(buildarray);
-                        
-                        function buildarray(item, index) {
-
-                            subArray = new Array();
-            
-                            subArray.push(item.valueindex, item.amount);
-                            mainArray.push(subArray);
+                    const month_year_map = getMapLast12Month();
+                    const sales_rep_data = []
+                    for(let char in result){
+                        const month_amount = []
+                        result[char].forEach(el => {
+                            for(let char in month_year_map){
+                                if(el.year == month_year_map[char].year && el.month == month_year_map[char].month){
+                                    month_amount.push([char, el.amount])
+                                }
+                            }
+                        })
+                        let setted_month = []
+                        month_amount.forEach(el => {
+                            setted_month.push(el[0])
+                        })
+                        for(let i = 0; i<12; i++){
+                            if(!setted_month.includes(i.toString())){
+                                month_amount.push([i.toString(), null])
+                            }
                         }
+                        month_amount.sort((a, b) => b[0] - a[0]).reverse()
 
-                        midArray = {name:key, data:mainArray, custom:key};
-            
-                        TotalPipelineByLeadSourceData.push(midArray);
+                        sales_rep_data.push({
+                            name: char,
+                            data: month_amount,
+                            custom: char
+                        })
+
                     }
+                    console.log('sales_rep_data: '+JSON.stringify(sales_rep_data))
 
-                    RenderCompanyPipelineLast12MonthsByLeadSource(TotalPipelineByLeadSourceData);
+                    RenderCompanyPipelineLast12MonthsByLeadSource(sales_rep_data);
                 } else if (event.type === 'exception') {
                     
                         console.log('Exception has occured in Pipeline Last 12 Months By Lead Source...');
@@ -2742,7 +2755,9 @@
                                 
                                 var month = parseInt(MonthArray.indexOf(CategArray[0]) + 1);
                                 
-                                var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                                // var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                                var year = '20' + YearIndex
+                                console.log('year: ',year)
                                 var duration = '';
 
                                 var chartName = "Pipeline Last 12 Months By Lead Source";
@@ -4828,34 +4843,76 @@
     var NeglectedOpptyCategories = new Array();
 
     var midArray;
+    function getMapLast12Month(){
+        let date = new Date();
+        date.setDate(1);
+        let year_month_obj = {};
+        for(let month = 1; month <= 12; month++){
+            let index = 12 - month;
+            let iteration_month = date.getMonth() + 1;
+            let iteration_year = date.getFullYear();
 
+            year_month_obj[index] = {
+                month: iteration_month,
+                year: iteration_year
+            }
+            //month_year_map[month] = year_month_obj;
+            date.setMonth(date.getMonth() - 1);
+        }
+
+        return year_month_obj;
+    }
     Visualforce.remoting.timeout = 120000;
 
     Visualforce.remoting.Manager.invokeAction(
     '{!$RemoteAction.HospitalityDashboardUSAController.Neglected_Opportunities}',
     function(result, event){
         if (event.status) {
-            console.log('result negl: ',JSON.stringify(result))
-
-            const main = []
+            const month_year_map = getMapLast12Month();
+            const sales_rep_data = [];
             for(let char in result){
-                const data_key = [];
-                const custom_key = [];
+                const month_amount = []
+                const custom = []
                 result[char].forEach(el => {
-                    let percent = +((el.amount*100)/el.misc).toFixed(2);
-                    let custom_str = [el.amount, el.misc, percent].join(':');
-                    data_key.push([el.valueindex, percent]);
-                    custom_key.push([el.valueindex, custom_str]);
+                    console.log(el)
+                    for(let char in month_year_map){
+                        if(el.year == month_year_map[char].year && el.month == month_year_map[char].month){
+                            month_amount.push([+char, el.neglected_opportunity_amount])
+                            let custom_str = [el.neglected_opportunity_amount, el.all_opportunity_amount, el.neglection_percent].join(':')
+                            custom.push([+char, custom_str])
+                        }
+
+                    }
                 })
-                data_key.sort((a, b) => b[0] - a[0]).reverse()
-                main.push({
+                let setted_month = []
+                let custom_arr = []
+                month_amount.forEach(el => {
+                    setted_month.push(el[0])
+                })
+                custom.forEach(el => {
+                    custom_arr.push(el[0])
+                })
+                for(let i = 0; i<12; i++){
+                    if(!setted_month.includes(i)){
+                        month_amount.push([i, 0])
+                    }
+
+                    if(!custom_arr.includes(i)){
+                        custom.push([i, 0])
+                    }
+                }
+
+                month_amount.sort((a, b) => b[0] - a[0]).reverse()
+                custom.sort((a, b) => b[0] - a[0]).reverse()
+
+                sales_rep_data.push({
                     name: char,
-                    data: data_key,
-                    custom: custom_key
+                    data: month_amount,
+                    custom: custom
                 })
+
             }
-            console.log('NeglectedOpptyData: ', JSON.stringify(NeglectedOpptyData))
-            RenderChartNeglectedOpportunities(main);
+            RenderChartNeglectedOpportunities(sales_rep_data);
             // RenderChartNeglectedOpportunities(NeglectedOpptyData);
         } else if (event.type === 'exception') {
 
@@ -4912,9 +4969,10 @@
                     this.series.userOptions.custom.forEach(function(item, index){
 
                         if(item[0] == tool.point.options.x){
-                            negOpptys = item[1].split(':')[0];
-                            totalOpptys = item[1].split(':')[1];
-                            percentNeg = item[1].split(':')[2];
+                            console.log('item[1]: ',item[1])
+                            negOpptys = item[1] !== 0 ? item[1].toString().split(':')[0] : 0;
+                            totalOpptys = item[1] !== 0 ? item[1].toString().split(':')[1] : 0;
+                            percentNeg = item[1] !== 0 ? item[1].toString().split(':')[2] : 0;
                         }
 
                     });
