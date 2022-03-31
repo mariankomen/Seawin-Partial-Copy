@@ -8,10 +8,11 @@
 
 public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Database.stateful{
 
-    public Set<Id> failureIdsSet;
+
+    public List<ErrorWrapper> errWrapper;
 
     public MonthlyOpportunityBatch(){
-        failureIdsSet = new Set<Id>();
+        errWrapper = new List<ErrorWrapper>();
     }
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
@@ -54,7 +55,7 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
         opp_dashb.Opportunity_Lead_Source__c = opp.LeadSource;
         opp_dashb.Opportunity_Locked__c = opp.Locked__c;
         opp_dashb.Opportunity_Loss_Reason__c = opp.Loss_Reason__c;
-        opp_dashb.Opportunity_Neglected_Days__c = checkOverdueTask(opp.Id) == false ?  checkNeglectedDays(opp.Id) : 0;
+        opp_dashb.Opportunity_Neglected_Days__c = checkOverdueTask(opp.Id) == true ?  checkNeglectedDays(opp.Id) : 0;
         opp_dashb.Opportunity_Price_Level__c = opp.Price_Level__c;
         opp_dashb.Opportunity_StageName__c = opp.StageName;
         opp_dashb.Opportunity_Type__c = opp.Type;
@@ -67,6 +68,7 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
         opp_dashb.IsWon__c = opp.IsWon;
         opp_dashb.Last_Modified_By_Copy__c = opp.LastModifiedById;
         opp_dashb.RecordTypeName__c = opp.RecordType.Name;
+        opp_dashb.Has_Activity_In_Last_Month__c = checkActivity(opp.Id);
 
         /* Refferences */
         opp_dashb.Opportunity__c = opp.Id;                
@@ -86,8 +88,9 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
         try{
             insert opp_dashb;
             System.debug('Opportunity_Dashboard__c record has been created successfully with id: '+ opp_dashb.Id + ', cloned Opportunity Id: '+opp.Id);
-        } catch(DMLException e){
-            failureIdsSet.add(opp.Id);
+        } catch(Exception e){
+            errWrapper.add(new ErrorWrapper(opp.Id, e.getMessage()));
+
             System.debug('Opportunity_Dashboard__c record has not been created successfully. Error: ' + e.getMessage());
         }
     }
@@ -106,17 +109,7 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
 
         // Check did batch finished and send email with result                
         if(a.Status == 'Completed') {
-
-            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            String[] toAddresses = new String[] {'testsalesforce840@gmail.com'};
-            mail.setToAddresses(toAddresses);
-            mail.setSenderDisplayName('SeaWin Batch Processing');
-            mail.setSubject('MonthlyOpportunityBatch - Status: ' + a.Status + ' - ' + date.today().format());
-            mail.setPlainTextBody('The batch Apex job processed ' + a.TotalJobItems +
-                                  ' batches with '+ failureIdsSet.size() + ' failures. Set of failures ids: '+JSON.serialize(failureIdsSet));
-
-            if(!Test.isRunningTest()) Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
-
+            finalBatchResult(a.Status, a.TotalJobItems);
         }
     }
 
@@ -193,11 +186,20 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
                   and Opportunity dont have not overdue, open Task
         */
 
-        if(opp.ForecastCategory == 'Pipeline'){
-            return neglection_days > 30 && hasOverdueTask == true ? true : false;
-        } else {
-            return false;
-        }
+        return opp.ForecastCategory == 'Pipeline' && neglection_days > 30 && hasOverdueTask == true ? true : false;
+    }
+    /***********************************************************************************************************
+    *   @method      : checkActivity
+    *   @description : public method, which check does opportunity has at least one activity in last 30 days
+    *   @return      : Boolean
+    *   @author      : Marian Lyzhychka ©Peeklogic
+    ***********************************************************************************************************/
+    public Boolean checkActivity(Id oppId){
+        Opportunity opp = [SELECT Id, LastActivityDate FROM Opportunity WHERE Id=:oppId];
+        Date today = date.today(); 
+
+        return opp.LastActivityDate != null && opp.LastActivityDate.daysBetween(today) < 30 ? true : false;
+
     }
 
     /***********************************************************************************************************
@@ -220,4 +222,56 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
         return neglection_days;
     }
 
+
+    /***********************************************************************************************************
+    *   @method      : finalBatchResult
+    *   @description : public method, send email in final of batch with csv file of failures records
+    *   @return      : void
+    *   @author      : Marian Lyzhychka ©Peeklogic
+    ***********************************************************************************************************/
+
+    public void finalBatchResult(String status, Integer TotalJobItems ){
+        //Generation csv file
+        String header = 'Opportunity Id, Error \n';
+
+        String finalstr = header;
+        if(errWrapper.size() > 0){
+            for(ErrorWrapper err: errWrapper){
+                String recordString = err.oppId+','+err.errMessage +'\n';
+                finalstr = finalstr +recordString;
+            }
+        }
+        
+        Messaging.EmailFileAttachment csvAttc = new Messaging.EmailFileAttachment();
+        Blob csvBlob = Blob.valueOf(finalstr);
+        String csvname= 'Monthly_Opportunity_Batch_Errors_'+ date.today().format()+'.csv';
+        csvAttc.setFileName(csvname);
+        csvAttc.setBody(csvBlob);
+
+        //Sending email
+        Messaging.SingleEmailMessage email =new Messaging.SingleEmailMessage();
+        String[] toAddresses = new list<string> {'testsalesforce840@gmail.com'};
+        email.setSubject('MonthlyOpportunityBatch - Status: ' + status + ' - ' + date.today().format());
+        email.setSenderDisplayName('SeaWin Batch Processing');
+        email.setToAddresses( toAddresses );
+        email.setPlainTextBody('The batch Apex job processed ' + TotalJobItems +
+                              ' batches with '+ errWrapper.size() + ' failures.');
+        if(errWrapper.size() > 0){
+            email.setFileAttachments(new Messaging.EmailFileAttachment[]{csvAttc});
+        }
+        Messaging.SendEmailResult [] r = !Test.isRunningTest() ? Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email}) : null;
+    }
+
+    public class ErrorWrapper{
+        public Id oppId {get; set;}
+        public String errMessage {get; set;}
+
+        public ErrorWrapper(Id opportunityId, String errorMessage){
+            oppId = opportunityId;
+            errMessage = errorMessage;
+        }
+
+    }
 }
+
+    

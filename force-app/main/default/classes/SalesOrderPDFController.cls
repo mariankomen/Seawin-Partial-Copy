@@ -44,7 +44,7 @@ public without sharing class SalesOrderPDFController {
                  Sales_Price__c,Total_Price__c,AcctSeedERP__Product__r.name,
                  AcctSeedERP__Product__r.Product_Image_Short_URL__c,
                  AcctSeedERP__Product__r.ProductImageURL__c,AcctSeedERP_Description__c, ProductCode__c 
-                 FROM AcctSeedERP__Sales_Order_Line__c where AcctSeedERP__Sales_Order__c =:soId 
+                 FROM AcctSeedERP__Sales_Order_Line__c where  Kit__c=true AND  AcctSeedERP__Sales_Order__c =:soId 
                  order by sortorder__c,name,createddate asc];
         
         List<AcctSeedERP__Sales_Order_line__c> not_kit_not_kitprod = new List<AcctSeedERP__Sales_Order_line__c>();

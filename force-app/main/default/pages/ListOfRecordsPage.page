@@ -91,46 +91,49 @@
                     <apex:variable value="{!k + 1}" var="k"/>
                 </apex:column>
                 <apex:column headerValue="Opportunity Name">
-                    <apex:outputLink value="/{!o.Id}">{!o.Name}</apex:outputLink>
+                    <apex:outputLink value="/{!o.Opportunity__c}">{!o.Opportunity__r.Name}</apex:outputLink>
                 </apex:column>
                 <apex:column headerValue="Account">
-                    <apex:outputField value="{!o.Account__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.AccountId}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Lead Source">
-                    <apex:outputField value="{!o.Opportunity_Lead_Source__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.LeadSource}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Last Activity Date" rendered="{!showNeglectedField}">
-                    <apex:outputField value="{!o.Last_Activity_Date__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.lastactivitydate}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Neglected Days" rendered="{!showNeglectedField}">
                     <apex:outputText value="{!o.Opportunity_Neglected_Days__c}"></apex:outputText> days
                 </apex:column>
                 <apex:column headerValue="Quote Submitted First Date" rendered="{!showSubmittedDate}">
-                    <apex:outputField value="{!o.Newly_Submitted_Quote_First_Date__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.Newly_Submitted_Quote_First_Date__c}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Closed Date" rendered="{!showClosedDate}">
-                    <apex:outputField value="{!o.Closed_Date__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.Closed_Date__c}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Stage">
-                    <apex:outputField value="{!o.Opportunity_StageName__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.StageName}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Close Date" rendered="{!showCloseDate}">
-                    <apex:outputField value="{!o.Close_Date__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.Closedate}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Forecast Category" rendered="{!ShowFC}">
-                    <apex:outputField value="{!o.Opportunity_Forecast_Category__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.ForecastCategoryName}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Awarded">
-                    <apex:outputField value="{!o.Awarded_Owner__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.Awarded_Owner__c}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Loss Reason" rendered="{!showLossReason}">
-                    <apex:outputField value="{!o.Opportunity_Loss_Reason__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.Loss_Reason__c}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Probability (%)" rendered="{!ShowProb}">
-                    <apex:outputField value="{!o.Probability__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.Probability}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Amount">
+                <apex:column headerValue="Month End Amount">
                     <apex:outputField value="{!o.Amount__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Current Amount">
+                    <apex:outputField value="{!o.Opportunity__r.Amount}"></apex:outputField>
                 </apex:column>
                 <apex:column rendered="{!ShowER}">
                     <apex:facet name="header">
@@ -141,20 +144,20 @@
                     </apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Won" rendered="{!ShowWon}">
-                    <apex:outputField value="{!o.IsWon__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.IsWon}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Price Level">
-                    <apex:outputField value="{!o.Opportunity_Price_Level__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.Price_Level__c}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Sales Rep">
-                    <apex:outputField value="{!o.Sales_Rep_Team__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.Sales_Rep_O__c}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Last Modified By" rendered="{!ShowModBy}">
-                    <apex:outputField value="{!o.Last_Modified_By_Copy__c}"></apex:outputField>
+                    <apex:outputField value="{!o.Opportunity__r.LastModifiedById}"></apex:outputField>
                 </apex:column>
                 <apex:column headerValue="Last Modified Date" rendered="{!ShowModDate}">
                     <apex:outputText value="{0, date, M'/'d'/'yyyy}">
-                        <apex:param value="{!o.LastModifiedDate_Copy__c}" /> 
+                        <apex:param value="{!o.Opportunity__r.LastModifiedDate}" /> 
                     </apex:outputText>
                 </apex:column>
                 <apex:column headerValue="Created Date">
@@ -429,16 +432,45 @@
                     </apex:outputText>
                 </apex:column>
             </apex:pageBlockTable>
+            
+
             <apex:outputPanel style="position: relative; top: 35px; float: right; right: 25px;"
-            rendered="{!orders.size > 0 ||
-                Opportunities.size > 0 || 
-                      billings.size > 0 || opp_dashboards.size > 0}">
-                <apex:outputLabel value="TOTAL: " 
-                                  style="font-weight: bold; margin-right: 10px;"> </apex:outputLabel>
+                                rendered="{!orders.size > 0 ||
+                                    Opportunities.size > 0 || 
+                                        billings.size > 0}">
+                    <apex:outputLabel value="TOTAL: " 
+                                    style="font-weight: bold; margin-right: 10px;">
+                    </apex:outputLabel>
                     <apex:outputText value="{0,number, Currency}">
                                 <apex:param value="{!summedupamount}"/>
-                            </apex:outputText> 
-                    </apex:outputPanel>
+                    </apex:outputText> 
+            </apex:outputPanel>
+
+            <apex:outputPanel style="position: relative; top: 35px; float: right; right: 25px;"
+                                rendered="{!opp_dashboards.size > 0}">
+                    <apex:outputLabel value="Current End Total: " 
+                                    style="font-weight: bold; margin-right: 10px;">
+                    </apex:outputLabel>
+                    <apex:outputText value="{0,number, Currency}">
+                                <apex:param value="{!current_total}"/>
+                    </apex:outputText> 
+            </apex:outputPanel>
+
+
+                <apex:outputPanel style="position: relative;
+                                        top: 35px; 
+                                        float: right; 
+                                        right: 75px;"
+                                                rendered="{!opp_dashboards.size > 0}">
+                    <apex:outputLabel value="Month End Total: " 
+                                        style="font-weight: bold; margin-right: 10px;">
+                    </apex:outputLabel>
+                    <apex:outputText value="{0,number, Currency}">
+                                <apex:param value="{!summedupamount}"/>
+                    </apex:outputText> 
+                </apex:outputPanel>
+
+
             <apex:outputPanel style="position: relative; top: 20px;"
             rendered="{!orders.size > 0 ||
                 Opportunities.size > 0 ||
