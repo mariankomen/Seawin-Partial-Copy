@@ -2066,17 +2066,23 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
 
             for(AggregateResult opp_agr:all_Opportunities_salRep.get(salRep)){
                 Integer opp_agr_year = Integer.valueOf(opp_agr.get('year'));
-                Integer opp_agr_month =Integer.valueOf(opp_agr.get('month'));
+                Integer opp_agr_month = Integer.valueOf(opp_agr.get('month'));
                 Integer opp_agr_amount = Integer.valueOf(opp_agr.get('amount'));
-                for(AggregateResult neg_agr:all_Neglected_salRep.get(salRep)){
-                    Integer opp_neg_year = Integer.valueOf(neg_agr.get('year'));
-                    Integer opp_neg_month = Integer.valueOf(neg_agr.get('month'));
-                    Integer opp_neg_amount = Integer.valueOf(neg_agr.get('amount'));
 
-                    if(opp_agr_year == opp_neg_year && opp_agr_month == opp_neg_month){
-                        data.add(new neglectedWrapper(opp_agr_amount, opp_neg_amount, opp_neg_year, opp_neg_month, salRep));
+                try{
+                    for(AggregateResult neg_agr:all_Neglected_salRep.get(salRep)){
+                        Integer opp_neg_year = Integer.valueOf(neg_agr.get('year'));
+                        Integer opp_neg_month = Integer.valueOf(neg_agr.get('month'));
+                        Integer opp_neg_amount = Integer.valueOf(neg_agr.get('amount'));
+    
+                        if(opp_agr_year == opp_neg_year && opp_agr_month == opp_neg_month){
+                            data.add(new neglectedWrapper(opp_agr_amount, opp_neg_amount, opp_neg_year, opp_neg_month, salRep));
+                        }
                     }
+                } catch(Exception e){
+                    system.debug(e.getMessage());
                 }
+                
             }
         }
 
@@ -2290,7 +2296,6 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
             //NewLeadsKeys = NewLeadsMapLocal.keyset();
             //NewLeadsMap = NewLeadsMapLocal;
         }
-        system.debug('Limits.getHeapSize: '+Limits.getHeapSize());
 
         return NewLeadsMapLocal;
     }
