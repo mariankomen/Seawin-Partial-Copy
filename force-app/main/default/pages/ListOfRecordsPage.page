@@ -1,4 +1,7 @@
 <apex:page controller="ListOfRecordsController">
+    <apex:includeScript value="//cdn.jsdelivr.net/jquery/1.7/jquery.min.js"/>    
+    <apex:includeScript value="//cdn.jsdelivr.net/jquery.colresizable/1.3/colResizable.min.js"/>
+
     <style>
         .bEditBlock .pbHeader>table, .apexp .bPageBlock.apexDefaultPageBlock .pbHeader>table, #ep.bLayoutBlock .pbHeader>table {
         border-bottom: none !important;
@@ -33,7 +36,7 @@
             </apex:pageBlockButtons>
             
             <apex:variable value="{!SerialNumber}" var="i"/>
-            <apex:pageBlockTable value="{!orders}" var="o" rendered="{!orders.size > 0}">
+            <apex:pageBlockTable value="{!orders}" id='orders' var="o" rendered="{!orders.size > 0}">
                 <apex:column headerValue="#">
                     <apex:outputText value="{!i + 1}"></apex:outputText>
                     <apex:variable value="{!i + 1}" var="i"/>
@@ -80,7 +83,6 @@
                     </apex:outputText>
                 </apex:column>
             </apex:pageBlockTable>
-
 
             <!-- START OPP DASHBOARD -->
             
@@ -250,18 +252,8 @@
             </apex:pageBlockTable>
 
 
-
-
-
-
-
-
-
-
-
-
             <apex:variable value="{!SerialNumber}" var="l"/>
-            <apex:pageBlockTable value="{!accounts}" var="a" rendered="{!accounts.size > 0}">
+            <apex:pageBlockTable value="{!accounts}" id='accountsBlock' var="a" rendered="{!accounts.size > 0}">
                 <apex:column headerValue="#">
                     <apex:outputText value="{!l + 1}"></apex:outputText>
                     <apex:variable value="{!l + 1}" var="l"/>
@@ -307,7 +299,7 @@
             </apex:pageBlockTable>
             
             <apex:variable value="{!SerialNumber}" var="x"/>
-            <apex:pageBlockTable value="{!tasks}" var="t" rendered="{!tasks.size > 0}">
+            <apex:pageBlockTable value="{!tasks}" id='tasksBlock' var="t" rendered="{!tasks.size > 0}">
                 <apex:column headerValue="#">
                     <apex:outputText value="{!x + 1}"></apex:outputText>
                     <apex:variable value="{!x + 1}" var="x"/>
@@ -335,7 +327,7 @@
             </apex:pageBlockTable>
             
             <apex:variable value="{!SerialNumber}" var="y"/>
-            <apex:pageBlockTable value="{!leads}" var="l" rendered="{!leads.size > 0}">
+            <apex:pageBlockTable value="{!leads}" id='leadsBlock' var="l" rendered="{!leads.size > 0}">
                 <apex:column headerValue="#">
                     <apex:outputText value="{!y + 1}"></apex:outputText>
                     <apex:variable value="{!y + 1}" var="y"/>
@@ -384,7 +376,7 @@
             </apex:pageBlockTable>
             
             <apex:variable value="{!SerialNumber}" var="z"/>
-            <apex:pageBlockTable value="{!billings}" var="b" rendered="{!billings.size > 0}">
+            <apex:pageBlockTable value="{!billings}" id='billingsBlock' var="b" rendered="{!billings.size > 0}">
                 <apex:column headerValue="#">
                     <apex:outputText value="{!z + 1}"></apex:outputText>
                     <apex:variable value="{!z + 1}" var="z"/>
@@ -517,4 +509,37 @@
                                                      && leads.size < 1 && opp_dashboards.size < 1}"></apex:pageMessage>
         </apex:pageBlock>
     </apex:form>
+
+    <script type="text/javascript">
+        $("[id$=orders]").colResizable({
+           liveDrag: true,
+           draggingClass: "dragging"
+         });    
+        $("[id$=oppDashb]").colResizable({
+           liveDrag: true,
+           draggingClass: "dragging"
+         });    
+        $("[id$=opptyblock]").colResizable({
+           liveDrag: true,
+           draggingClass: "dragging"
+         });    
+        $("[id$=accountsBlock]").colResizable({
+           liveDrag: true,
+           draggingClass: "dragging"
+         });    
+        $("[id$=tasksBlock]").colResizable({
+           liveDrag: true,
+           draggingClass: "dragging"
+         });    
+        $("[id$=leadsBlock]").colResizable({
+           liveDrag: true,
+           draggingClass: "dragging"
+         });    
+        $("[id$=billingsBlock]").colResizable({
+           liveDrag: true,
+           draggingClass: "dragging"
+         });    
+
+
+    </script> 
 </apex:page>

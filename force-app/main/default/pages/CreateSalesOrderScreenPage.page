@@ -10,6 +10,12 @@
         body .hoverDetail .bPageBlock .detailList tr th {
         border-color: transparent !important;
         }
+
+        textarea{
+            width: 250px !important;
+            height: 150px !important;
+        }
+
     </style>
     
     <apex:form rendered="{!hasSalesOrder}">
@@ -37,7 +43,7 @@
                     <apex:selectOptions value="{!LedgerList}"/>
                 </apex:selectList><p/>
             </apex:pageBlockSection>
-            
+            <apex:outputPanel id='rerend'>
             <apex:pageBlockSection title="Sales Order Lines" collapsible="false" rendered="{!showError == false}" id="to">
                 <apex:pageBlockTable value="{!linesList}" var="line" id="tobe"> 
                     <apex:column >
@@ -56,27 +62,25 @@
                         <apex:outputText value="{!line.oli.productcode}"></apex:outputText>
                     </apex:column>
                     <apex:column headervalue="Item Description">
-                        <apex:outputText value="{!line.oli.Item_Description__c}" rendered="{!!line.oli.Allow_Product_Description_Change__c}"></apex:outputText>
-                        <apex:inputField value="{!line.oli.Item_Description__c}" rendered="{!line.oli.Allow_Product_Description_Change__c}"></apex:inputField>
+                        <apex:outputText value="{!line.oli.Item_Description__c}" rendered="{!!line.oli.Product2.Allow_Product_Description_Change__c}"></apex:outputText>
+                        <apex:inputField value="{!line.oli.Item_Description__c}" rendered="{!line.oli.Product2.Allow_Product_Description_Change__c}"></apex:inputField>
                     </apex:column>
                     <apex:column headervalue="Size">
-                        <apex:outputText value="{!line.oli.Size__c}" rendered="{!!line.oli.Allow_Product_Description_Change__c}"></apex:outputText>
-                        <apex:inputField value="{!line.oli.Size__c}" rendered="{!line.oli.Allow_Product_Description_Change__c}"></apex:inputField>
+                        <apex:outputText value="{!line.oli.Size__c}" rendered="{!!line.oli.Product2.Allow_Product_Description_Change__c}"></apex:outputText>
+                        <apex:inputField value="{!line.oli.Size__c}" rendered="{!line.oli.Product2.Allow_Product_Description_Change__c}"></apex:inputField>
                     </apex:column>
                     <apex:column headervalue="Quantity">
-                        <!--<apex:inputText id="quantityfield" value="{!line.oli.Quantity}" html-min="1"
-                        styleClass="{!IF(KitErrorMap[line.oli.product2Id] && ProductInventoryTypeMap[line.oli.product2Id] == 'Kit', 
-                        'error', '')}">
-                            <apex:actionSupport event="onchange" reRender="msg"/>
-                            <apex:actionSupport event="onclick" reRender="msg"/>
-                        </apex:inputText>
-                        <apex:outputPanel rendered="{!KitErrorMap[line.oli.product2Id] && 
-                            ProductInventoryTypeMap[line.oli.product2Id] == 'Kit'}">
-                            <div class="errorMsg"><strong>Error:</strong>&nbsp;Quantity cannot be greater than kit's available quantity<span style="font-weight: bold">({!ibMap[line.oli.product2Id][0]})</span>.</div>
-                        </apex:outputPanel>-->
                         <apex:inputText id="quantityfield" value="{!line.oli.Quantity}" html-min="1">
-                            <apex:actionSupport event="onchange" reRender="msg"/>
+                            <!-- <apex:actionSupport event="onchange" reRender="msg"/> -->
                             <apex:actionSupport event="onclick" reRender="msg"/>
+
+                            <apex:actionSupport event="onchange" reRender="msg,quantity_field,pbs,rerend" action="{!handleQuantity}">
+                                    <apex:param name="quan" value="{!line.oli.Product2Id}" assignTo="{!changedQuantityId}"/>
+                            </apex:actionSupport>
+
+                            <!-- <apex:actionSupport event="onchange" reRender="msg,quantity_field,pbs" action="{!handleQuantity}">
+                                    <apex:param name="quan" value="{!line.Id}" assignTo="{!newQuantity}"/>
+                                </apex:actionSupport> -->
                         </apex:inputText>
                         <script>
                             var val = document.getElementById('{!$Component.quantityfield}').value.replace(/,/g,'');
@@ -90,18 +94,41 @@
                    <apex:column breakBefore="true" colspan="8" rendered="{!NOT(ISNULL(validKeys)) && 
                     CONTAINS(validKeys, line.oli.product2Id)}" 
                     id="kitchildren">
+                        <!-- Children Rendering -->
+                        
+
+                        <div style='margin-left:40px;'>
                         <apex:pageblocksection title="Kit Children ({!line.oli.Product2.Name})" columns="8" id="kitchildrensection">
-                            <apex:pageBlockTable value="{!KitMap[line.oli.product2Id]}" var="part" id="kitchildrentable">
-                                <apex:column value="{!part.Kit_Children__c}"/>
-                                <apex:column value="{!part.Kit_Children__r.ProductCode}"/>
-                                <apex:column value="{!part.Kit_Children__r.Description}"/>
-                                <apex:column value="{!part.Kit_Children__r.Size__c}"/>
-                                <apex:column value="{!part.AcctSeed__Quantity__c}"/>
+                            <apex:pageBlockTable value="{!KitMap[line.oli.product2Id]}" var="part" id="kitchildrentable"> 
+                                <apex:column headervalue="Product">
+                                    <apex:outputText value="{!part.Kit_Children__r.Name}"></apex:outputText>
+                                </apex:column>
+                                <apex:column headervalue="Product Code">
+                                    <apex:outputText value="{!part.Kit_Children__r.productcode}"></apex:outputText>
+                                </apex:column>
+                                <apex:column headervalue="Item Description">
+                                    <apex:outputText value="{!part.Kit_Children__r.Description}" rendered="{!!part.Kit_Children__r.Allow_Product_Description_Change__c}"></apex:outputText>
+                                    <apex:inputField value="{!part.Kit_Children__r.Description}" rendered="{!part.Kit_Children__r.Allow_Product_Description_Change__c}"></apex:inputField>
+                                </apex:column>
+                                <apex:column headervalue="Size">
+                                    <apex:outputText value="{!part.Kit_Children__r.Size__c}" rendered="{!!part.Kit_Children__r.Allow_Product_Description_Change__c}"></apex:outputText>
+                                    <apex:inputField value="{!part.Kit_Children__r.Size__c}" rendered="{!part.Kit_Children__r.Allow_Product_Description_Change__c}"></apex:inputField>
+                                </apex:column>
+                                <apex:column headervalue="Quantity">
+                                    <apex:outputText value="{!part.AcctSeed__Quantity__c}"></apex:outputText>
+                                </apex:column>
+
+
                             </apex:pageBlockTable>
                         </apex:pageblockSection>
+                        </div>
+
+                        <apex:pageBlockSection title="" collapsible="false" columns="2"></apex:pageBlockSection>
+                        <!-- Children End -->
                     </apex:column>
                 </apex:pageBlockTable>
             </apex:pageBlockSection>
+        </apex:outputPanel>
             <apex:pageBlockButtons >                
                 <apex:commandButton value="Create" action="{!create}" rendered="{!showError == false}"/>
                 <apex:commandButton value="Back" action="{!back}" immediate="true"/>

@@ -23,7 +23,9 @@ public class CreateSalesOrderScreenExtension {
 
     public map<id, List<AcctSeed__Product_Part__c>> KitMap {get; set;}
     public List<AcctSeed__Product_Part__c> emptyList {get; set;}
-    
+    public List<childrenWrapper> childrens_data {get; set;}
+
+
     public List<SelectOption> getLedgerList() {
         
         ledgers = [select id, name from AcctSeed__Ledger__c];
@@ -37,49 +39,52 @@ public class CreateSalesOrderScreenExtension {
         return options;
     }
     public Boolean hasSalesOrder {get; set;}
-    
+
+    public Id changedQuantityId {get; set;}
+
+    /*****************************************************************************************************
+    *   @method      : CreateSalesOrderScreenExtension
+    *   @description : class constructor, check does opportunity has sales order
+    *   @return      : constructor
+    *   @author      : Marian Lyzhychka ©Peeklogic
+    *****************************************************************************************************/
     public CreateSalesOrderScreenExtension(ApexPages.StandardController std){
+        KitMap = new map<id, List<AcctSeed__Product_Part__c>>();
+        emptyList = new List<Acctseed__Product_Part__c>();
+
         hasKits = false;
         ibMap = new Map<id, list<decimal>>();
-        // {!IF(  Account.GL_Variable1_Name__c == 'Seawin Factory', 'Seawin Factory (China)',
-            // IF(  Account.GL_Variable1_Name__c == 'Seawin Hospitality', 'Seawin Hospitality (USA)',''))}
-        // get all the ledgers
+
         ledgers = [select id, name from AcctSeed__Ledger__c];
         ProductIds = new set<id>();
+        Id OppId = std.getId();
 
         salesrepid = ApexPages.currentPage().getParameters().get('salesrepid');
         ownerid = ApexPages.currentPage().getParameters().get('ownerid');
         
-            List<String> fieldsList = new List<String>{'Id', 'StageName', 'Account.Name', 'ContactPerson__c','ContactPerson__r.name',
-                'Account.Acctseed__Billing_Contact__r.name', 'recordtype.name','recordtypeId',
-                'Description', 'Note__c', 'deliver_by__c','Shipping_Term__c', 'Account.billingStreet', 
-                'Account.billingCity', 'Account.billingState', 'account.billingPostalCode', 'submittal_submitted_date__c',
-                'Account.billingcountry', 'shipping_street__c', 'shipping_city__c', 'shipping_state__c', 
-                'shipping_postalcode__c', 'shipping_country__c', 'submittal_approval_date__c',
-                'Contract_Date__c','Financial_Clearance_Date__c','PO_Number__c', 'PO_Date__c',
-                'GL_Account_Variable_1__c', 'shipping_name__c', 'shipping_account__c', 'Project__c','sales_rep_o__c',
-                'Manufacturer_Rep__c','OwnerId', 'Account.Manufacture_Representative__c','Price_Level__c', 'Sales_rep_o__r.name','Approve_Date__c', 'Referral_Sales_Rep__c',
-                'Billing_Deposit__c', 'Billing_Terms_Name__c', 'Specified_Rep__c'
-                 };  
+        List<String> fieldsList = new List<String>{'Id', 'StageName', 'Account.Name', 'ContactPerson__c','ContactPerson__r.name',
+            'Account.Acctseed__Billing_Contact__r.name', 'recordtype.name','recordtypeId',
+            'Description', 'Note__c', 'deliver_by__c','Shipping_Term__c', 'Account.billingStreet', 
+            'Account.billingCity', 'Account.billingState', 'account.billingPostalCode', 'submittal_submitted_date__c',
+            'Account.billingcountry', 'shipping_street__c', 'shipping_city__c', 'shipping_state__c', 
+            'shipping_postalcode__c', 'shipping_country__c', 'submittal_approval_date__c',
+            'Contract_Date__c','Financial_Clearance_Date__c','PO_Number__c', 'PO_Date__c',
+            'GL_Account_Variable_1__c', 'shipping_name__c', 'shipping_account__c', 'Project__c','sales_rep_o__c',
+            'Manufacturer_Rep__c','OwnerId', 'Account.Manufacture_Representative__c','Price_Level__c', 'Sales_rep_o__r.name','Approve_Date__c', 'Referral_Sales_Rep__c',
+            'Billing_Deposit__c', 'Billing_Terms_Name__c', 'Specified_Rep__c'
+                };  
                  
         String fields = String.join(fieldsList, ',');
-
-        KitMap = new map<id, List<AcctSeed__Product_Part__c>>();
-        emptyList = new List<Acctseed__Product_Part__c>();
-        
         
         list<AcctSeed__Billing_Format__c> formatIs = [select id from AcctSeed__Billing_Format__c where 
                                                       AcctSeed__Type__c = 'Sales Order' limit 1];
         
         if(!formatIs.isEmpty()){
-            
             selectedFormat = formatIs[0].id;
         }
-        Id OppId = std.getId();
         
         oppty = Database.Query('Select ' + fields + ' From Opportunity where id=:OppId Limit 1');
         
-        // check if Sales Order exists 
         list<AcctSeedERP__Sales_Order__c> soExists = [select id, name from AcctSeedERP__Sales_Order__c 
                                                       where AcctSeedERP__Opportunity__c =:oppty.id];
         if(!soExists.IsEmpty()){
@@ -87,6 +92,13 @@ public class CreateSalesOrderScreenExtension {
         }        
     }
    
+
+    /*****************************************************************************************************
+    *   @method      : TryCreate
+    *   @description : initial page method, get list of OLI and related childrens to him
+    *   @return      : PageReference
+    *   @author      : Marian Lyzhychka ©Peeklogic
+    *****************************************************************************************************/
     public PageReference TryCreate(){
         
         if(oppty.StageName != 'Closed Won'){
@@ -95,12 +107,16 @@ public class CreateSalesOrderScreenExtension {
             
             return null;
         }else{ 
+            linesList = new list<linesWrapper>();
+            //Get list of all opp line items related to current opportunity
             list<opportunitylineitem> lines = [SELECT Id, Product2Id, Product2.Name, ProductCode,
                                                Item_Description__c, Size__c, Quantity, TotalPrice,
                                                UnitPrice, SortOrder,
                                                product2.AcctSeed__Inventory_Type__c,
+                                               product2.Allow_Custom_Image__c,
                                                product2.Kit_Available_Quantity__c,
                                                Allow_Product_Description_Change__c,
+                                               product2.Allow_Product_Description_Change__c,
                                                AcctSeed__GL_Account_Variable_1__c, 
                                                AcctSeed__GL_Account_Variable_2__c, 
                                                AcctSeed__GL_Account_Variable_3__c, 
@@ -109,50 +125,52 @@ public class CreateSalesOrderScreenExtension {
                                                and product2.AcctSeed__Inventory_Type__c != 'Raw Material' 
                                                order by sortorder,name,createddate asc];
             
+            //If opportunity dont have any OLI show error that we cant create so without products
             if(lines.size() == 0){
                 showError = true;
-                ApexPages.addmessage(new ApexPages.message(
-                    ApexPages.severity.ERROR,'You cannot create a Sales Order from an '+
-                    'Opportunity without products.'));
+                ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,'You cannot create a Sales Order from an '+'Opportunity without products.'));
                 return null;
             }
             
-            linesList = new list<linesWrapper>();
+            
 
             KitMap = new map<id, List<AcctSeed__Product_Part__c>>();
             ProductIds = new set<id>();
+
             List<AcctSeed__Product_Part__c> partsList = new List<AcctSeed__Product_Part__c>();
 
             // else continue to show the visualforce content for line items
             for(opportunitylineitem oli : lines){
-                system.debug('Volodia: '+oli.Allow_Product_Description_Change__c);
                 if(oli.product2.AcctSeed__Inventory_Type__c == 'Kit') hasKits = true;
-
                 ProductIds.add(oli.product2Id);
-                
+
                 linesWrapper lw = new linesWrapper(oli, true); 
-                
                 linesList.add(lw);
-                
             }
-            system.debug('JSON linesList: '+JSON.serialize(linesList));
-            ibMap = InventoryCalculationHelper.Calculate(ProductIds);
+
+            // ibMap = InventoryCalculationHelper.Calculate(ProductIds);//dont use
 
             List<string> validProductIds = new List<String>();
-            system.debug('ProductIds: '+ProductIds);
-            for(AcctSeed__Product_Part__c parts : [SELECT Id, Name, Kit_Product__c, 
-                                                    Kit_Children__c,
-                                                    Kit_Children__r.ProductCode,
-                                                    Kit_Children__r.Description,
-                                                    Kit_Children__r.Size__c,
-                                                    AcctSeed__Quantity__c 
-                                                    FROM AcctSeed__Product_Part__c 
-                                                    where Kit_Product__c in:ProductIds]){
+            //Making map, ParentId - Children object => KitMap
+            List<AcctSeed__Product_Part__c> childrens = [SELECT Id, Name, Kit_Product__c, 
+                                                                Kit_Children__c,
+                                                                Kit_Children__r.ProductCode,
+                                                                Kit_Children__r.Description,
+                                                                Kit_Children__r.Name,
+                                                                Kit_Children__r.Allow_Product_Description_Change__c,
+                                                                Kit_Children__r.Size__c,
+                                                                AcctSeed__Quantity__c 
+                                                                FROM AcctSeed__Product_Part__c 
+                                                                where Kit_Product__c in:ProductIds];
 
+            childrens_data = new List<childrenWrapper>();
+            
+            for(AcctSeed__Product_Part__c parts : childrens){
+
+                childrens_data.add(new childrenWrapper(parts.Kit_Product__c, parts.Kit_Children__r.Id, parts.AcctSeed__Quantity__c));
                 partsList = new List<AcctSeed__Product_Part__c>();
                 
                 if(KitMap.containsKey(parts.Kit_Product__c)){
-
                     partsList = KitMap.get(parts.Kit_Product__c);
                     partsList.add(parts);
                 }else{
@@ -164,17 +182,15 @@ public class CreateSalesOrderScreenExtension {
             }
             system.debug('kitmap: '+JSON.serialize(KitMap));
 
-// linesList = new list<linesWrapper>();
+
+            //Quaniny children = Quaniny children * Quantity parent, this loop count it
             for(linesWrapper lw:linesList){
                 if(KitMap.containsKey(lw.oli.Product2.Id)){
                     for(AcctSeed__Product_Part__c pr: KitMap.get(lw.oli.Product2.Id)){
-                        pr.AcctSeed__Quantity__c = lw.oli.Quantity;
+                        pr.AcctSeed__Quantity__c = lw.oli.Quantity * pr.AcctSeed__Quantity__c;
                     }
                 }
-                
             }
-
-
 
             if(!validProductIds.isEmpty())
                 validKeys = String.join(validProductIds, ';');
@@ -183,6 +199,35 @@ public class CreateSalesOrderScreenExtension {
         return null;
     }
     
+    /*****************************************************************************************************
+    *   @method      : handleQuantity
+    *   @description : non static method used to handling changes quantity of parent KIT
+    *   @return      : void
+    *   @author      : Marian Lyzhychka ©Peeklogic
+    *****************************************************************************************************/
+    public void handleQuantity(){
+
+        Decimal newQuantity = 1.00;
+        //Need to find new quantity of parent
+        for(linesWrapper lw:linesList){
+            if(lw.oli.Product2Id == changedQuantityId){
+                newQuantity = lw.oli.Quantity;
+                lw.oli.TotalPrice = lw.oli.Quantity * lw.oli.UnitPrice;
+            }
+        }
+
+        if(KitMap.containsKey(changedQuantityId)){
+            for(AcctSeed__Product_Part__c child:KitMap.get(changedQuantityId)){
+                    for(childrenWrapper cw: childrens_data){
+                        if(child.Kit_Product__c == cw.parentId && child.Kit_Children__c == cw.childrenId){
+                            child.AcctSeed__Quantity__c = newQuantity * cw.children_amount;
+                        }
+                    }
+            }
+        }
+
+    }
+
     public PageReference create(){
         
         // get the gl variables
@@ -199,6 +244,7 @@ public class CreateSalesOrderScreenExtension {
         // get the selected opportunity line items
         Integer sortSequence = 0;
         
+        //Parents
         for(linesWrapper lw : linesList){
             if(lw.selected){
                 sortSequence++;
@@ -220,36 +266,81 @@ public class CreateSalesOrderScreenExtension {
                     AcctSeedERP__GL_Account_Variable_4__c = lw.oli.AcctSeed__GL_Account_Variable_4__c,
                     Allow_Product_Description_Change__c = lw.oli.Allow_Product_Description_Change__c
                 ));
+
+                for(AcctSeed__Product_Part__c child: KitMap.get(lw.oli.Product2Id)){
+                    sortSequence++;
+                    slines.add(new AcctSeedERP__Sales_Order_Line__c(
+                        AcctSeedERP__Product__c = child.Kit_Children__c,
+                        AcctSeedERP_Description__c = child.Kit_Children__r.Description,
+                        Item_description__c = child.Kit_Children__r.Description,
+                        AcctSeedERP__Quantity_Ordered__c = child.AcctSeed__Quantity__c,
+                        size__c = child.Kit_Children__r.Size__c,
+                        AcctSeedERP__Unit_Price__c = 0,
+                        sortorder__c = sortSequence,
+                        AcctSeedERP__GL_Account_Variable_1__c = oppty.GL_Account_Variable_1__c,
+                        Kit_Children__c = true
+                    ));
+                }
+
                 
             }
         }
+
+
+
+
+
+
+
+        //Childrens
+
+        // for(Id childrens:KitMap.keySet()){
+
+        //     for(AcctSeed__Product_Part__c child: KitMap.get(childrens)){
+        //         sortSequence++;
+        //         slines.add(new AcctSeedERP__Sales_Order_Line__c(
+        //             AcctSeedERP__Product__c = child.Kit_Children__c,
+        //             AcctSeedERP_Description__c = child.Kit_Children__r.Description,
+        //             Item_description__c = child.Kit_Children__r.Description,
+        //             AcctSeedERP__Quantity_Ordered__c = child.AcctSeed__Quantity__c,
+        //             size__c = child.Kit_Children__r.Size__c,
+        //             AcctSeedERP__Unit_Price__c = 0,
+        //             sortorder__c = sortSequence,
+        //             AcctSeedERP__GL_Account_Variable_1__c = oppty.GL_Account_Variable_1__c,
+        //             Kit_Children__c = true
+        //         ));
+        //     }
+
+        // }
+
+
+        // for(AcctSeed__Product_Part__c part : [SELECT Id, Name, Kit_Product__c, 
+        //     Kit_Children__c,
+        //     Kit_Children__r.ProductCode,
+        //     Kit_Children__r.AcctSeed__Unit_Cost__c,
+        //     Kit_Children__r.Description,
+        //     Kit_Children__r.Size__c,
+        //     AcctSeed__Quantity__c 
+        //     FROM AcctSeed__Product_Part__c 
+        //     where Kit_Product__c in:ProductIds]){
+        //         sortSequence++;
+        //         system.debug('ID part: '+ JSON.serialize(part));
+        //         // add it to the the new sales order item list
+        //         slines.add(new AcctSeedERP__Sales_Order_Line__c(
+        //             AcctSeedERP__Product__c = part.Kit_Children__c,
+        //             AcctSeedERP_Description__c = part.Kit_Children__r.Description,
+        //             Item_description__c = part.Kit_Children__r.Description,
+        //             AcctSeedERP__Quantity_Ordered__c = KitMap.get(part.Kit_Product__c)[0].AcctSeed__Quantity__c, //part.AcctSeed__Quantity__c, //!
+        //             size__c = part.Kit_Children__r.Size__c,
+        //             AcctSeedERP__Unit_Price__c = part.Kit_Children__r.AcctSeed__Unit_Cost__c,
+        //             sortorder__c = sortSequence,
+        //             AcctSeedERP__GL_Account_Variable_1__c = oppty.GL_Account_Variable_1__c,
+        //             Kit_Children__c = true
+        //         ));
+        //     }
         
-        system.debug('KitMap: 222'+JSON.serialize(KitMap));
-        for(AcctSeed__Product_Part__c part : [SELECT Id, Name, Kit_Product__c, 
-            Kit_Children__c,
-            Kit_Children__r.ProductCode,
-            Kit_Children__r.AcctSeed__Unit_Cost__c,
-            Kit_Children__r.Description,
-            Kit_Children__r.Size__c,
-            AcctSeed__Quantity__c 
-            FROM AcctSeed__Product_Part__c 
-            where Kit_Product__c in:ProductIds]){
-                sortSequence++;
-                system.debug('ID part: '+ JSON.serialize(part));
-                // add it to the the new sales order item list
-                slines.add(new AcctSeedERP__Sales_Order_Line__c(
-                    AcctSeedERP__Product__c = part.Kit_Children__c,
-                    AcctSeedERP_Description__c = part.Kit_Children__r.Description,
-                    Item_description__c = part.Kit_Children__r.Description,
-                    AcctSeedERP__Quantity_Ordered__c = KitMap.get(part.Kit_Product__c)[0].AcctSeed__Quantity__c, //part.AcctSeed__Quantity__c, //!
-                    size__c = part.Kit_Children__r.Size__c,
-                    AcctSeedERP__Unit_Price__c = part.Kit_Children__r.AcctSeed__Unit_Cost__c,
-                    sortorder__c = sortSequence,
-                    AcctSeedERP__GL_Account_Variable_1__c = oppty.GL_Account_Variable_1__c,
-                    Kit_Children__c = true
-                ));
-            }
-        
+
+
         if(slines.IsEmpty()){
             ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,'No products have been selected.'));
             return null;
@@ -276,6 +367,10 @@ public class CreateSalesOrderScreenExtension {
                              name =: oppty.recordtype.name limit 1][0].id;
             
         }
+
+
+
+
 
         // create the sales order
         AcctSeedERP__Sales_Order__c so = new AcctSeedERP__Sales_Order__c();
@@ -388,6 +483,18 @@ public class CreateSalesOrderScreenExtension {
             
             oli = line;
             selected = checked;
+        }
+    }
+
+    public class childrenWrapper{
+        Id parentId {get; set;}
+        Id childrenId {get; set;}
+        Decimal children_amount {get; set;}
+
+        public childrenWrapper(Id parId, Id chilId, Decimal amount){
+            parentId = parId;
+            childrenId = chilId;
+            children_amount = amount;
         }
     }
 }
