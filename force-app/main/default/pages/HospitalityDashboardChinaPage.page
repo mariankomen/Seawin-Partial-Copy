@@ -2222,35 +2222,63 @@
         /* ---------------------- Company Total Pipeline Last 12 Months ---------------------- */
         var CompanyTotalPipelineData = new Array();
         
-        
+        //Calculate map of last 12 year-month
+        function getMapLast12Month(){
+            let date = new Date();
+            date.setDate(1);
+            let year_month_obj = {};
+            for(let month = 1; month <= 12; month++){
+                let index = 12 - month;
+                let iteration_month = date.getMonth() + 1;
+                let iteration_year = date.getFullYear();
+
+                year_month_obj[index] = {
+                    month: iteration_month,
+                    year: iteration_year
+                }
+                //month_year_map[month] = year_month_obj;
+                date.setMonth(date.getMonth() - 1);
+            }
+
+            return year_month_obj;
+        }
         var DataArray = new Array();
 
         Visualforce.remoting.timeout = 120000;
 
         Visualforce.remoting.Manager.invokeAction(
         '{!$RemoteAction.HospitalityDashboardChinaController.Company_Total_Pipeline_Last_12_Months}',
-            function(result, event){
+                function(result, event){
 
                 if (event.status) {
-                    for (var key in result) {
-                        DataArray = new Array();
+                    const month_year_map = getMapLast12Month();
 
-                        result[key].forEach(buildarray);
-                        
-                        function buildarray(item, index) {
+                    const dashboard_arr = []
+                    const month_amount = []
+                    result.forEach(el => {
+                        for(let char in month_year_map){
+                            if(el.year == month_year_map[char].year && el.month == month_year_map[char].month){
+                                month_amount.push([char, el.amount])
+                            }
+                        }
+                    })
+                    let setted_month = []
+                    month_amount.forEach(el => {
+                        setted_month.push(el[0])
+                    })
 
-                            var subArray = new Array();
-            
-                            subArray.push(item.valueindex, item.amount);
-                            DataArray.push(subArray);
+                    for(let i = 0; i<12; i++){
+                        if(!setted_month.includes(i.toString())){
+                            month_amount.push([i.toString(), 0])
                         }
                     }
+                    month_amount.sort((a, b) => b[0] - a[0]).reverse()
+                    dashboard_arr.push({
+                        name: 'companydata',
+                        data: month_amount
+                    })
 
-                    var MainArray = {name: 'companydata', data: DataArray};
-        
-                    CompanyTotalPipelineData.push(MainArray);
-
-                    RenderCompanyTotalPipelineLast12Months(CompanyTotalPipelineData);
+                    RenderCompanyTotalPipelineLast12Months(dashboard_arr);
                 } else if (event.type === 'exception') {
                     
                         console.log('Exception has occured in Company Total Pipeline Last 12 Months...');
@@ -2355,8 +2383,9 @@
                                 var YearIndex = (CategArray[1]).replace("'", "");
                                 
                                 var month = parseInt(MonthArray.indexOf(CategArray[0]) + 1);
-                                
-                                var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                                let full_year = '20'
+                                // var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                                var year = full_year + YearIndex
                                 var duration = '';
 
                                 var chartName = "Company Total Pipeline Last 12 Months";

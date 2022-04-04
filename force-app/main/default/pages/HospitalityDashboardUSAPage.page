@@ -2388,6 +2388,9 @@
                                 let full_year = '20'
                                 // var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
                                 var year = full_year + YearIndex
+                                console.log('YearIndex: ',YearIndex)
+                                console.log('full_year: ',full_year)
+                                console.log('year: ',year)
                                 var duration = '';
 
                                 var chartName = "Company Total Pipeline Last 12 Months";

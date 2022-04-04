@@ -11,6 +11,11 @@ trigger BeforeAfterCloneTrigger on Opportunity (before insert, after insert) {
         }
         else if(trigger.isAfter){
             
+            //Insert new Opportunity_Dashboard__c record after insert Opportunity records
+            OpportunityDashboardHandler.createNewRecord(Trigger.New);
+            
+
+            //Some logic
             for(Opportunity opp : Trigger.New) {
                 
                 if(opp.isClone() && opp.Type == 'Template'){

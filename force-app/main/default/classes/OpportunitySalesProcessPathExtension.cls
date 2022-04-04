@@ -113,7 +113,7 @@ public class OpportunitySalesProcessPathExtension {
             
           update Opp; 
             
-          Opp = [select id, StageName, recordtypeId, recordtype.name, Loss_Reason__c,
+          Opp = [select id, StageName, recordtypeId, recordtype.name, Loss_Reason__c, CloseDate,Closed_Date__c,
                Approval_Package__c, submittal_approval_date__c, Financial_Clearance__c, Financial_Clearance_Date__c,
                Signed_Sales_Order__c, Contract_Date__c,
                Quote_Submitted_Date__c from Opportunity where id =:Opp.Id limit 1];
@@ -139,7 +139,11 @@ public class OpportunitySalesProcessPathExtension {
             }
             */
             try{
-                
+                List<String> closed_stages = new List<String>{'Closed Won', 'Closed Lost', 'Not Qualified'};
+
+                if(closed_stages.contains(Opp.StageName)){
+                    Opp.Closed_Date__c = null;
+                }
                 Opp.StageName = stageNameIs;
                 update Opp;
                 

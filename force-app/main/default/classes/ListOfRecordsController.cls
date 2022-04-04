@@ -236,10 +236,17 @@ public class ListOfRecordsController {
     }
     public void calculateTotalAmountCur(List<Opportunity_Dashboard__c> data, String totalFieldName){
         current_total = 0.00;
+        system.debug('data: '+JSON.serialize(data));
         for(Opportunity_Dashboard__c item: data){
-            //if(item.get(totalFieldName) != null){
-                current_total += (Decimal)item.Opportunity__r.get(totalFieldName);
-            //}
+
+                try{
+                    if(item.Opportunity__r != null && item.Opportunity__r.get(totalFieldName) != null){
+                        current_total += (Decimal)item.Opportunity__r.get(totalFieldName);
+                    }
+                } catch(Exception e){
+                    system.debug('error: '+e.getMessage());
+                }
+            
         }
     }
 
@@ -3408,6 +3415,12 @@ public class ListOfRecordsController {
             );
             Con.setPageSize(size);
         } else if (chart == 'Company_Total_Pipeline_SMD_CHK') {
+            /*****************************************************************************************************
+            *   @dashboard name  : Company Total Pipeline Last 12 Months
+            *   @chart name      : Company_Total_Pipeline_SMD_CHK
+            *   @description     : Put data on list of records Page(China), depends on input params from front by url
+            *   @author          : Marian Lyzhychka ©Peeklogic
+            *****************************************************************************************************/
             isOpptys = true;
             showCloseDate = true;
             ShowClosedDate = true;
@@ -3415,45 +3428,91 @@ public class ListOfRecordsController {
             ShowProb = true;
             ShowOwner = true;
             ShowAwardedOwner = true;
-            
+
+            Map<string, integer> Last12MonthsList_CombinedMap = MainSalesManagerDashboardUSACtrl.Last12MonthsList_CombinedMap();
+
             String yearStr = ApexPages.currentPage().getParameters().get('year');
             String monthStr = ApexPages.currentPage().getParameters().get('month');
-            
-            Integer year = 2020;
-            INteger month = 5;
-            
-            if (yearStr != null && yearStr != '') {
-                year = Integer.valueOf(yearStr);
-            }
-            
-            if (monthStr != null && monthStr != '') {
-                month = Integer.valueOf(monthStr);
-            }
-            
-            Date PointMonthStart = Date.newInstance(year, month, 1);
-            DateTime PointMonthEnd = FindMonthEndDate(year, month);
-            Date PointMonthEndClosed = Date.newInstance(d.year(), d.month(), 
-                                                        Date.daysInMonth(d.year(), d.month()));
-            
-            String QueryStr = QueryOpportunities;
-            QueryStr += ' Sales_Rep_o__r.Name in:All_SalesReps_CHK ';
-            QueryStr += ' and  (GL_Account_Variable_1__r.Name = \'Seawin China\' or ';
-            QueryStr += ' GL_Account_Variable_1__r.Name = \'Seawin Hong Kong\') ';
-            QueryStr += ' and ForecastCategoryName !=\'Omitted\' ';
-            
-            if (click == 'chart') {
-                QueryStr += ' and createddate <=:Full_End_Date';
-            } else {
-                QueryStr += ' and createddate <=:PointMonthEnd';
-            }
-            
-            QueryStr += ' order by Name';
-            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
 
-            Con = new ApexPages.StandardSetController(
-                Database.getQueryLocator(QueryStr)
-            );
-            Con.setPageSize(size);
+            Integer year = yearStr != null && yearStr != '' ? Integer.valueOf(yearStr) : Date.Today().Year();
+            Integer month = monthStr != null && monthStr != '' ? Integer.valueOf(monthStr) : Date.Today().Month();
+
+            String opportunity_dashboard_query = opp_dashb_query;
+            opportunity_dashboard_query += ' WHERE Sales_Rep_Team__r.Name IN:All_SalesReps_CHK';
+            opportunity_dashboard_query += ' AND  (Opportunity_GL_Var_1__r.Name = \'Seawin China\' OR Opportunity_GL_Var_1__r.Name = \'Seawin Hong Kong\')';
+            opportunity_dashboard_query += ' AND Opportunity_Forecast_Category__c =\'Pipeline\' ';
+            opportunity_dashboard_query += ' AND RecordTypeName__c =\'Seawin China Hospitality\' ';
+
+            String max_year;
+            String max_month;
+
+            if (click == 'chart'){
+                Set<String> months = Last12MonthsList_CombinedMap.keySet(); //This method returns map of last 12 months, and we get last
+                List<String> list_months = new List<String>(months);
+                List<String> year_m = list_months[list_months.size() - 1].split('-'); //Current date for ex if today if 3 March 2022 - here will be 3-2022
+                max_year =  year_m[1];
+                max_month = year_m[0];
+            } else {
+                max_year = String.valueOf(year);
+                max_month = String.valueOf(month);
+            }
+
+            opportunity_dashboard_query += ' AND Inserting_Year__c =: max_year ';
+            opportunity_dashboard_query += ' AND Inserting_Month__c =: max_month ';
+            opportunity_dashboard_query += ' ORDER BY Opportunity__r.Name';
+
+            List<Opportunity_Dashboard__c> table_data = (List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query);
+            opp_dashboards = table_data;
+
+            calculateTotalAmountCur((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount');
+            calculateTotalAmount((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount__c');
+
+            // isOpptys = true;
+            // showCloseDate = true;
+            // ShowClosedDate = true;
+            // ShowER = true;
+            // ShowProb = true;
+            // ShowOwner = true;
+            // ShowAwardedOwner = true;
+            
+            // String yearStr = ApexPages.currentPage().getParameters().get('year');
+            // String monthStr = ApexPages.currentPage().getParameters().get('month');
+            
+            // Integer year = 2020;
+            // INteger month = 5;
+            
+            // if (yearStr != null && yearStr != '') {
+            //     year = Integer.valueOf(yearStr);
+            // }
+            
+            // if (monthStr != null && monthStr != '') {
+            //     month = Integer.valueOf(monthStr);
+            // }
+            
+            // Date PointMonthStart = Date.newInstance(year, month, 1);
+            // DateTime PointMonthEnd = FindMonthEndDate(year, month);
+            // Date PointMonthEndClosed = Date.newInstance(d.year(), d.month(), 
+            //                                             Date.daysInMonth(d.year(), d.month()));
+            
+            // String QueryStr = QueryOpportunities;
+            // QueryStr += ' Sales_Rep_o__r.Name in:All_SalesReps_CHK ';
+            // QueryStr += ' and  (GL_Account_Variable_1__r.Name = \'Seawin China\' or ';
+            // QueryStr += ' GL_Account_Variable_1__r.Name = \'Seawin Hong Kong\') ';
+            // QueryStr += ' and ForecastCategoryName !=\'Omitted\' ';
+            
+            // if (click == 'chart') {
+            //     QueryStr += ' and createddate <=:Full_End_Date';
+            // } else {
+            //     QueryStr += ' and createddate <=:PointMonthEnd';
+            // }
+            
+            // QueryStr += ' order by Name';
+            // calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
+
+            // Con = new ApexPages.StandardSetController(
+            //     Database.getQueryLocator(QueryStr)
+            // );
+            // Con.setPageSize(size);
         } else if (chart == 'Sales_Reps_Total_Pipeline_SMD_CHK') {
             
             isOpptys = true;

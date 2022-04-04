@@ -623,93 +623,121 @@ global without sharing class HospitalityDashboardChinaController extends MainSal
     
     @RemoteAction
     @ReadOnly
-    global static map<string, List<ValuesWrapper>> Company_Total_Pipeline_Last_12_Months() {
-
-        DateTime Full_End_Date = Full_End_Date();
-
-        Date Only_Start_Date = Only_Start_Date();
-
+    global static List<AggregateResult> Company_Total_Pipeline_Last_12_Months() {
+        /*****************************************************************************************************
+        *   @dashboard name  : Company Total Pipeline Last 12 Months
+        *   @chart name      : Company_Total_Pipeline_SMD_CHK
+        *   @description     : Preparing data for frontend rendering
+        *   @author          : Marian Lyzhychka ©Peeklogic
+        *****************************************************************************************************/
         Set<string> All_SalesReps = getAll_SalesReps();
 
         Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
         
-        List<AggregateResult> Open = [
-            SELECT
-            Sum(amount) amount,
-            calendar_month(createddate) month,
-            calendar_year(createddate) year
-            FROM opportunity
-            WHERE
-            createddate <= :Full_End_Date
-            AND Sales_Rep_o__r.Name IN :All_SalesReps
-            AND ForecastCategoryName != 'Omitted'
-            AND RecordType.Name = 'Seawin China Hospitality'
-            AND (GL_Account_Variable_1__r.Name = 'Seawin China' OR GL_Account_Variable_1__r.Name = 'Seawin Hong Kong')
-            AND amount > 0
-            AND amount != NULL
-            GROUP BY calendar_year(createddate), calendar_month(createddate)
-            ORDER BY calendar_year(createddate), calendar_month(createddate) ASC
+        List<AggregateResult> opportunity_data = [
+            SELECT  
+            SUM(Amount__c) amount, 
+            calendar_month(Inserting_Date__c) month,
+            calendar_year(Inserting_Date__c) year
+            FROM Opportunity_Dashboard__c 
+            WHERE 
+            Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
+            AND Opportunity_Forecast_Category__c = 'Pipeline'
+            AND (Opportunity_GL_Var_1__r.Name = 'Seawin China' OR Opportunity_GL_Var_1__r.Name = 'Seawin Hong Kong')
+            AND Amount__c != null
+            AND RecordTypeName__c = 'Seawin China Hospitality'
+            AND Sal_Rep_Team_Name__c IN:All_SalesReps
+            
+            GROUP BY calendar_year(Inserting_Date__c), calendar_month(Inserting_Date__c)
         ];
+        system.debug(JSON.serialize(opportunity_data));
         
-        // if Closed Date is 1 Oct 2019 - Will appear in Oct 2019.
-        // if Closed Date is 15 Nov 2019 - Will appear in Nov 2019.
+        return opportunity_data;
+        // DateTime Full_End_Date = Full_End_Date();
+
+        // Date Only_Start_Date = Only_Start_Date();
+
+        // Set<string> All_SalesReps = getAll_SalesReps();
+
+        // Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
         
-        map<string, List<ValuesWrapper>> CompanyTotalPipelineMapLocal = new Map<string, List<ValuesWrapper>>();
+        // List<AggregateResult> Open = [
+        //     SELECT
+        //     Sum(amount) amount,
+        //     calendar_month(createddate) month,
+        //     calendar_year(createddate) year
+        //     FROM opportunity
+        //     WHERE
+        //     createddate <= :Full_End_Date
+        //     AND Sales_Rep_o__r.Name IN :All_SalesReps
+        //     AND ForecastCategoryName != 'Omitted'
+        //     AND RecordType.Name = 'Seawin China Hospitality'
+        //     AND (GL_Account_Variable_1__r.Name = 'Seawin China' OR GL_Account_Variable_1__r.Name = 'Seawin Hong Kong')
+        //     AND amount > 0
+        //     AND amount != NULL
+        //     GROUP BY calendar_year(createddate), calendar_month(createddate)
+        //     ORDER BY calendar_year(createddate), calendar_month(createddate) ASC
+        // ];
         
-        String key = 'Company Total Pipeline Last 12 Months';
+        // // if Closed Date is 1 Oct 2019 - Will appear in Oct 2019.
+        // // if Closed Date is 15 Nov 2019 - Will appear in Nov 2019.
         
-        map<Integer, Decimal> Open_MonthAmountMap = new Map<Integer, Decimal>();
-        if (!Open.isEmpty()) {
-            for (AggregateResult a : Open) {
-                Integer m = (Integer) a.get('month');
-                Integer y = (Integer) a.get('year');
-                Decimal amt = (Decimal) a.get('amount');
+        // map<string, List<ValuesWrapper>> CompanyTotalPipelineMapLocal = new Map<string, List<ValuesWrapper>>();
+        
+        // String key = 'Company Total Pipeline Last 12 Months';
+        
+        // map<Integer, Decimal> Open_MonthAmountMap = new Map<Integer, Decimal>();
+        // if (!Open.isEmpty()) {
+        //     for (AggregateResult a : Open) {
+        //         Integer m = (Integer) a.get('month');
+        //         Integer y = (Integer) a.get('year');
+        //         Decimal amt = (Decimal) a.get('amount');
                 
-                Integer MonthIndex = Last12MonthsList_CombinedMap.containsKey(
-                    m +
-                    '-' +
-                    y
-                )
-                    ? Last12MonthsList_CombinedMap.get(m + '-' + y)
-                    : 0;
+        //         Integer MonthIndex = Last12MonthsList_CombinedMap.containsKey(
+        //             m +
+        //             '-' +
+        //             y
+        //         )
+        //             ? Last12MonthsList_CombinedMap.get(m + '-' + y)
+        //             : 0;
                 
-                Open_MonthAmountMap.put(
-                    MonthIndex,
-                    Open_MonthAmountMap.containsKey(MonthIndex)
-                    ? Open_MonthAmountMap.get(MonthIndex) + amt
-                    : amt
-                );
-            }
-        }
-        List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
+        //         Open_MonthAmountMap.put(
+        //             MonthIndex,
+        //             Open_MonthAmountMap.containsKey(MonthIndex)
+        //             ? Open_MonthAmountMap.get(MonthIndex) + amt
+        //             : amt
+        //         );
+        //     }
+        // }
+        // List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
         
-        Decimal TotalAmount = 0;
+        // Decimal TotalAmount = 0;
         
-        Decimal PipelineAmount = 0;
+        // Decimal PipelineAmount = 0;
         
-        for (Integer i = 0; i < 12; i++) {
-            if (Open_MonthAmountMap.containsKey(i)) {
-                PipelineAmount += Open_MonthAmountMap.get(i);
-            }
+        // for (Integer i = 0; i < 12; i++) {
+        //     if (Open_MonthAmountMap.containsKey(i)) {
+        //         PipelineAmount += Open_MonthAmountMap.get(i);
+        //     }
             
-            TotalAmount = PipelineAmount;
+        //     TotalAmount = PipelineAmount;
             
-            if (TotalAmount > 0)
-                ValuesList.add(
-                    new ValuesWrapper(i, null, null, TotalAmount, 0, null, 0)
-                );
-        }
+        //     if (TotalAmount > 0)
+        //         ValuesList.add(
+        //             new ValuesWrapper(i, null, null, TotalAmount, 0, null, 0)
+        //         );
+        // }
         
-        if (!ValuesList.isEmpty())
-            CompanyTotalPipelineMapLocal.put(key, ValuesList);
+        // if (!ValuesList.isEmpty())
+        //     CompanyTotalPipelineMapLocal.put(key, ValuesList);
         
-        //if (CompanyTotalPipelineMapLocal.size() > 0) {
-            //TotalPipelineMapLocal = this.SortByValues(TotalPipelineMapLocal);
+        // //if (CompanyTotalPipelineMapLocal.size() > 0) {
+        //     //TotalPipelineMapLocal = this.SortByValues(TotalPipelineMapLocal);
             
-           // CompanyTotalPipelineKeys = CompanyTotalPipelineMapLocal.keyset();
-           // CompanyTotalPipelineMap = CompanyTotalPipelineMapLocal;
-        //}
-        return CompanyTotalPipelineMapLocal;
+        //    // CompanyTotalPipelineKeys = CompanyTotalPipelineMapLocal.keyset();
+        //    // CompanyTotalPipelineMap = CompanyTotalPipelineMapLocal;
+        // //}
+        // return CompanyTotalPipelineMapLocal;
     }
     
     @RemoteAction

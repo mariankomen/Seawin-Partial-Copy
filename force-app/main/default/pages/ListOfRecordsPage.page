@@ -1,6 +1,8 @@
 <apex:page controller="ListOfRecordsController">
     <apex:includeScript value="//cdn.jsdelivr.net/jquery/1.7/jquery.min.js"/>    
     <apex:includeScript value="//cdn.jsdelivr.net/jquery.colresizable/1.3/colResizable.min.js"/>
+    <apex:includescript value="//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js" />
+    <apex:includescript value="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"/>
 
     <style>
         .bEditBlock .pbHeader>table, .apexp .bPageBlock.apexDefaultPageBlock .pbHeader>table, #ep.bLayoutBlock .pbHeader>table {
@@ -41,43 +43,43 @@
                     <apex:outputText value="{!i + 1}"></apex:outputText>
                     <apex:variable value="{!i + 1}" var="i"/>
                 </apex:column>
-                <apex:column headerValue="Sales Order Name">
+                <apex:column headerValue="Sales Order Name ⇅">
                     <apex:outputLink value="/{!o.id}">{!o.Name}</apex:outputLink>
                 </apex:column>
-                <apex:column headerValue="Shipping State" rendered="{!ShowState}">
+                <apex:column headerValue="Shipping State ⇅" rendered="{!ShowState}">
                     <apex:outputText value="{!o.AcctSeedERP__Shipping_State__c}"></apex:outputText>
                 </apex:column>
-                <apex:column headerValue="Lead Source">
+                <apex:column headerValue="Lead Source ⇅">
                     <apex:outputText value="{!o.AcctSeedERP__Opportunity__r.Leadsource}"></apex:outputText>
                 </apex:column>
-                <apex:column headerValue="Opportunity">
+                <apex:column headerValue="Opportunity ⇅">
                     <apex:outputField value="{!o.AcctSeedERP__Opportunity__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Customer">
+                <apex:column headerValue="Customer ⇅">
                     <apex:outputField value="{!o.AcctSeedERP__Customer__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Status">
+                <apex:column headerValue="Status ⇅">
                     <apex:outputField value="{!o.AcctSeedERP__Status__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Total">
+                <apex:column headerValue="Total ⇅">
                     <apex:outputField value="{!o.AcctSeedERP__Total__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Billed Amount">
+                <apex:column headerValue="Billed Amount ⇅">
                     <apex:outputField value="{!o.Billed_Amount__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Paid Amount">
+                <apex:column headerValue="Paid Amount ⇅">
                     <apex:outputField value="{!o.Paid_Amount__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Balance">
+                <apex:column headerValue="Balance ⇅">
                     <apex:outputField value="{!o.Balance__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Sales Rep">
+                <apex:column headerValue="Sales Rep ⇅">
                     <apex:outputField value="{!o.Sales_Rep_O__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Manufacture Rep">
+                <apex:column headerValue="Manufacture Rep ⇅">
                     <apex:outputField value="{!o.Manufacturer_Rep__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Created Date">
+                <apex:column headerValue="Created Date ⇅">
                     <apex:outputText value="{0, date, M'/'d'/'yyyy}">
                         <apex:param value="{!o.CreatedDate}" /> 
                     </apex:outputText>
@@ -92,77 +94,77 @@
                     <apex:outputText value="{!k + 1}"></apex:outputText>
                     <apex:variable value="{!k + 1}" var="k"/>
                 </apex:column>
-                <apex:column headerValue="Opportunity Name">
+                <apex:column headerValue="Opportunity Name ⇅">
                     <apex:outputLink value="/{!o.Opportunity__c}">{!o.Opportunity__r.Name}</apex:outputLink>
                 </apex:column>
-                <apex:column headerValue="Account">
+                <apex:column headerValue="Account ⇅">
                     <apex:outputField value="{!o.Opportunity__r.AccountId}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Lead Source">
+                <apex:column headerValue="Lead Source  ⇅">
                     <apex:outputField value="{!o.Opportunity__r.LeadSource}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Last Activity Date" rendered="{!showNeglectedField}">
+                <apex:column headerValue="Last Activity Date ⇅" rendered="{!showNeglectedField}">
                     <apex:outputField value="{!o.Opportunity__r.lastactivitydate}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Neglected Days" rendered="{!showNeglectedField}">
+                <apex:column headerValue="Neglected Days ⇅" rendered="{!showNeglectedField}">
                     <apex:outputText value="{!o.Opportunity_Neglected_Days__c}"></apex:outputText> days
                 </apex:column>
-                <apex:column headerValue="Quote Submitted First Date" rendered="{!showSubmittedDate}">
+                <apex:column headerValue="Quote Submitted First Date ⇅" rendered="{!showSubmittedDate}">
                     <apex:outputField value="{!o.Opportunity__r.Newly_Submitted_Quote_First_Date__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Closed Date" rendered="{!showClosedDate}">
+                <apex:column headerValue="Closed Date ⇅" rendered="{!showClosedDate}">
                     <apex:outputField value="{!o.Opportunity__r.Closed_Date__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Stage">
+                <apex:column headerValue="Stage ⇅">
                     <apex:outputField value="{!o.Opportunity__r.StageName}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Close Date" rendered="{!showCloseDate}">
+                <apex:column headerValue="Close Date ⇅" rendered="{!showCloseDate}">
                     <apex:outputField value="{!o.Opportunity__r.Closedate}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Forecast Category" rendered="{!ShowFC}">
+                <apex:column headerValue="Forecast Category ⇅" rendered="{!ShowFC}">
                     <apex:outputField value="{!o.Opportunity__r.ForecastCategoryName}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Awarded">
+                <apex:column headerValue="Awarded ⇅">
                     <apex:outputField value="{!o.Opportunity__r.Awarded_Owner__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Loss Reason" rendered="{!showLossReason}">
+                <apex:column headerValue="Loss Reason ⇅" rendered="{!showLossReason}">
                     <apex:outputField value="{!o.Opportunity__r.Loss_Reason__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Probability (%)" rendered="{!ShowProb}">
+                <apex:column headerValue="Probability (%) ⇅" rendered="{!ShowProb}">
                     <apex:outputField value="{!o.Opportunity__r.Probability}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Month End Amount">
+                <apex:column headerValue="Month End Amount ⇅">
                     <apex:outputField value="{!o.Amount__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Current Amount">
+                <apex:column headerValue="Current Amount ⇅">
                     <apex:outputField value="{!o.Opportunity__r.Amount}"></apex:outputField>
                 </apex:column>
                 <apex:column rendered="{!ShowER}">
                     <apex:facet name="header">
-                        Expected Revenue
+                        Expected Revenue ⇅
                         <img src="/s.gif" alt="Help" class="helpIcon" title="Amount * Probability%"/>
                     </apex:facet>
                     <apex:outputField value="{!o.Opportunity_Expected_Revenue__c}">
                     </apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Won" rendered="{!ShowWon}">
+                <apex:column headerValue="Won ⇅" rendered="{!ShowWon}">
                     <apex:outputField value="{!o.Opportunity__r.IsWon}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Price Level">
+                <apex:column headerValue="Price Level ⇅">
                     <apex:outputField value="{!o.Opportunity__r.Price_Level__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Sales Rep">
+                <apex:column headerValue="Sales Rep ⇅">
                     <apex:outputField value="{!o.Opportunity__r.Sales_Rep_O__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Last Modified By" rendered="{!ShowModBy}">
+                <apex:column headerValue="Last Modified By ⇅" rendered="{!ShowModBy}">
                     <apex:outputField value="{!o.Opportunity__r.LastModifiedById}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Last Modified Date" rendered="{!ShowModDate}">
+                <apex:column headerValue="Last Modified Date ⇅" rendered="{!ShowModDate}">
                     <apex:outputText value="{0, date, M'/'d'/'yyyy}">
                         <apex:param value="{!o.Opportunity__r.LastModifiedDate}" /> 
                     </apex:outputText>
                 </apex:column>
-                <apex:column headerValue="Created Date">
+                <apex:column headerValue="Created Date ⇅">
                     <apex:outputText value="{0, date, M'/'d'/'yyyy}">
                         <apex:param value="{!o.Opportunity_Created_Date__c}" /> 
                     </apex:outputText>
@@ -177,74 +179,74 @@
                     <apex:outputText value="{!k + 1}"></apex:outputText>
                     <apex:variable value="{!k + 1}" var="k"/>
                 </apex:column>
-                <apex:column headerValue="Opportunity Name">
+                <apex:column headerValue="Opportunity Name ⇅">
                     <apex:outputLink value="/{!o.Id}">{!o.Name}</apex:outputLink>
                 </apex:column>
-                <apex:column headerValue="Account">
+                <apex:column headerValue="Account ⇅">
                     <apex:outputField value="{!o.AccountId}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Lead Source">
+                <apex:column headerValue="Lead Source ⇅">
                     <apex:outputField value="{!o.LeadSource}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Last Activity Date" rendered="{!showNeglectedField}">
+                <apex:column headerValue="Last Activity Date ⇅" rendered="{!showNeglectedField}">
                     <apex:outputField value="{!o.lastactivitydate}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Neglected Days" rendered="{!showNeglectedField}">
+                <apex:column headerValue="Neglected Days ⇅" rendered="{!showNeglectedField}">
                     <apex:outputText value="{!NeglectedDaysMap[o.id]}"></apex:outputText> days
                 </apex:column>
-                <apex:column headerValue="Quote Submitted First Date" rendered="{!showSubmittedDate}">
+                <apex:column headerValue="Quote Submitted First Date ⇅" rendered="{!showSubmittedDate}">
                     <apex:outputField value="{!o.Newly_Submitted_Quote_First_Date__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Closed Date" rendered="{!showClosedDate}">
+                <apex:column headerValue="Closed Date ⇅" rendered="{!showClosedDate}">
                     <apex:outputField value="{!o.Closed_Date__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Stage">
+                <apex:column headerValue="Stage ⇅">
                     <apex:outputField value="{!o.StageName}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Close Date" rendered="{!showCloseDate}">
+                <apex:column headerValue="Close Date ⇅" rendered="{!showCloseDate}">
                     <apex:outputField value="{!o.Closedate}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Forecast Category" rendered="{!ShowFC}">
+                <apex:column headerValue="Forecast Category ⇅" rendered="{!ShowFC}">
                     <apex:outputField value="{!o.ForecastCategoryName}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Awarded">
+                <apex:column headerValue="Awarded ⇅">
                     <apex:outputField value="{!o.Awarded_Owner__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Loss Reason" rendered="{!showLossReason}">
+                <apex:column headerValue="Loss Reason ⇅" rendered="{!showLossReason}">
                     <apex:outputField value="{!o.Loss_Reason__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Probability (%)" rendered="{!ShowProb}">
+                <apex:column headerValue="Probability (%) ⇅" rendered="{!ShowProb}">
                     <apex:outputField value="{!o.Probability}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Amount">
+                <apex:column headerValue="Amount ⇅">
                     <apex:outputField value="{!o.Amount}"></apex:outputField>
                 </apex:column>
                 <apex:column rendered="{!ShowER}">
                     <apex:facet name="header">
-                        Expected Revenue
+                        Expected Revenue ⇅
                         <img src="/s.gif" alt="Help" class="helpIcon" title="Amount * Probability%"/>
                     </apex:facet>
                     <apex:outputField value="{!o.ExpectedRevenue}">
                     </apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Won" rendered="{!ShowWon}">
+                <apex:column headerValue="Won ⇅" rendered="{!ShowWon}">
                     <apex:outputField value="{!o.IsWon}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Price Level">
+                <apex:column headerValue="Price Level ⇅">
                     <apex:outputField value="{!o.Price_Level__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Sales Rep">
+                <apex:column headerValue="Sales Rep ⇅">
                     <apex:outputField value="{!o.Sales_Rep_O__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Last Modified By" rendered="{!ShowModBy}">
+                <apex:column headerValue="Last Modified By ⇅" rendered="{!ShowModBy}">
                     <apex:outputField value="{!o.LastModifiedById}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Last Modified Date" rendered="{!ShowModDate}">
+                <apex:column headerValue="Last Modified Date ⇅" rendered="{!ShowModDate}">
                     <apex:outputText value="{0, date, M'/'d'/'yyyy}">
                         <apex:param value="{!o.LastModifiedDate}" /> 
                     </apex:outputText>
                 </apex:column>
-                <apex:column headerValue="Created Date">
+                <apex:column headerValue="Created Date ⇅">
                     <apex:outputText value="{0, date, M'/'d'/'yyyy}">
                         <apex:param value="{!o.CreatedDate}" /> 
                     </apex:outputText>
@@ -258,40 +260,40 @@
                     <apex:outputText value="{!l + 1}"></apex:outputText>
                     <apex:variable value="{!l + 1}" var="l"/>
                 </apex:column>
-                <apex:column headerValue="Account Name">
+                <apex:column headerValue="Account Name ⇅">
                     <apex:outputLink value="/{!a.Id}">{!a.Name}</apex:outputLink>
                 </apex:column>
-                <apex:column headerValue="Accounting Type">
+                <apex:column headerValue="Accounting Type ⇅">
                     <apex:outputField value="{!a.AcctSeed__Accounting_Type__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Industry">
+                <apex:column headerValue="Industry ⇅">
                     <apex:outputField value="{!a.Industry}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Price Level">
+                <apex:column headerValue="Price Level ⇅">
                     <apex:outputField value="{!a.Price_Level__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="GL Account Variable 1">
+                <apex:column headerValue="GL Account Variable 1 ⇅">
                     <apex:outputField value="{!a.AcctSeed__GL_Account_Variable_1__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Billing City">
+                <apex:column headerValue="Billing City ⇅">
                     <apex:outputField value="{!a.BillingCity}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Billing Country">
+                <apex:column headerValue="Billing Country ⇅">
                     <apex:outputField value="{!a.BillingCountry}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Phone">
+                <apex:column headerValue="Phone ⇅">
                     <apex:outputField value="{!a.Phone}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Shipping Citry">
+                <apex:column headerValue="Shipping City ⇅">
                     <apex:outputField value="{!a.ShippingCity}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Shipping Country">
+                <apex:column headerValue="Shipping Country ⇅">
                     <apex:outputField value="{!a.ShippingCountry}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Sales Rep">
+                <apex:column headerValue="Sales Rep ⇅">
                     <apex:outputField value="{!a.Sales_Rep_O__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Created Date">
+                <apex:column headerValue="Created Date ⇅">
                     <apex:outputText value="{0, date, M'/'d'/'yyyy}">
                         <apex:param value="{!a.CreatedDate}" /> 
                     </apex:outputText>
@@ -304,24 +306,24 @@
                     <apex:outputText value="{!x + 1}"></apex:outputText>
                     <apex:variable value="{!x + 1}" var="x"/>
                 </apex:column>
-                <apex:column headerValue="Task Name">
+                <apex:column headerValue="Task Name ⇅">
                     <apex:outputLink value="/{!t.Id}">{!t.Subject}</apex:outputLink>
                 </apex:column>
-                <apex:column headerValue="Assigned To">
+                <apex:column headerValue="Assigned To ⇅">
                     <apex:outputField value="{!t.OwnerId}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Due Date">
+                <apex:column headerValue="Due Date ⇅">
                     <apex:outputField value="{!t.ActivityDate}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Status">
+                <apex:column headerValue="Status ⇅">
                     <apex:outputField value="{!t.Status}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Created Date">
+                <apex:column headerValue="Created Date ⇅">
                     <apex:outputText value="{0, date, M'/'d'/'yyyy}">
                         <apex:param value="{!t.CreatedDate}" /> 
                     </apex:outputText>
                 </apex:column>
-                <apex:column headerValue="Created By">
+                <apex:column headerValue="Created By ⇅">
                     <apex:outputField value="{!t.CreatedById}"></apex:outputField>
                 </apex:column>
             </apex:pageBlockTable>
@@ -332,43 +334,43 @@
                     <apex:outputText value="{!y + 1}"></apex:outputText>
                     <apex:variable value="{!y + 1}" var="y"/>
                 </apex:column>
-                <apex:column headerValue="Name">
+                <apex:column headerValue="Name ⇅">
                     <apex:outputLink value="/{!l.Id}">{!l.Name}</apex:outputLink>
                 </apex:column>
-               <apex:column headerValue="Title">
+               <apex:column headerValue="Title ⇅">
                    <apex:outputText value="{!l.title}" />
                 </apex:column>
-                <apex:column headerValue="Company">
+                <apex:column headerValue="Company ⇅">
                     <apex:outputText value="{!l.company}" />
                 </apex:column>
-                <apex:column headerValue="Industry">
+                <apex:column headerValue="Industry ⇅">
                     <apex:outputText value="{!l.Industry}" />
                 </apex:column>
-                <apex:column headerValue="Email">
+                <apex:column headerValue="Email ⇅">
                     <apex:outputText value="{!l.Email}" />
                 </apex:column>
-                <apex:column headerValue="Phone">
+                <apex:column headerValue="Phone ⇅">
                     <apex:outputText value="{!l.phone}" />
                 </apex:column>
-                <apex:column headerValue="Mobile">
+                <apex:column headerValue="Mobile ⇅">
                     <apex:outputText value="{!l.MobilePhone}" />
                 </apex:column>
-                <apex:column headerValue="City">
+                <apex:column headerValue="City ⇅">
                     <apex:outputText value="{!l.City}" />
                 </apex:column>
-                <apex:column headerValue="State/Province">
+                <apex:column headerValue="State/Province ⇅">
                     <apex:outputText value="{!l.State}" />
                 </apex:column>
-                <apex:column headerValue="Lead Source">
+                <apex:column headerValue="Lead Source ⇅">
                     <apex:outputText value="{!l.leadsource}" />
                 </apex:column>
-                <apex:column headerValue="Status">
+                <apex:column headerValue="Status ⇅">
                     <apex:outputText value="{!l.status}" />
                 </apex:column>
-                <apex:column headerValue="Created By">
+                <apex:column headerValue="Created By ⇅">
                     <apex:outputLink value="/{!l.CreatedById}">{!l.CreatedBy.name}</apex:outputLink>
                 </apex:column>
-                <apex:column headerValue="Created Date">
+                <apex:column headerValue="Created Date ⇅">
                     <apex:outputText value="{0, date, M'/'d'/'yyyy}">
                         <apex:param value="{!l.CreatedDate}" /> 
                     </apex:outputText>
@@ -381,44 +383,44 @@
                     <apex:outputText value="{!z + 1}"></apex:outputText>
                     <apex:variable value="{!z + 1}" var="z"/>
                 </apex:column>
-                <apex:column headerValue="Billing Number">
+                <apex:column headerValue="Billing Number ⇅">
                     <apex:outputLink value="/{!b.id}">{!b.Name}</apex:outputLink>
                 </apex:column>
-                <apex:column headerValue="Sales Order">
+                <apex:column headerValue="Sales Order ⇅">
                     <apex:outputField value="{!b.AcctSeedERP__Sales_Order__c}"/>
                 </apex:column>
-                <apex:column headerValue="Customer">
+                <apex:column headerValue="Customer ⇅">
                     <apex:outputField value="{!b.AcctSeed__Customer__c}"/>
                 </apex:column>
-                <apex:column headerValue="Accounting Period">
+                <apex:column headerValue="Accounting Period ⇅">
                     <apex:outputField value="{!b.AcctSeed__Accounting_Period__c}"/>
                 </apex:column>
-                <apex:column headerValue="Posting Status">
+                <apex:column headerValue="Posting Status ⇅">
                     <apex:outputField value="{!b.AcctSeed__Status__c}"/>
                 </apex:column>
-                <apex:column headerValue="Billing Date">
+                <apex:column headerValue="Billing Date ⇅">
                     <apex:outputText value="{0, date, M'/'d'/'yyyy}">
                         <apex:param value="{!b.AcctSeed__Date__c}" /> 
                     </apex:outputText>
                 </apex:column>
-                <apex:column headerValue="Due Date">
+                <apex:column headerValue="Due Date ⇅">
                     <apex:outputText value="{0, date, M'/'d'/'yyyy}">
                         <apex:param value="{!b.AcctSeed__Due_Date2__c}" /> 
                     </apex:outputText>
                 </apex:column>
-                <apex:column headerValue="Balance">
+                <apex:column headerValue="Balance ⇅">
                     <apex:outputField value="{!b.AcctSeed__Balance__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Total">
+                <apex:column headerValue="Total ⇅">
                     <apex:outputField value="{!b.AcctSeed__Total__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Balance">
+                <apex:column headerValue="Balance ⇅">
                     <apex:outputField value="{!b.AcctSeed__Balance__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Age">
+                <apex:column headerValue="Age ⇅">
                     <apex:outputField value="{!b.AcctSeed__Age__c}"></apex:outputField>
                 </apex:column>
-                <apex:column headerValue="Created Date">
+                <apex:column headerValue="Created Date ⇅">
                     <apex:outputText value="{0, date, M'/'d'/'yyyy}">
                         <apex:param value="{!b.CreatedDate}" /> 
                     </apex:outputText>
@@ -542,4 +544,31 @@
 
 
     </script> 
+
+    <script type="text/javascript">
+        $j = jQuery.noConflict();    
+        $j(document).ready(function () {
+            $j("[id$=orders]").tablesorter();
+        });
+        $j(document).ready(function () {
+            $j("[id$=oppDashb]").tablesorter();
+        });
+        $j(document).ready(function () {
+            $j("[id$=opptyblock]").tablesorter();
+        });
+        $j(document).ready(function () {
+            $j("[id$=accountsBlock]").tablesorter();
+        });
+        $j(document).ready(function () {
+            $j("[id$=tasksBlock]").tablesorter();
+        });
+        $j(document).ready(function () {
+            $j("[id$=leadsBlock]").tablesorter();
+        });
+        $j(document).ready(function () {
+            $j("[id$=billingsBlock]").tablesorter();
+        });
+
+
+    </script>
 </apex:page>

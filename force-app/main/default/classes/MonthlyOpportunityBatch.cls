@@ -9,7 +9,7 @@
 public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Database.stateful{
 
 
-    public List<ErrorWrapper> errWrapper;
+    public static List<ErrorWrapper> errWrapper;
 
     public MonthlyOpportunityBatch(){
         errWrapper = new List<ErrorWrapper>();
@@ -120,7 +120,7 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
     *   @author      : Marian Lyzhychka ©Peeklogic
     ***********************************************************************************************************/
 
-    public String getOpportunityFields(){
+    public static String getOpportunityFields(){
         String fields = '';
         Schema.DescribeSObjectResult r = Opportunity.sObjectType.getDescribe();
 
@@ -138,7 +138,7 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
     *   @author      : Marian Lyzhychka ©Peeklogic
     ***********************************************************************************************************/
     
-    public Boolean checkOverdueTask(Id oppId){
+    public static Boolean checkOverdueTask(Id oppId){
         List<Task> relatedTasks = [SELECT Id, 
                                           ActivityDate,
                                           Status, 
@@ -158,7 +158,7 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
     *   @author      : Marian Lyzhychka ©Peeklogic
     ***********************************************************************************************************/
 
-    public Boolean checkOpenActivities(Id oppId){
+    public static Boolean checkOpenActivities(Id oppId){
         Opportunity opportunityActivity = [SELECT (SELECT ActivityDate,
                                                           Description,
                                                           Subject
@@ -176,7 +176,7 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
     *   @author      : Marian Lyzhychka ©Peeklogic
     ***********************************************************************************************************/
 
-    public Boolean checkNeglect(Id oppId){
+    public static Boolean checkNeglect(Id oppId){
         Opportunity opp = [SELECT Id, ForecastCategory FROM Opportunity WHERE Id=:oppId];
         Boolean hasOverdueTask = checkOverdueTask(oppId);
         Integer neglection_days = checkNeglectedDays(oppId);
@@ -194,7 +194,7 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
     *   @return      : Boolean
     *   @author      : Marian Lyzhychka ©Peeklogic
     ***********************************************************************************************************/
-    public Boolean checkActivity(Id oppId){
+    public static Boolean checkActivity(Id oppId){
         Opportunity opp = [SELECT Id, LastActivityDate FROM Opportunity WHERE Id=:oppId];
         Date today = date.today(); 
 
@@ -209,7 +209,7 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
     *   @author      : Marian Lyzhychka ©Peeklogic
     ***********************************************************************************************************/
 
-    public Integer checkNeglectedDays(Id oppId){
+    public static Integer checkNeglectedDays(Id oppId){
         Opportunity opp = [SELECT Id, LastModifiedDate, LastActivityDate, ForecastCategory FROM Opportunity WHERE Id=:oppId];
         Datetime DT = opp.LastModifiedDate;
         Date lastModDate = Date.NewInstance(dT.year(), dT.month(), dT.day());
@@ -230,7 +230,7 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
     *   @author      : Marian Lyzhychka ©Peeklogic
     ***********************************************************************************************************/
 
-    public void finalBatchResult(String status, Integer TotalJobItems ){
+    public static void finalBatchResult(String status, Integer TotalJobItems ){
         //Generation csv file
         String header = 'Opportunity Id, Error \n';
 
