@@ -83,7 +83,7 @@ public class ListOfRecordsController {
 
     public String opp_dashb_query {get;set;}
     public List<Opportunity_Dashboard__c> opp_dashboards {get;set;}
-
+    public List<SObject> list_opps_big {get;set;}
 
 
     public Boolean hasNext {
@@ -110,10 +110,14 @@ public class ListOfRecordsController {
     public Integer getTotalPages() {
         Decimal totalSize = Con != null ? this.Con.getResultSize() : 0;
         Decimal pageSize = Con != null ? this.Con.getPageSize() : 0;
+        try{
+            Decimal pages = totalSize / pageSize;
         
-        Decimal pages = totalSize / pageSize;
+            return (Integer) pages.round(System.RoundingMode.CEILING);
+        } catch(Exception e){
+             return 1;
+        }
         
-        return (Integer) pages.round(System.RoundingMode.CEILING);
     }
     
     public Integer pageNumber {
@@ -250,11 +254,14 @@ public class ListOfRecordsController {
         }
     }
 
-
+    public List<SObject> getlist_opps_big (){
+        return list_opps_big;
+    }
     public ListOfRecordsController() {
         this.BuildQuery();
-        opp_dashb_query = 'SELECT Id, Name,Opportunity__r.Name, Opportunity__r.AccountId, Opportunity__r.LeadSource , Opportunity__r.lastactivitydate, Opportunity__r.Newly_Submitted_Quote_First_Date__c , Opportunity__r.Closed_Date__c , Opportunity__r.StageName , Opportunity__r.Closedate , Opportunity__r.ForecastCategoryName , Opportunity__r.Awarded_Owner__c , Opportunity__r.Loss_Reason__c , Opportunity__r.Probability , Opportunity__r.IsWon , Opportunity__r.Price_Level__c , Opportunity__r.Sales_Rep_O__c , Opportunity__r.LastModifiedById , Opportunity__r.LastModifiedDate, Opportunity__r.Amount, Has_Activity_In_Last_Month__c, Inserting_Year__c,LastModifiedDate_Copy__c,Last_Modified_By_Copy__c, Inserting_Month__c,Opportunity_Neglected_Days__c,Opportunity__c,Last_Activity_Date__c,Awarded_Owner__c, Account__c, Opportunity_Lead_Source__c, Closed_Date__c, Opportunity_StageName__c, Close_Date__c, Probability__c, Amount__c,  Opportunity_Expected_Revenue__c, Opportunity_Price_Level__c, Sales_Rep_Team__c, Opportunity_Created_Date__c,Opportunity_Forecast_Category__c,Opportunity_GL_Var_1__c FROM Opportunity_Dashboard__c ';
+        opp_dashb_query = 'SELECT Id, Name,Opportunity__r.Name, Opportunity_GL_Var_1__r.Name, Opportunity_GL_Var_1__c,Opportunity__r.AccountId, Opportunity__r.ExpectedRevenue,Opportunity__r.CreatedDate, Opportunity_Created_Date__c, Opportunity__r.LeadSource , Opportunity_Expected_Revenue__c, Opportunity__r.lastactivitydate, Opportunity__r.Newly_Submitted_Quote_First_Date__c , Opportunity__r.Closed_Date__c , Opportunity__r.StageName , Opportunity__r.Closedate , Opportunity__r.ForecastCategoryName , Opportunity__r.Awarded_Owner__c , Opportunity__r.Loss_Reason__c , Opportunity__r.Probability , Opportunity__r.IsWon , Opportunity__r.Price_Level__c , Opportunity__r.Sales_Rep_O__c , Opportunity__r.LastModifiedById , Opportunity__r.LastModifiedDate, Opportunity__r.Amount, Has_Activity_In_Last_Month__c, Inserting_Year__c, Inserting_Month__c,Opportunity_Neglected_Days__c,Opportunity__c, Opportunity_Lead_Source__c, Opportunity_StageName__c, Amount__c,Opportunity_Forecast_Category__c FROM Opportunity_Dashboard__c ';
         opp_dashboards = new List<Opportunity_Dashboard__c>();
+        list_opps_big = new List<SObject>();
         
         
         summedupamount = 0.00;
@@ -619,7 +626,7 @@ public class ListOfRecordsController {
         QueryOpportunities += fields + ',Owner.Name';
         QueryOpportunities += ' FROM Opportunity where ';
         
-        amountQuery = 'SELECT Id, Amount, Owner.Name FROM Opportunity where ';
+        amountQuery = 'SELECT Id, Amount, Owner.Name,ExpectedRevenue  FROM Opportunity where ';
         // Accounts
         fields = AllFields.Fields('Account', new List<String>());
         
@@ -974,6 +981,13 @@ public class ListOfRecordsController {
             );
             Con.setPageSize(size);
         } else if (chart == 'Sales_Pipeline_Last_12_Months') {
+            /*****************************************************************************************************
+            *   @dashboard name  : Sales Pipeline Last 12 Months
+            *   @chart name      : Sales_Pipeline_Last_12_Months
+            *   @description     : Put data on list of records Page, depends on input params from front by url
+            *   @author          : Marian Lyzhychka ©Peeklogic
+            *****************************************************************************************************/
+
             isOpptys = true;
             showCloseDate = true;
             ShowClosedDate = true;
@@ -981,46 +995,90 @@ public class ListOfRecordsController {
             ShowProb = true;
             ShowOwner = true;
             ShowAwardedOwner = true;
-            
+
+            Map<string, integer> Last12MonthsList_CombinedMap = MainSalesManagerDashboardUSACtrl.Last12MonthsList_CombinedMap();
+
             String yearStr = ApexPages.currentPage().getParameters().get('year');
             String monthStr = ApexPages.currentPage().getParameters().get('month');
-            
-            Integer year = 2020;
-            INteger month = 5;
-            
-            if (yearStr != null && yearStr != '') {
-                year = Integer.valueOf(yearStr);
+
+            Integer year = yearStr != null && yearStr != '' ? Integer.valueOf(yearStr) : Date.Today().Year();
+            Integer month = monthStr != null && monthStr != '' ? Integer.valueOf(monthStr) : Date.Today().Month();
+
+            String opportunity_dashboard_query = opp_dashb_query;
+            opportunity_dashboard_query += ' WHERE Opportunity_Forecast_Category__c =\'Pipeline\' ';
+            //opportunity_dashboard_query += ' AND Amount__c != null';
+            opportunity_dashboard_query += ' AND Opportunity__r.ownerId =:LoggedInUserId ';
+            String max_year;
+            String max_month;
+
+            if (click == 'chart'){
+                Set<String> months = Last12MonthsList_CombinedMap.keySet(); //This method returns map of last 12 months, and we get last
+                List<String> list_months = new List<String>(months);
+                List<String> year_m = list_months[list_months.size() - 1].split('-'); //Current date for ex if today if 3 March 2022 - here will be 3-2022
+                max_year =  year_m[1];
+                max_month = year_m[0];
+            } else {
+                max_year = String.valueOf(year);
+                max_month = String.valueOf(month);
             }
+
+            opportunity_dashboard_query += ' AND Inserting_Year__c =: max_year ';
+            opportunity_dashboard_query += ' AND Inserting_Month__c =: max_month ';
+            opportunity_dashboard_query += ' ORDER BY Opportunity__r.Name';
+
+            List<Opportunity_Dashboard__c> table_data = (List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query);
+            opp_dashboards = table_data;
+            system.debug('table_data sales: '+JSON.serialize(table_data));
+            calculateTotalAmountCur((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount');
+            calculateTotalAmount((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount__c');
+
+            // isOpptys = true;
+            // showCloseDate = true;
+            // ShowClosedDate = true;
+            // ShowER = true;
+            // ShowProb = true;
+            // ShowOwner = true;
+            // ShowAwardedOwner = true;
             
-            if (monthStr != null && monthStr != '') {
-                month = Integer.valueOf(monthStr);
-            }
+            // String yearStr = ApexPages.currentPage().getParameters().get('year');
+            // String monthStr = ApexPages.currentPage().getParameters().get('month');
             
-            // Monthly data
+            // Integer year = 2020;
+            // INteger month = 5;
             
-            Date PointMonthStart = Date.newInstance(year, month, 1);
-            DateTime PointMonthEnd = FindMonthEndDate(year, month);
-            Date PointMonthEndClosed = Date.newInstance(year, month, 
-                                                        Date.daysInMonth(d.year(), d.month()));
+            // if (yearStr != null && yearStr != '') {
+            //     year = Integer.valueOf(yearStr);
+            // }
             
-            String QueryStr = QueryOpportunities;
-            QueryStr += ' ownerId =:LoggedInUserId ';
-            QueryStr += ' and Amount != 0 and Amount != null ';
+            // if (monthStr != null && monthStr != '') {
+            //     month = Integer.valueOf(monthStr);
+            // }
             
-            if (click == 'chart') {
-                QueryStr += ' and ForecastCategoryName =\'Pipeline\' and createddate <=:Full_End_Date ';
-            } else if (click == 'legend') {
-                QueryStr += ' and ForecastCategoryName =\'Pipeline\' and createddate <=:Full_End_Date ';
-            } else if (click == 'point') {
-                QueryStr += ' and ForecastCategoryName =\'Pipeline\' and createddate <=:PointMonthEnd ';
-            }
+            // // Monthly data
             
-            QueryStr += ' order by Name';
-            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
-            Con = new ApexPages.StandardSetController(
-                Database.getQueryLocator(QueryStr)
-            );
-            Con.setPageSize(size);
+            // Date PointMonthStart = Date.newInstance(year, month, 1);
+            // DateTime PointMonthEnd = FindMonthEndDate(year, month);
+            // Date PointMonthEndClosed = Date.newInstance(year, month, 
+            //                                             Date.daysInMonth(d.year(), d.month()));
+            
+            // String QueryStr = QueryOpportunities;
+            // QueryStr += ' ownerId =:LoggedInUserId ';
+            // QueryStr += ' and Amount != 0 and Amount != null ';
+            
+            // if (click == 'chart') {
+            //     QueryStr += ' and ForecastCategoryName =\'Pipeline\' and createddate <=:Full_End_Date ';
+            // } else if (click == 'legend') {
+            //     QueryStr += ' and ForecastCategoryName =\'Pipeline\' and createddate <=:Full_End_Date ';
+            // } else if (click == 'point') {
+            //     QueryStr += ' and ForecastCategoryName =\'Pipeline\' and createddate <=:PointMonthEnd ';
+            // }
+            
+            // QueryStr += ' order by Name';
+            // calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
+            // Con = new ApexPages.StandardSetController(
+            //     Database.getQueryLocator(QueryStr)
+            // );
+            // Con.setPageSize(size);
         } else if (chart == 'Newly_Submitted_Opportunities_Last_12_Months') {
             isOpptys = true;
             ShowSubmittedDate = true;
@@ -1407,168 +1465,104 @@ public class ListOfRecordsController {
             );
             Con.setPageSize(size);
         } else if (chart == 'Neglected_Opportunities') {
-            
+            /*****************************************************************************************************
+            *   @dashboard name  : Neglected Opportunities
+            *   @chart name      : Neglected_Opportunities
+            *   @description     : Put data on list of records Page,depends on input params from front by url(Sales)
+            *   @author          : Marian Lyzhychka ©Peeklogic
+            *****************************************************************************************************/
             isOpptys = true;
             ShowModBy = true;
             ShowModDate = true;
             ShowER = true;
             ShowProb = true;
             showNeglectedField = true;
+
             
-            Boolean Thirty = false;
-            Boolean Sixty = false;
-            Boolean Ninty = false;
-            Boolean Over120 = false;
             
-            if (duration == '0') {
-                Thirty = true;
-            } else if (duration == '1') {
-                Sixty = true;
-            } else if (duration == '2') {
-                Ninty = true;
-            } else if (duration == '3') {
-                Over120 = true;
+            String yearStr = ApexPages.currentPage().getParameters().get('year');
+            String monthStr = ApexPages.currentPage().getParameters().get('month');
+            String str = Apexpages.currentPage().getParameters().get('str');
+
+            String duration_filter = '';
+
+            if(str == '31 - 60 days'){
+                duration_filter = ' AND Opportunity_Neglected_Days__c > 30 AND Opportunity_Neglected_Days__c < 61';
+            }else if(str == '61 - 90 days'){
+                duration_filter = ' AND Opportunity_Neglected_Days__c > 60 AND Opportunity_Neglected_Days__c < 91';
+            }else if(str == '91 - 120 days'){
+                duration_filter = ' AND Opportunity_Neglected_Days__c > 90 AND Opportunity_Neglected_Days__c < 121';
+            }else if(str == 'Over 120 days'){
+                duration_filter = ' AND Opportunity_Neglected_Days__c > 120';
             }
-            
-            Date Last_Thirty_Days = date.today() - 30; // Today minus 30 days, will give us a date before 30 days
-            
-            string QueryStr = QueryOpportunities;
-            QueryStr += Test.isRunningTest()
-                ? ' Id != null '
-                : ' ownerId =:LoggedInUserId and Parent_Opportunity__c = null ';
-            QueryStr += Test.isRunningTest()
-                ? ''
-                : ' and ForecastCategoryName != \'Omitted\' and ForecastCategoryName != \'Closed\' ';
-            
-            QueryStr += Test.isRunningTest()
-                ? ''
-                : ' and (LastActivityDate <:Last_Thirty_Days or ';
-            QueryStr += Test.isRunningTest()
-                ? ''
-                : ' (LastActivityDate = null and (LastModifiedDate <:Last_Thirty_Days and ';
-            QueryStr += Test.isRunningTest()
-                ? ''
-                : ' LastModifiedBy.Name != \'Murtaza Ashraf\' and LastModifiedBy.Name != \'Ashraf Murtaza\'))) ';
-            
-            QueryStr += ' order by name asc ';
-            
-            List<Opportunity> opptys = (List<Opportunity>) Database.Query(QueryStr);
-            
-            map<id, opportunity> QualifiedOpsMap = new Map<id, opportunity>(opptys);
-            map<id, opportunity> opportunitiesMap = new Map<id, opportunity>();
-            NeglectedDaysMap = new Map<id, integer>();
-            
-            if (QualifiedOpsMap.size() > 0) {
-                for (Opportunity o : QualifiedOpsMap.values()) {
-                    if (o.HasOverdueTask || o.HasOpenActivity) {
-                        QualifiedOpsMap.remove(o.id);
-                    }
-                }
+
+            String year_month = system.today().month() + '-' + system.today().year();
+
+
+
+            String opportunity_dashboard_query = opp_dashb_query;
+
+            opportunity_dashboard_query += ' WHERE Opportunity_Forecast_Category__c =\'Pipeline\' ';
+            opportunity_dashboard_query += ' AND Month_Year__c =: year_month ';
+            opportunity_dashboard_query += ' AND isNeglected__c = true ';
+            opportunity_dashboard_query += ' AND Opportunity__r.ownerId =:LoggedInUserId and Parent_Opportunity__c = null ';
+
+            if (click == 'chart') {
+                opportunity_dashboard_query += ' AND Sales_Rep_Team__r.Name in:All_SalesReps_USA';
+            } else if(click == 'legend' || click == 'point') {
+                opportunity_dashboard_query += ' AND Sales_Rep_Team__r.Name = \'' + str + '\'';
             }
-            
-            if (QualifiedOpsMap.size() > 0) {
-                for (Opportunity o : QualifiedOpsMap.values()) {
-                    DateTime modifyDate = o.LastModifiedDate;
-                    
-                    Date LMD = Date.newInstance(
-                        modifyDate.year(),
-                        modifyDate.month(),
-                        modifyDate.day()
-                    );
-                    Date LAD = o.LastActivityDate;
-                    
-                    Integer Modified_Neg_Days = LMD.daysBetween(d);
-                    Integer Activity_Neg_Days = LAD != null ? LAD.daysBetween(d) : 0;
-                    
-                    // In the code below we will keep the one with most Neg days out of the three above, means the oldest
-                    // For example if an opportunity has Modified_Neg_Days = 5
-                    // and Activity_Neg_Days = 2, then we will keep 5 as Neg days.
-                    Integer NegDays = 0;
-                    
-                    if (
-                        Modified_Neg_Days > Activity_Neg_Days
-                    ) {
-                        NegDays = Modified_Neg_Days;
-                    } else if (
-                        Activity_Neg_Days > Modified_Neg_Days
-                    ) {
-                        NegDays = Activity_Neg_Days;
-                    }
-                    
-                    if (click == 'bar' || click == 'legend') {
-                        if (Thirty) {
-                            if (NegDays > 30 && NegDays < 61) {
-                                opportunitiesMap.put(o.id, o);
-                            }
-                        } else if (Sixty) {
-                            if (NegDays > 60 && NegDays < 91) {
-                                opportunitiesMap.put(o.id, o);
-                            }
-                        } else if (Ninty) {
-                            if (NegDays > 90 && NegDays < 121) {
-                                opportunitiesMap.put(o.id, o);
-                            }
-                        } else if (Over120) {
-                            if (NegDays > 120) {
-                                opportunitiesMap.put(o.id, o);
-                            }
-                        }
-                        NeglectedDaysMap.put(o.id, NegDays);
-                    } else {
-                        if (NegDays > 0) {
-                            opportunitiesMap.put(o.id, o);
-                            NeglectedDaysMap.put(o.id, NegDays);
-                        }
-                    }
-                }
-                
-                if (opportunitiesMap.size() > 0) {
-                    // sort the map
-                    List<id> sortedKeys = this.sortEngine(NeglectedDaysMap);
-                    map<id, opportunity> sortedMap = new Map<id, opportunity>();
-                    
-                    for (id s : sortedKeys) {
-                        if (opportunitiesMap.containskey(s)) {
-                            sortedMap.put(s, opportunitiesMap.get(s));
-                        }
-                    }
-                    
-                    opportunitiesMap = sortedMap;
-                }
+            if(click == 'bar'){
+                opportunity_dashboard_query += duration_filter;
             }
-            string FinalQueryStr = QueryOpportunities;
-            set<id> OpptysIds = new Set<id>(opportunitiesMap.keyset());
-            FinalQueryStr += ' id in:OpptysIds ';
+            // bar chart
+
+
+            opportunity_dashboard_query += ' ORDER BY Opportunity__r.Name';
             
-            Con = new ApexPages.StandardSetController(
-                Database.getQueryLocator(FinalQueryStr)
-            );
+
+            List<Opportunity_Dashboard__c> table_data = (List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query);
+
+            opp_dashboards = table_data;
             
-            Con.setPageSize(size);
+            calculateTotalAmountCur((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount');
+            calculateTotalAmount((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount__c');
         } else if (chart == 'Active_Opportunities_By_Stage') {
+            /*****************************************************************************************************
+            *   @dashboard name  : Active Opportunities by Stage
+            *   @chart name      : Active_Opportunities_By_Stage
+            *   @description     : Put data on list of records Page,depends on input params from front by url(Sales)
+            *   @author          : Marian Lyzhychka ©Peeklogic
+            *****************************************************************************************************/
             isOpptys = true;
             ShowER = true;
             ShowProb = true;
             showCloseDate = true;
-            
-            string QueryStr = QueryOpportunities;
-            QueryStr += ' ForecastCategoryName != \'Omitted\' and ForecastCategoryName != \'Closed\' ';
-            QueryStr += ' and ownerId = \'' + LoggedInUserId + '\'';
-            
+            User usr = SalesDashboardController.getUser();
+        
+            string recordtypename = usr.Default_GL_Account_Variable__c == 'Seawin USA' ? 'Seawin USA Hospitality' : 'Seawin China Hospitality';
+            String year_month = system.today().month() + '-' + system.today().year();
+            String opportunity_dashboard_query = opp_dashb_query;
+
+            opportunity_dashboard_query += ' WHERE Opportunity_Forecast_Category__c =\'Pipeline\' ';
+            opportunity_dashboard_query += ' AND Month_Year__c =: year_month ';
+            opportunity_dashboard_query += ' AND Opportunity__r.ownerId = \''+UserInfo.getUserId()+'\'';
+            opportunity_dashboard_query += ' AND Has_Activity_In_Last_Month__c = true';
+            opportunity_dashboard_query += ' AND Amount__c != NULL';
+            opportunity_dashboard_query += ' AND RecordTypeName__c =: recordtypename';
+
             if (click == 'chart') {
-            } else if (click == 'bar') {
-                QueryStr += ' and stagename = \'' + duration + '\'';
-            } else if (click == 'legend') {
-                QueryStr += '  and stagename = \'' + duration + '\'';
-            } else if (click == 'left') {
-                QueryStr += '  and stagename = \'' + duration + '\'';
+            }else{
+                opportunity_dashboard_query += ' and Opportunity_StageName__c = \'' + duration + '\'';
             }
-            QueryStr += ' order by stagename ';
-            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
-            Con = new ApexPages.StandardSetController(
-                Database.getQueryLocator(QueryStr)
-            );
-            Con.setPageSize(size);
+            opportunity_dashboard_query += ' ORDER BY Opportunity__r.Name';
+
+            List<Opportunity_Dashboard__c> table_data = (List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query);
+
+            opp_dashboards = table_data;
+
+            calculateTotalAmountCur((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount');
+            calculateTotalAmount((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount__c');
         } else if (chart == 'Tasks_Completion') {
             isTasks = true;
             string DateStr = '';
@@ -1911,7 +1905,7 @@ public class ListOfRecordsController {
                 Database.getQueryLocator(QueryStr)
             );
             amountQuery += QueryStr.split('where')[1];
-            calculateTotalAmount((List<Opportunity>)Database.query(amountQuery), 'Amount');
+            calculateTotalAmount((List<Opportunity>)Database.query(amountQuery), 'ExpectedRevenue');
 
             Con.setPageSize(size);
         } else if (chart == 'Company_Total_Pipeline_SMD_USA') {
@@ -2619,39 +2613,63 @@ public class ListOfRecordsController {
             }
             
             QueryStr += ' order by Name,Probability desc NULLS LAST';
-            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
+            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'ExpectedRevenue');
             Con = new ApexPages.StandardSetController(
                 Database.getQueryLocator(QueryStr)
             );
             Con.setPageSize(size);
         } else if (chart == 'Active_Opportunities_By_Stage_SMD') {
+            /*****************************************************************************************************
+            *   @dashboard name  : Active Opportunities by Stage
+            *   @chart name      : Active_Opportunities_By_Stage_SMD
+            *   @description     : Put data on list of records Page, depends on input params from front by url
+            *   @author          : Marian Lyzhychka ©Peeklogic
+            *****************************************************************************************************/
             isOpptys = true;
             ShowER = true;
             ShowProb = true;
             showCloseDate = true;
             
-            string QueryStr = QueryOpportunities;
-            QueryStr += ' RecordType.name = \'Seawin USA Hospitality\' ';
-            QueryStr += ' and GL_Account_Variable_1__r.Name = \'Seawin USA\' ';
-            QueryStr += ' and ForecastCategoryName != \'Omitted\' and ForecastCategoryName != \'Closed\' ';
-            
+            String str = ApexPages.currentPage().getParameters().get('str');
+            String year_month = system.today().month() + '-' + system.today().year();
+            String opportunity_dashboard_query = opp_dashb_query;
+
+            opportunity_dashboard_query += ' WHERE Opportunity_Forecast_Category__c =\'Pipeline\' ';
+            opportunity_dashboard_query += ' AND Month_Year__c =: year_month ';
+            opportunity_dashboard_query += ' AND Amount__c != NULL';
+            opportunity_dashboard_query += ' AND Sal_Rep_Team_Name__c IN:All_SalesReps_USA';
+            opportunity_dashboard_query += '  AND Opportunity_GL_Var_1__r.Name = \'Seawin USA\'';
+            // List<AggregateResult> opp_dashboard_data = [SELECT  SUM(Amount__c) amount, 
+            // Opportunity_StageName__c stage
+            // FROM Opportunity_Dashboard__c
+            // WHERE Month_Year__c =:year_month
+            // AND Opportunity_Forecast_Category__c = 'Pipeline'
+            // AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+            // AND Amount__c != null
+            // AND Sal_Rep_Team_Name__c IN:All_SalesReps
+            // GROUP BY Opportunity_StageName__c];
             if (click == 'chart') {
-                QueryStr += ' and sales_rep_o__r.name in:All_SalesReps_USA ';
-            } else if (click == 'bar') {
-                QueryStr +=
-                    ' and stagename =:duration';
-            } else if (click == 'legend') {
-                QueryStr += '  and stagename =:duration ';
-            } else if (click == 'left') {
-                QueryStr += ' and sales_rep_o__r.name = \'' + str + '\'';
+            }else{
+                opportunity_dashboard_query += ' and Opportunity_StageName__c = \'' + str + '\'';
             }
-            QueryStr += ' order by stagename,Sales_Rep_O__r.name';
-            system.debug('QueryStr: '+QueryStr);
-            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
+            opportunity_dashboard_query += ' ORDER BY Opportunity__r.Name';
+
+            List<Opportunity_Dashboard__c> table_data = (List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query);
+            list_opps_big = table_data;
+            // opp_dashboards = table_data;
+            List<Opportunity> opps = new List<Opportunity>();
+            for(Opportunity_Dashboard__c opd: table_data){
+                opps.add((Opportunity)opd.Opportunity__r);
+            }
+
             Con = new ApexPages.StandardSetController(
-                Database.getQueryLocator(QueryStr)
+                opps
             );
             Con.setPageSize(size);
+
+
+            calculateTotalAmountCur((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount');
+            calculateTotalAmount((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount__c');
         } else if (chart == 'Neg_Win_Rate_SMD') {
             ShowClosedDate = true;
             ShowWon = true;
@@ -2853,7 +2871,6 @@ public class ListOfRecordsController {
             *   @description     : Put data on list of records Page, depends on input params from front by url
             *   @author          : Marian Lyzhychka ©Peeklogic
             *****************************************************************************************************/
-            // snake
             isOpptys = true;
             ShowModBy = true;
             ShowModDate = true;
@@ -2868,7 +2885,7 @@ public class ListOfRecordsController {
             String str = Apexpages.currentPage().getParameters().get('str');
 
             Integer year = yearStr != null && yearStr != '' ? Integer.valueOf(yearStr) : Date.Today().Year();
-            Integer month = monthStr != null && monthStr != '' ? Integer.valueOf(monthStr) : Date.Today().Month() - 1;
+            Integer month = monthStr != null && monthStr != '' ? Integer.valueOf(monthStr) : Date.Today().Month();
 
             Map<string, integer> Last12MonthsList_CombinedMap = MainSalesManagerDashboardUSACtrl.Last12MonthsList_CombinedMap();
 
@@ -2904,7 +2921,8 @@ public class ListOfRecordsController {
             List<Opportunity_Dashboard__c> table_data = (List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query);
 
             opp_dashboards = table_data;
-
+            
+            calculateTotalAmountCur((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount');
             calculateTotalAmount((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount__c');
         } else if (chart == 'TopTenAccounts_OD') {
             isOrders = true;
@@ -3228,7 +3246,8 @@ public class ListOfRecordsController {
             }
             
             QueryStr += ' order by sales_rep_o__r.name asc, CreatedDate desc';
-            
+            calculateTotalAmount((List<AcctSeedERP__Sales_Order__c>)Database.query(QueryStr), 'AcctSeedERP__Total__c');
+
             Con = new ApexPages.StandardSetController(
                 Database.getQueryLocator(QueryStr)
             );
@@ -3248,7 +3267,8 @@ public class ListOfRecordsController {
                 QueryStr += ' and Sales_rep_o__r.name = \'' + str + '\'';
             }
             QueryStr += ' order by sales_rep_o__r.name asc, CreatedDate desc';
-            
+            calculateTotalAmount((List<AcctSeedERP__Sales_Order__c>)Database.query(QueryStr), 'AcctSeedERP__Total__c');
+
             Con = new ApexPages.StandardSetController(
                 Database.getQueryLocator(QueryStr)
             );
@@ -3288,7 +3308,8 @@ public class ListOfRecordsController {
                 QueryStr += ' and Sales_rep_o__r.name = \'' + str + '\'';
             }
             QueryStr += ' order by sales_rep_o__r.name asc, CreatedDate desc';
-            
+            calculateTotalAmount((List<AcctSeedERP__Sales_Order__c>)Database.query(QueryStr), 'AcctSeedERP__Total__c');
+
             Con = new ApexPages.StandardSetController(
                 Database.getQueryLocator(QueryStr)
             );
@@ -3306,7 +3327,8 @@ public class ListOfRecordsController {
             QueryStr += '(GL_Account_Variable_1__r.name = \'Seawin China\' or GL_Account_Variable_1__r.name = \'Seawin Hong Kong\') ';
             QueryStr += ' and Sales_Rep_o__r.name in:All_SalesReps_CHK ';
             QueryStr += ' order by sales_rep_o__r.name asc, CreatedDate desc';
-            
+            calculateTotalAmount((List<AcctSeedERP__Sales_Order__c>)Database.query(QueryStr), 'AcctSeedERP__Total__c');
+
             Con = new ApexPages.StandardSetController(
                 Database.getQueryLocator(QueryStr)
             );
@@ -3345,7 +3367,8 @@ public class ListOfRecordsController {
             QueryStr += ' and Sales_Rep_o__r.name in:srNames and ';
             QueryStr += ' acctseederp__total__c > 0 ';
             QueryStr += ' order by sales_rep_o__r.name asc, CreatedDate desc';
-            
+            calculateTotalAmount((List<AcctSeedERP__Sales_Order__c>)Database.query(QueryStr), 'AcctSeedERP__Total__c');
+
             Con = new ApexPages.StandardSetController(
                 Database.getQueryLocator(QueryStr)
             );
@@ -3410,6 +3433,8 @@ public class ListOfRecordsController {
             }
             
             QueryStr += ' order by Name,Probability desc NULLS LAST';
+            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'ExpectedRevenue');
+
             Con = new ApexPages.StandardSetController(
                 Database.getQueryLocator(QueryStr)
             );
@@ -3466,55 +3491,13 @@ public class ListOfRecordsController {
 
             calculateTotalAmountCur((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount');
             calculateTotalAmount((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount__c');
-
-            // isOpptys = true;
-            // showCloseDate = true;
-            // ShowClosedDate = true;
-            // ShowER = true;
-            // ShowProb = true;
-            // ShowOwner = true;
-            // ShowAwardedOwner = true;
-            
-            // String yearStr = ApexPages.currentPage().getParameters().get('year');
-            // String monthStr = ApexPages.currentPage().getParameters().get('month');
-            
-            // Integer year = 2020;
-            // INteger month = 5;
-            
-            // if (yearStr != null && yearStr != '') {
-            //     year = Integer.valueOf(yearStr);
-            // }
-            
-            // if (monthStr != null && monthStr != '') {
-            //     month = Integer.valueOf(monthStr);
-            // }
-            
-            // Date PointMonthStart = Date.newInstance(year, month, 1);
-            // DateTime PointMonthEnd = FindMonthEndDate(year, month);
-            // Date PointMonthEndClosed = Date.newInstance(d.year(), d.month(), 
-            //                                             Date.daysInMonth(d.year(), d.month()));
-            
-            // String QueryStr = QueryOpportunities;
-            // QueryStr += ' Sales_Rep_o__r.Name in:All_SalesReps_CHK ';
-            // QueryStr += ' and  (GL_Account_Variable_1__r.Name = \'Seawin China\' or ';
-            // QueryStr += ' GL_Account_Variable_1__r.Name = \'Seawin Hong Kong\') ';
-            // QueryStr += ' and ForecastCategoryName !=\'Omitted\' ';
-            
-            // if (click == 'chart') {
-            //     QueryStr += ' and createddate <=:Full_End_Date';
-            // } else {
-            //     QueryStr += ' and createddate <=:PointMonthEnd';
-            // }
-            
-            // QueryStr += ' order by Name';
-            // calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
-
-            // Con = new ApexPages.StandardSetController(
-            //     Database.getQueryLocator(QueryStr)
-            // );
-            // Con.setPageSize(size);
         } else if (chart == 'Sales_Reps_Total_Pipeline_SMD_CHK') {
-            
+            /*****************************************************************************************************
+            *   @dashboard name  : Company Total Pipeline Last 12 Months
+            *   @chart name      : Company_Total_Pipeline_SMD_CHK
+            *   @description     : Put data on list of records Page(China), depends on input params from front by url
+            *   @author          : Marian Lyzhychka ©Peeklogic
+            *****************************************************************************************************/
             isOpptys = true;
             showCloseDate = true;
             ShowClosedDate = true;
@@ -3525,49 +3508,54 @@ public class ListOfRecordsController {
             
             String yearStr = ApexPages.currentPage().getParameters().get('year');
             String monthStr = ApexPages.currentPage().getParameters().get('month');
-            
-            Integer year = 2020;
-            INteger month = 5;
-            
-            if (yearStr != null && yearStr != '') {
-                year = Integer.valueOf(yearStr);
-            }
-            
-            if (monthStr != null && monthStr != '') {
-                month = Integer.valueOf(monthStr);
-            }
-            
-            // Monthly data
-            
-            Date PointMonthStart = Date.newInstance(year, month, 1);
-            DateTime PointMonthEnd = FindMonthEndDate(year, month);
-            Date PointMonthEndClosed = Date.newInstance(d.year(), d.month(), 
-                                                        Date.daysInMonth(d.year(), d.month()));
-            
-            String QueryStr = QueryOpportunities;
-            QueryStr += ' (GL_Account_Variable_1__r.Name = \'Seawin China\' or ';
-            QueryStr += ' GL_Account_Variable_1__r.Name = \'Seawin Hong Kong\') ';
-            QueryStr += ' and ForecastCategoryName !=\'Omitted\' ';
-            
-            if (click == 'chart') {
-                QueryStr += ' and Sales_Rep_o__r.Name in:All_SalesReps_CHK ';
-                QueryStr += ' and createddate <=:Full_End_Date ';
-            } else if (click == 'legend') {
-                QueryStr += ' and Sales_Rep_o__r.Name = \'' + str + '\'';
-                QueryStr += ' and createddate <=:Full_End_Date ';
-            } else if (click == 'point') {
-                QueryStr += ' and Sales_Rep_o__r.Name = \'' + str + '\'';
-                QueryStr += ' and createddate <=:PointMonthEnd ';
-            }
-            
-            QueryStr += ' order by Name';
-            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
+            String str = Apexpages.currentPage().getParameters().get('str');
 
-            Con = new ApexPages.StandardSetController(
-                Database.getQueryLocator(QueryStr)
-            );
-            Con.setPageSize(size);
+            Integer year = yearStr != null && yearStr != '' ? Integer.valueOf(yearStr) : Date.Today().Year();
+            Integer month = monthStr != null && monthStr != '' ? Integer.valueOf(monthStr) : Date.Today().Month();
+
+            Map<string, integer> Last12MonthsList_CombinedMap = MainSalesManagerDashboardUSACtrl.Last12MonthsList_CombinedMap();
+
+            String max_year;
+            String max_month;
+            if(click == 'chart' || click == 'legend'){
+                Set<String> months = Last12MonthsList_CombinedMap.keySet(); //This method returns map of last 12 months, and we get last
+                List<String> list_months = new List<String>(months);
+                List<String> year_m = list_months[list_months.size() - 1].split('-');
+                max_year =  year_m[1];
+                max_month = year_m[0];
+            } else if(click == 'point'){
+                max_year = String.valueOf(year);
+                max_month = String.valueOf(month);
+            }
+
+            String opportunity_dashboard_query = opp_dashb_query;
+
+            opportunity_dashboard_query += ' WHERE  (Opportunity_GL_Var_1__r.Name = \'Seawin China\' OR Opportunity_GL_Var_1__r.Name = \'Seawin Hong Kong\')';
+            opportunity_dashboard_query += ' AND Opportunity_Forecast_Category__c =\'Pipeline\' ';
+            opportunity_dashboard_query += ' AND Inserting_Year__c =: max_year ';
+            opportunity_dashboard_query += ' AND Inserting_Month__c =: max_month ';
+
+            if (click == 'chart') {
+                opportunity_dashboard_query += ' AND Sales_Rep_Team__r.Name in:All_SalesReps_CHK';
+            } else if(click == 'legend' || click == 'point') {
+                opportunity_dashboard_query += ' AND Sales_Rep_Team__r.Name = \'' + str + '\'';
+            }
+            opportunity_dashboard_query += ' ORDER BY Opportunity__r.Name';
+            
+
+            List<Opportunity_Dashboard__c> table_data = (List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query);
+
+            opp_dashboards = table_data;
+            calculateTotalAmountCur((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount');
+            calculateTotalAmount((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount__c');
+
         } else if (chart == 'Total_Pipeline_By_Lead_Source_SMD_CHK') {
+            /*****************************************************************************************************
+            *   @dashboard name  : Pipeline Last 12 Months By Lead Source
+            *   @chart name      : Total_Pipeline_By_Lead_Source_SMD_CHK
+            *   @description     : Put data on list of records Page(China), depends on input params from front by url
+            *   @author          : Marian Lyzhychka ©Peeklogic
+            *****************************************************************************************************/
             isOpptys = true;
             showCloseDate = true;
             ShowClosedDate = true;
@@ -3580,58 +3568,57 @@ public class ListOfRecordsController {
             String yearStr = ApexPages.currentPage().getParameters().get('year');
             String monthStr = ApexPages.currentPage().getParameters().get('month');
             
+            Map<string, integer> Last12MonthsList_CombinedMap = MainSalesManagerDashboardUSACtrl.Last12MonthsList_CombinedMap();
+
             if(str == 'N/A' || str == 'NA') {
                 str = '';
                 str2 = 'N/A';
                 str3 = 'NA';
             }
             
-            Integer year = 2020;
-            INteger month = 5;
+            Integer year = yearStr != null && yearStr != '' ? Integer.valueOf(yearStr) : Date.Today().Year();
+            Integer month = monthStr != null && monthStr != '' ? Integer.valueOf(monthStr) : Date.Today().Month();
             
-            if (yearStr != null && yearStr != '') {
-                year = Integer.valueOf(yearStr);
+            String max_year;
+            String max_month;
+            if(click == 'chart' || click == 'legend'){
+                Set<String> months = Last12MonthsList_CombinedMap.keySet(); //This method returns map of last 12 months, and we get last
+                List<String> list_months = new List<String>(months);
+                List<String> year_m = list_months[list_months.size() - 1].split('-'); //Last available date
+                max_year =  year_m[1];
+                max_month = year_m[0];
+            } else if(click == 'point'){
+                max_year = String.valueOf(year);
+                max_month = String.valueOf(month);
             }
-            
-            if (monthStr != null && monthStr != '') {
-                month = Integer.valueOf(monthStr);
-            }
-            
-            
-            // Monthly data
-            
-            Date PointMonthStart = Date.newInstance(year, month, 1);
-            DateTime PointMonthEnd = FindMonthEndDate(year, month);
-            Date PointMonthEndClosed = Date.newInstance(d.year(), d.month(), 
-                                                        Date.daysInMonth(d.year(), d.month()));
-            
-            String QueryStr = QueryOpportunities;
-            QueryStr += ' (GL_Account_Variable_1__r.Name = \'Seawin China\' or ';
-            QueryStr += ' GL_Account_Variable_1__r.Name = \'Seawin Hong Kong\') ';
-            QueryStr += ' and Sales_Rep_o__r.Name in:All_SalesReps_CHK ';
-            QueryStr += ' and ForecastCategoryName !=\'Omitted\' ';
-            
-            if (click == 'chart') {
-                QueryStr += ' and createddate <=:Full_End_Date ';
-            } else if (click == 'legend') {
-                QueryStr += str == '' ? ' and (LeadSource = \'' + str + '\'' : ' and LeadSource = \'' + str + '\'';
-                QueryStr += str == '' ? ' or LeadSource = \'' + str2 + '\'' : '';
-                QueryStr += str == '' ? ' or LeadSource = \'' + str3 + '\')' : '';
-                QueryStr += ' and createddate <=:Full_End_Date ';
-            } else if (click == 'point') {
-                QueryStr += str == '' ? ' and (LeadSource = \'' + str + '\'' : ' and LeadSource = \'' + str + '\'';
-                QueryStr += str == '' ? ' or LeadSource = \'' + str2 + '\'' : '';
-                QueryStr += str == '' ? ' or LeadSource = \'' + str3 + '\')' : '';
-                QueryStr += ' and createddate <=:PointMonthEnd ';
-            }
-            
-            QueryStr += ' order by Name';
-            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
 
-            Con = new ApexPages.StandardSetController(
-                Database.getQueryLocator(QueryStr)
-            );
-            Con.setPageSize(size);
+            String opportunity_dashboard_query = opp_dashb_query;
+
+            opportunity_dashboard_query += ' WHERE  (Opportunity_GL_Var_1__r.Name = \'Seawin China\' OR Opportunity_GL_Var_1__r.Name = \'Seawin Hong Kong\')';
+            opportunity_dashboard_query += ' AND Opportunity_Forecast_Category__c =\'Pipeline\' ';
+            opportunity_dashboard_query += ' AND Inserting_Year__c =: max_year ';
+            opportunity_dashboard_query += ' AND Inserting_Month__c =: max_month ';
+            
+            // opportunity_dashboard_query += ' AND Inserting_Year__c =: max_year ';
+            // opportunity_dashboard_query += ' AND Inserting_Month__c =: max_month ';
+
+
+            if (click == 'legend' || click == 'point') {
+                opportunity_dashboard_query += str == '' ? ' and (Opportunity_Lead_Source__c = \'' + str + '\'' : ' and Opportunity_Lead_Source__c = \'' + str + '\'';
+                opportunity_dashboard_query += str == '' ? ' or Opportunity_Lead_Source__c = \'' + str2 + '\'' : '';
+                opportunity_dashboard_query += str == '' ? ' or Opportunity_Lead_Source__c = \'' + str3 + '\')' : '';
+            } else if(click == 'chart'){
+                //If chart than we show all lead sources without filtering by lead source
+            }
+
+            opportunity_dashboard_query += ' ORDER BY Opportunity__r.Name';
+
+            List<Opportunity_Dashboard__c> table_data = (List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query);
+
+            opp_dashboards = table_data;
+            calculateTotalAmountCur((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount');
+
+            calculateTotalAmount((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount__c');
         } else if (chart == 'Newly_Submitted_Quotes_SMD_CHK') {
             isOpptys = true;
             ShowSubmittedDate = true;
@@ -4146,7 +4133,7 @@ public class ListOfRecordsController {
             }
             
             QueryStr += ' order by Name,Probability desc NULLS LAST';
-            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
+            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'ExpectedRevenue');
 
             Con = new ApexPages.StandardSetController(
                 Database.getQueryLocator(QueryStr)
@@ -4302,6 +4289,12 @@ public class ListOfRecordsController {
             );
             Con.setPageSize(size);
         } else if (chart == 'Activity_Graph_Last_12_Months_SMD_CHK') {
+            /*****************************************************************************************************
+            *   @dashboard name  : Activity Graph Last 12 Months
+            *   @chart name      : Activity_Graph_Last_12_Months_SMD_CHK
+            *   @description     : Put data on list of records Page, depends on input params from front by url
+            *   @author          : Marian Lyzhychka ©Peeklogic
+            *****************************************************************************************************/
             if (String.isNotEmpty(str)) {
                 All_SalesReps_CHK.clear();
                 All_SalesReps_CHK.add(str);
@@ -4311,151 +4304,57 @@ public class ListOfRecordsController {
                 SELECT Id, Name, Team__c, inactive_date__c
                 FROM sales_rep__c
                 WHERE name IN :All_SalesReps_CHK
-            ];
-            // enigma
-            map<string, date> SalesRepDateMap = new Map<string, date>();
-            
-            //Team Logic Start
-            set<String> userTeams = new Set<String>();
-            
-            for (Sales_Rep__c team : salesReps) {
-                Set<String> users = UserData_From_Teams(team.Team__c);
-                for (string usr : users) {
-                    userTeams = new Set<String>();
-                    userTeams.add(team.name);
-                    
-                    if (UserAndTeams_Map.containsKey(usr)) {
-                        userTeams.addAll(UserAndTeams_Map.get(usr));
-                    }
-                    UserAndTeams_Map.put(usr, userTeams);
-                }
-            }
+            ];       
             
             isOpptys = true;
             showCloseDate = true;
-            
+
             String yearStr = ApexPages.currentPage().getParameters().get('year');
             String monthStr = ApexPages.currentPage().getParameters().get('month');
-            
-            Integer year = 2020;
-            INteger month = 5;
-            
-            if (yearStr != null && yearStr != '') {
-                year = Integer.valueOf(yearStr);
+            String str = Apexpages.currentPage().getParameters().get('str');
+
+            Integer year = yearStr != null && yearStr != '' ? Integer.valueOf(yearStr) : Date.Today().Year();
+            Integer month = monthStr != null && monthStr != '' ? Integer.valueOf(monthStr) : Date.Today().Month();
+
+            Map<string, integer> Last12MonthsList_CombinedMap = MainSalesManagerDashboardUSACtrl.Last12MonthsList_CombinedMap();
+
+            String max_year;
+            String max_month;
+            if(click == 'chart' || click == 'legend'){
+                Set<String> months = Last12MonthsList_CombinedMap.keySet(); //This method returns map of last 12 months, and we get last
+                List<String> list_months = new List<String>(months);
+                List<String> year_m = list_months[list_months.size() - 1].split('-');
+                max_year =  year_m[1];
+                max_month = year_m[0];
+            } else if(click == 'point'){
+                max_year = String.valueOf(year);
+                max_month = String.valueOf(month);
             }
-            
-            if (monthStr != null && monthStr != '') {
-                month = Integer.valueOf(monthStr);
-            }
-            
-            DateTime PipelineMonthStart = FindMonthStartDate(year, month);
-            
-            //DateTime PipelineMonthStart = DateTime.newInstance(year, month, 1, 0, 0, 0);
-            DateTime PipelineMonthEnd = FindMonthEndDate(year, month);
-            
-            String FirstQuery = 'Select whatid, OwnerId, owner.name, CompletedDateTime ';
-            FirstQuery += ' from task ';
-            FirstQuery += ' where what.type = \'Opportunity\' and ';
-            
+
+            String opportunity_dashboard_query = opp_dashb_query;
+
+            opportunity_dashboard_query += ' WHERE  (Opportunity_GL_Var_1__r.Name = \'Seawin China\' OR Opportunity_GL_Var_1__r.Name = \'Seawin Hong Kong\')';
+            opportunity_dashboard_query += ' AND Opportunity_Forecast_Category__c =\'Pipeline\' ';
+            opportunity_dashboard_query += ' AND Has_Activity_In_Last_Month__c = true ';
+            opportunity_dashboard_query += ' AND Inserting_Year__c =: max_year ';
+            opportunity_dashboard_query += ' AND Inserting_Month__c =: max_month ';
+            opportunity_dashboard_query += ' AND RecordTypeName__c =\'Seawin China Hospitality\' ';
+
+
             if (click == 'chart') {
-                FirstQuery += ' Owner.Name in:Inside_Sales_Users_CHK ';
-                FirstQuery += ' and (CompletedDateTime >=:Full_Start_Date and CompletedDateTime <=:Full_End_Date) ';
-            } else if (click == 'legend') {
-                FirstQuery += ' Owner.Name IN :Inside_Sales_Users_CHK ';
-                FirstQuery += ' and (CompletedDateTime >=:Full_Start_Date and CompletedDateTime <=:Full_End_Date) ';
-            } else if (click == 'point') {
-                Set<String> userIds = getUserIdsInSetFromTeamString(str, 'china');
-                FirstQuery += ' OwnerId IN :userIds ';
-                FirstQuery += ' and (CompletedDateTime >=:PipelineMonthStart and CompletedDateTime <=:PipelineMonthEnd) ';
+                opportunity_dashboard_query += ' AND Sales_Rep_Team__r.Name in:All_SalesReps_CHK';
+            } else if(click == 'legend' || click == 'point') {
+                opportunity_dashboard_query += ' AND Sales_Rep_Team__r.Name = \'' + str + '\'';
             }
+            opportunity_dashboard_query += ' ORDER BY Opportunity__r.Name';
             
-            List<task> tasks = Database.query(FirstQuery);
-            
-            if (!tasks.isEmpty()) {
-                set<id> OppIds = new Set<id>();
-                
-                map<id, opportunity> EligibleOpportunities = new Map<id, opportunity>();
-                
-                for (task t : tasks) {
-                    OppIds.add(t.whatId);
-                }
-                
-                EligibleOpportunities = new Map<id, opportunity>(
-                    [
-                        SELECT id, Sales_Rep_O__r.name, Sales_Rep_O__r.Team__c, ForecastCategoryName
-                        FROM opportunity
-                        WHERE
-                        RecordType.Name = 'Seawin China Hospitality'
-                        AND (GL_Account_Variable_1__r.Name = 'Seawin China' or
-                             GL_Account_Variable_1__r.Name = 'Seawin Hong Kong')
-                             AND ForecastCategoryName != 'Omitted'
-                        AND id IN :oppIds
-                    ]
-                );
-                
-                if (EligibleOpportunities.size() > 0) {
-                    for (task tsk : tasks) {
-                        Id key = tsk.whatid;
 
-                        Opportunity opp = new Opportunity();
-                        
-                        if (EligibleOpportunities.containsKey(key)) {
+            List<Opportunity_Dashboard__c> table_data = (List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query);
 
-                            opp = EligibleOpportunities.get(key);
+            opp_dashboards = table_data;
 
-                            DateTime RecordDate = tsk.LastModifiedDate;
-                            Boolean RemoveIt = false;
-                            
-                            string salesrepName = EligibleOpportunities.get(key)
-                                .Sales_Rep_O__r.name;
-                            
-                            Boolean BelongsToTeam = CheckUser(
-                                EligibleOpportunities.get(key).Sales_Rep_O__r.Team__c,
-                                tsk.ownerId
-                            );
-                            
-                            Date InactiveDate = SalesRepDateMap.get(SalesRepName);
-                            
-                            if (InactiveDate != null) {
-                                Date InactiveDateRevised = Date.newInstance(
-                                    InactiveDate.year(),
-                                    InactiveDate.month(),
-                                    1
-                                );
-                                
-                                Date RecordDateRevised = Date.newInstance(
-                                    RecordDate.year(),
-                                    RecordDate.month(),
-                                    1
-                                );
-                                
-                                RemoveIt = RecordDateRevised > InactiveDateRevised
-                                    ? true
-                                    : false;
-                            }
-                            
-                            if (RemoveIt || !BelongsToTeam || 
-                            opp.ForecastCategoryName != 'Pipeline') {
-                                EligibleOpportunities.remove(key);
-                            }
-                        }
-                    }
-                }
-                
-                if (EligibleOpportunities.size() > 0) {
-                    OppIds = EligibleOpportunities.keyset();
-                    
-                    String QueryStr = QueryOpportunities;
-                    QueryStr += ' id in:OppIds ';
-                    QueryStr += ' and Sales_Rep_o__r.Name in:All_SalesReps_CHK ';
-                    calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
-
-                    Con = new ApexPages.StandardSetController(
-                        Database.getQueryLocator(QueryStr)
-                    );
-                    Con.setPageSize(size);
-                }
-            }
+            calculateTotalAmountCur((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount');
+            calculateTotalAmount((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount__c');
         } else if (chart == 'Tasks_Completion_SMD_CHK') {
             isTasks = true;
             string DateStr = '';
@@ -4501,7 +4400,12 @@ public class ListOfRecordsController {
             Con.setPageSize(size);
         } else if (chart == 'Neglected_Opportunities_SMD_CHK') {
             
-            // snake
+            /*****************************************************************************************************
+            *   @dashboard name  : Neglected Opportunities
+            *   @chart name      : Neglected_Opportunities_SMD_CHK
+            *   @description     : Put data on list of records Page, depends on input params from front by url
+            *   @author          : Marian Lyzhychka ©Peeklogic
+            *****************************************************************************************************/
             isOpptys = true;
             ShowModBy = true;
             ShowModDate = true;
@@ -4509,147 +4413,54 @@ public class ListOfRecordsController {
             ShowProb = true;
             showNeglectedField = true;
 
-            Integer month = 0;
-            Integer year = 0;
-
+            
+            
             String yearStr = ApexPages.currentPage().getParameters().get('year');
             String monthStr = ApexPages.currentPage().getParameters().get('month');
-            
-            if (yearStr != null && yearStr != '') {
-                year = Integer.valueOf(yearStr);
+            String str = Apexpages.currentPage().getParameters().get('str');
+
+            Integer year = yearStr != null && yearStr != '' ? Integer.valueOf(yearStr) : Date.Today().Year();
+            Integer month = monthStr != null && monthStr != '' ? Integer.valueOf(monthStr) : Date.Today().Month();
+
+            Map<string, integer> Last12MonthsList_CombinedMap = MainSalesManagerDashboardUSACtrl.Last12MonthsList_CombinedMap();
+
+            String max_year;
+            String max_month;
+            if(click == 'chart' || click == 'legend'){
+                Set<String> months = Last12MonthsList_CombinedMap.keySet(); //This method returns map of last 12 months, and we get last
+                List<String> list_months = new List<String>(months);
+                List<String> year_m = list_months[list_months.size() - 1].split('-');
+                max_year =  year_m[1];
+                max_month = year_m[0];
+            } else if(click == 'point'){
+                max_year = String.valueOf(year);
+                max_month = String.valueOf(month);
             }
-            
-            if (monthStr != null && monthStr != '') {
-                month = Integer.valueOf(monthStr);
-            }
 
-            Date OnlyStartDate = this.OnlyStartDate();
-            Date OnlyEndDate = this.OnlyEndDate();
+            String opportunity_dashboard_query = opp_dashb_query;
 
-            // tortoise
+            opportunity_dashboard_query += ' WHERE  (Opportunity_GL_Var_1__r.Name = \'Seawin China\' OR Opportunity_GL_Var_1__r.Name = \'Seawin Hong Kong\')';
+            opportunity_dashboard_query += ' AND Opportunity_Forecast_Category__c =\'Pipeline\' ';
+            opportunity_dashboard_query += ' AND Inserting_Year__c =: max_year ';
+            opportunity_dashboard_query += ' AND Inserting_Month__c =: max_month ';
+            opportunity_dashboard_query += ' AND isNeglected__c = true ';
+            opportunity_dashboard_query += ' AND RecordTypeName__c =\'Seawin China Hospitality\' ';
 
-            Date MonthStartDate = Date.newInstance(year, month, 1);
-            Date MonthEndDate = Date.newInstance(year, month, Date.DaysInMonth(year, month));
-            
-            Date Last_Thirty_Days = date.today() - 30; // Today minus 30 days, will give us a date before 30 days
-            
-            string QueryStr = QueryOpportunities;
-            QueryStr += Test.isRunningTest()
-                ? ' Id != null '
-                : ' Parent_Opportunity__c = null and RecordType.name = \'Seawin China Hospitality\' ';
-            QueryStr += Test.isRunningTest()
-                ? ''
-                : ' and (GL_Account_Variable_1__r.name = \'Seawin China\' or ';
-            QueryStr += Test.isRunningTest()
-                ? ''
-                : ' GL_Account_Variable_1__r.name = \'Seawin Hong Kong\') ';
-            QueryStr += Test.isRunningTest()
-                ? ''
-                : ' and ForecastCategoryName = \'Pipeline\' ';
-            
             if (click == 'chart') {
-                QueryStr += ' and sales_Rep_o__r.name in:Active_SalesReps_CHK ';
-
-                QueryStr += Test.isRunningTest()
-                ? ''
-                : ' and ((LastActivityDate <:Last_Thirty_Days and LastActivityDate >=:OnlyStartDate and LastActivityDate <=:OnlyEndDate) or ';
-                QueryStr += Test.isRunningTest()
-                    ? ''
-                    : ' (LastActivityDate = null and (LastModifiedDate <:Last_Thirty_Days and LastModifiedDate >=:OnlyStartDate and LastModifiedDate <=:OnlyEndDate and ';
-                QueryStr += Test.isRunningTest()
-                    ? ''
-                    : ' LastModifiedBy.Name != \'Murtaza Ashraf\' and LastModifiedBy.Name != \'Ashraf Murtaza\'))) ';
-
-            } else if (click == 'point') {
-                QueryStr += ' and sales_Rep_o__r.name = \'' + str + '\'';
-
-                QueryStr += Test.isRunningTest()
-                ? ''
-                : ' and ((LastActivityDate <:Last_Thirty_Days and LastActivityDate >=:MonthStartDate and LastActivityDate <=:MonthEndDate) or ';
-                QueryStr += Test.isRunningTest()
-                    ? ''
-                    : ' (LastActivityDate = null and (LastModifiedDate <:Last_Thirty_Days and LastModifiedDate >=:MonthStartDate and LastModifiedDate <=:MonthEndDate and ';
-                QueryStr += Test.isRunningTest()
-                    ? ''
-                    : ' LastModifiedBy.Name != \'Murtaza Ashraf\' and LastModifiedBy.Name != \'Ashraf Murtaza\'))) ';
+                opportunity_dashboard_query += ' AND Sales_Rep_Team__r.Name in:Active_SalesReps_CHK';
+            } else if(click == 'legend' || click == 'point') {
+                opportunity_dashboard_query += ' AND Sales_Rep_Team__r.Name = \'' + str + '\'';
             }
+            opportunity_dashboard_query += ' ORDER BY Opportunity__r.Name';
             
-            QueryStr += ' order by sales_Rep_o__r.name, name asc ';
-            
-            List<Opportunity> opptys = (List<Opportunity>) Database.Query(QueryStr);
-            
-            map<id, opportunity> QualifiedOpsMap = new Map<id, opportunity>(opptys);
-            map<id, opportunity> opportunitiesMap = new Map<id, opportunity>();
-            NeglectedDaysMap = new Map<id, integer>();
-            
-            if (QualifiedOpsMap.size() > 0) {
-                for (Opportunity o : QualifiedOpsMap.values()) {
-                    if (o.HasOverdueTask || o.HasOpenActivity) {
-                        QualifiedOpsMap.remove(o.id);
-                    }
-                }
-            }
-            
-            if (QualifiedOpsMap.size() > 0) {
-                for (Opportunity o : QualifiedOpsMap.values()) {
-                    DateTime modifyDate = o.LastModifiedDate;
-                    
-                    Date LMD = Date.newInstance(
-                        modifyDate.year(),
-                        modifyDate.month(),
-                        modifyDate.day()
-                    );
-                    Date LAD = o.LastActivityDate;
-                    
-                    Integer Modified_Neg_Days = LMD.daysBetween(d);
-                    Integer Activity_Neg_Days = LAD != null ? LAD.daysBetween(d) : 0;
-                    
-                    // In the code below we will keep the one with most Neg days out of the three above, means the oldest
-                    // For example if an opportunity has Modified_Neg_Days = 5
-                    // and Activity_Neg_Days = 2, then we will keep 5 as Neg days.
-                    Integer NegDays = 0;
-                    
-                    if (
-                        Modified_Neg_Days > Activity_Neg_Days
-                    ) {
-                        NegDays = Modified_Neg_Days;
-                    } else if (
-                        Activity_Neg_Days > Modified_Neg_Days
-                    ) {
-                        NegDays = Activity_Neg_Days;
-                    }else if(Activity_Neg_Days == Modified_Neg_Days){
 
-                        NegDays = Activity_Neg_Days;
-                    }
-                    
-                    opportunitiesMap.put(o.id, o);
-                    NeglectedDaysMap.put(o.id, NegDays);
-                }
-                
-                if (opportunitiesMap.size() > 0) {
-                    // sort the map
-                    List<id> sortedKeys = this.sortEngine(NeglectedDaysMap);
-                    map<id, opportunity> sortedMap = new Map<id, opportunity>();
-                    
-                    for (id s : sortedKeys) {
-                        if (opportunitiesMap.containskey(s)) {
-                            sortedMap.put(s, opportunitiesMap.get(s));
-                        }
-                    }
-                    
-                    opportunitiesMap = sortedMap;
-                }
-            }
-            string FinalQueryStr = QueryOpportunities;
-            set<id> OpptysIds = new Set<id>(opportunitiesMap.keyset());
-            FinalQueryStr += ' id in:OpptysIds ';
-            calculateTotalAmount((List<Opportunity>)Database.query(QueryStr), 'Amount');
+            List<Opportunity_Dashboard__c> table_data = (List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query);
 
-            Con = new ApexPages.StandardSetController(
-                Database.getQueryLocator(FinalQueryStr)
-            );
-            
-            Con.setPageSize(size);
+            opp_dashboards = table_data;
+
+            calculateTotalAmount((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount__c');
+            calculateTotalAmountCur((List<Opportunity_Dashboard__c>)Database.query(opportunity_dashboard_query), 'Amount');
+
         } else if (chart == 'New_Leads_SMD_CHK') {
             isLeads = true;
             String yearStr = ApexPages.currentPage().getParameters().get('year');

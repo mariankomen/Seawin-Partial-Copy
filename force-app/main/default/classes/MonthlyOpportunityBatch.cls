@@ -9,17 +9,17 @@
 public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Database.stateful{
 
 
-    public static List<ErrorWrapper> errWrapper;
+    public static List<ErrorWrapper> errWrapper = new List<ErrorWrapper>();
 
     public MonthlyOpportunityBatch(){
-        errWrapper = new List<ErrorWrapper>();
+        //errWrapper = new List<ErrorWrapper>();
     }
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
 
         String fieldsApiNames = getOpportunityFields();
         
-        String query = 'SELECT ' + fieldsApiNames + ' FROM Opportunity WHERE ( CreatedDate = LAST_N_MONTHS:11 OR CreatedDate = THIS_MONTH )';
+        String query = 'SELECT ' + fieldsApiNames + ' FROM Opportunity WHERE CreatedDate < LAST_N_MONTHS:11';
 
         return Database.getQueryLocator(query);
 

@@ -1519,92 +1519,114 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
     
     @RemoteAction
     @ReadOnly
-    global static map<string, List<ValuesWrapper>> Active_Opportunities_By_Stage() {
-
+    global static List<AggregateResult> Active_Opportunities_By_Stage() {
+/*****************************************************************************************************
+        *   @dashboard name  : Pipeline Last 12 Months By Lead Source
+        *   @chart name      : Total_Pipeline_By_Lead_Source_SMD_USA
+        *   @description     : Preparing data for frontend rendering
+        *   @author          : Marian Lyzhychka ©Peeklogic
+        *****************************************************************************************************/
         Set<string> All_SalesReps = getAll_SalesReps();
 
-        map<string, List<ValuesWrapper>> ActiveOpptyByStageMapLocal = new Map<string, List<ValuesWrapper>>();
+        Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
+        String year_month = system.today().month() + '-' + system.today().year();
+
+        List<AggregateResult> opp_dashboard_data = [SELECT  SUM(Amount__c) amount, 
+                                                            Opportunity_StageName__c stage
+                                                            FROM Opportunity_Dashboard__c
+                                                            WHERE Month_Year__c =:year_month
+                                                            AND Opportunity_Forecast_Category__c = 'Pipeline'
+                                                            AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+                                                            AND Amount__c != null
+                                                            AND Sal_Rep_Team_Name__c IN:All_SalesReps
+                                                            GROUP BY Opportunity_StageName__c];
+        system.debug('opp_dashboard_dataopp_dashboard_data :'+JSON.serialize(opp_dashboard_data));
+        return opp_dashboard_data;
+
+        // Set<string> All_SalesReps = getAll_SalesReps();
+
+        // map<string, List<ValuesWrapper>> ActiveOpptyByStageMapLocal = new Map<string, List<ValuesWrapper>>();
         
-        List<AggregateResult> ActiveOpptyData = [select sales_rep_o__r.name name, StageName stage, sum(amount) amount
-                                                from Opportunity
-                                                where ForecastCategoryName != 'Omitted' and ForecastCategoryName != 'Closed'
-                                                and RecordType.name = 'Seawin USA Hospitality'
-                                                and GL_Account_Variable_1__r.name = 'Seawin USA'
-                                                and sales_rep_o__r.name in:All_SalesReps and amount != null and amount != 0
-                                                group by Sales_Rep_O__r.name,stagename
-                                                order by Sales_Rep_O__r.name,stagename];
+        // List<AggregateResult> ActiveOpptyData = [select sales_rep_o__r.name name, StageName stage, sum(amount) amount
+        //                                         from Opportunity
+        //                                         where ForecastCategoryName != 'Omitted' and ForecastCategoryName != 'Closed'
+        //                                         and RecordType.name = 'Seawin USA Hospitality'
+        //                                         and GL_Account_Variable_1__r.name = 'Seawin USA'
+        //                                         and sales_rep_o__r.name in:All_SalesReps and amount != null and amount != 0
+        //                                         group by Sales_Rep_O__r.name,stagename
+        //                                         order by Sales_Rep_O__r.name,stagename];
         
-        List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
-        map<string, Integer> UniqueMap = new Map<string, Integer>();
+        // List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
+        // map<string, Integer> UniqueMap = new Map<string, Integer>();
         
-        Integer i = 0;
-        if (!ActiveOpptyData.isEmpty()) {
-            // Assing the sales rep the index from the graph
-            for (AggregateResult a : ActiveOpptyData) {
-                string key = (string) a.get('name');
-                key = String.isNotEmpty(key) ? key.capitalize() : key;
+        // Integer i = 0;
+        // if (!ActiveOpptyData.isEmpty()) {
+        //     // Assing the sales rep the index from the graph
+        //     for (AggregateResult a : ActiveOpptyData) {
+        //         string key = (string) a.get('name');
+        //         key = String.isNotEmpty(key) ? key.capitalize() : key;
                 
-                if (!UniqueMap.containsKey(key)) {
-                    UniqueMap.put(key, i);
-                    i++;
-                }
-            }
-            /*
-            List<string> sortedKeysList = new List<string>();
-            if (UniqueMap.size() > 0) {
-                set<string> uniqueMapKeys = UniqueMap.keySet();
-                for (string key : uniqueMapKeys) {
-                    sortedKeysList.add(key);
-                }
-                sortedKeysList.sort();
-            }*/
-            //ActiveOpptyByStageCategories.addAll(UniqueMap.keyset());
-            //ActiveOpptyByStageCategories.addAll(sortedKeysList);
+        //         if (!UniqueMap.containsKey(key)) {
+        //             UniqueMap.put(key, i);
+        //             i++;
+        //         }
+        //     }
+        //     /*
+        //     List<string> sortedKeysList = new List<string>();
+        //     if (UniqueMap.size() > 0) {
+        //         set<string> uniqueMapKeys = UniqueMap.keySet();
+        //         for (string key : uniqueMapKeys) {
+        //             sortedKeysList.add(key);
+        //         }
+        //         sortedKeysList.sort();
+        //     }*/
+        //     //ActiveOpptyByStageCategories.addAll(UniqueMap.keyset());
+        //     //ActiveOpptyByStageCategories.addAll(sortedKeysList);
             
-            for (AggregateResult a : ActiveOpptyData) {
-                string key = (String) a.get('stage');
-                key = String.isNotEmpty(key) ? key.capitalize() : key;
+        //     for (AggregateResult a : ActiveOpptyData) {
+        //         string key = (String) a.get('stage');
+        //         key = String.isNotEmpty(key) ? key.capitalize() : key;
                 
-                ValuesList = new List<ValuesWrapper>();
+        //         ValuesList = new List<ValuesWrapper>();
                 
-                ValuesWrapper vw = new ValuesWrapper(
-                            UniqueMap.get(((String) a.get('name')).capitalize()),
-                            ((String) a.get('name')).capitalize(),
-                            null,
-                            (Decimal) a.get('amount'),
-                            null,
-                            null,
-                            null
-                        );
+        //         ValuesWrapper vw = new ValuesWrapper(
+        //                     UniqueMap.get(((String) a.get('name')).capitalize()),
+        //                     ((String) a.get('name')).capitalize(),
+        //                     null,
+        //                     (Decimal) a.get('amount'),
+        //                     null,
+        //                     null,
+        //                     null
+        //                 );
                 
-                if (ActiveOpptyByStageMapLocal.containskey(key)) {
+        //         if (ActiveOpptyByStageMapLocal.containskey(key)) {
                     
-                    ValuesList = ActiveOpptyByStageMapLocal.get(key);
-                    ValuesList.add(vw);
-                } else {
+        //             ValuesList = ActiveOpptyByStageMapLocal.get(key);
+        //             ValuesList.add(vw);
+        //         } else {
 
-                    ValuesList.add(vw);
-                }
+        //             ValuesList.add(vw);
+        //         }
                 
-                ActiveOpptyByStageMapLocal.put(((String) a.get('stage')).capitalize(), ValuesList );
-            }
-        }
+        //         ActiveOpptyByStageMapLocal.put(((String) a.get('stage')).capitalize(), ValuesList );
+        //     }
+        // }
         
-        if (ActiveOpptyByStageMapLocal.size() > 0) {
-            List<string> sortedKeys = sortedKeys(ActiveOpptyByStageMapLocal);
-            map<string, List<ValuesWrapper>> sortedMap = new Map<string, List<ValuesWrapper>>();
+        // if (ActiveOpptyByStageMapLocal.size() > 0) {
+        //     List<string> sortedKeys = sortedKeys(ActiveOpptyByStageMapLocal);
+        //     map<string, List<ValuesWrapper>> sortedMap = new Map<string, List<ValuesWrapper>>();
             
-            for (string s : sortedKeys) {
-                if (ActiveOpptyByStageMapLocal.containskey(s)) {
-                    sortedMap.put(s, ActiveOpptyByStageMapLocal.get(s));
-                }
-            }
+        //     for (string s : sortedKeys) {
+        //         if (ActiveOpptyByStageMapLocal.containskey(s)) {
+        //             sortedMap.put(s, ActiveOpptyByStageMapLocal.get(s));
+        //         }
+        //     }
             
-            ActiveOpptyByStageMapLocal = sortedMap;
-            //ActiveOpptyByStageKeys = ActiveOpptyByStageMap.Keyset();
-        }
+        //     ActiveOpptyByStageMapLocal = sortedMap;
+        //     //ActiveOpptyByStageKeys = ActiveOpptyByStageMap.Keyset();
+        // }
 
-        return ActiveOpptyByStageMapLocal;
+        // return ActiveOpptyByStageMapLocal;
     }
 
     @RemoteAction

@@ -14,17 +14,22 @@
 
         <apex:include pageName="BillingAgingDashboardUSAPage" 
         rendered="{!IF(dashboardName == 'Billing Aging Manager Dashboard USA', true, false)}"/>
+        
         <apex:include pageName="HospitalityDashboardUSAPage" 
         rendered="{!IF(dashboardName == 'Hospitality Manager Dashboard USA', true, false)}"/>
+
         <apex:include pageName="OnlineDropShipmentDashboardUSAPage" 
         rendered="{!IF(dashboardName == 'Online/Drop Shipment Manager Dashboard USA', true, false)}"/>
+
         <apex:include pageName="WholesaleDistributionDashboardUSAPage" 
         rendered="{!IF(dashboardName == 'Wholesale Manager Dashboard USA', true, false)}"/>
 
         <apex:include pageName="BillingAgingDashboardChinaPage" 
         rendered="{!IF(dashboardName == 'Billing Aging Manager Dashboard China', true, false)}"/>
+
         <apex:include pageName="HospitalityDashboardChinaPage" 
         rendered="{!IF(dashboardName == 'Hospitality Manager Dashboard China', true, false)}"/>
+
         <apex:include pageName="OEMDashboardChinaPage" 
         rendered="{!IF(dashboardName == 'OEM Dashboard China', true, false)}"/>
 

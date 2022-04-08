@@ -882,6 +882,7 @@
                 function(result, event){
 
                     if (event.status) {
+                        console.log('result leads: ',JSON.stringify(result))
                         for (var key in result) {
                             
                             mainArray = new Array();  
@@ -900,7 +901,7 @@
                             
                             SalesByLeadSourceLastTwelveMonthsData.push(midArray); 
                         }
-                        
+                        console.log('result leads SalesByLeadSourceLastTwelveMonthsData: ',JSON.stringify(SalesByLeadSourceLastTwelveMonthsData))
                         RenderChartSalesByLeadSource(SalesByLeadSourceLastTwelveMonthsData);
                     } else if (event.type === 'exception') {
                         
@@ -1481,7 +1482,25 @@
     var UserTotalPipelineData = new Array();
     
     var DataArray = new Array();
-    
+    function getMapLast12Month(){
+            let date = new Date();
+            date.setDate(1);
+            let year_month_obj = {};
+            for(let month = 1; month <= 12; month++){
+                let index = 12 - month;
+                let iteration_month = date.getMonth() + 1;
+                let iteration_year = date.getFullYear();
+
+                year_month_obj[index] = {
+                    month: iteration_month,
+                    year: iteration_year
+                }
+                //month_year_map[month] = year_month_obj;
+                date.setMonth(date.getMonth() - 1);
+            }
+
+            return year_month_obj;
+        }
     Visualforce.remoting.timeout = 120000;
     
     Visualforce.remoting.Manager.invokeAction(
@@ -1489,25 +1508,34 @@
         function(result, event){
             
             if (event.status) {
-                for (var key in result) {
-                    DataArray = new Array();
-                    
-                    result[key].forEach(buildarray);
-                    
-                    function buildarray(item, index) {
-                        
-                        var subArray = new Array();
-                        
-                        subArray.push(item.valueindex, item.amount);
-                        DataArray.push(subArray);
+                const month_year_map = getMapLast12Month();
+
+                const dashboard_arr = []
+                const month_amount = []
+                result.forEach(el => {
+                    for(let char in month_year_map){
+                        if(el.year == month_year_map[char].year && el.month == month_year_map[char].month){
+                            month_amount.push([char, el.amount])
+                        }
+                    }
+                })
+                let setted_month = []
+                month_amount.forEach(el => {
+                    setted_month.push(el[0])
+                })
+
+                for(let i = 0; i<12; i++){
+                    if(!setted_month.includes(i.toString())){
+                        month_amount.push([i.toString(), 0])
                     }
                 }
+                month_amount.sort((a, b) => b[0] - a[0]).reverse()
+                dashboard_arr.push({
+                    name: 'companydata',
+                    data: month_amount
+                })
+                RenderCompanyTotalPipelineLast12Months(dashboard_arr);
                 
-                var MainArray = {name: 'userdata', data: DataArray};
-                
-                UserTotalPipelineData.push(MainArray);
-                
-                RenderCompanyTotalPipelineLast12Months(UserTotalPipelineData);
             } else if (event.type === 'exception') {
                 
                 console.log('Exception has occured in Sales Pipeline Last 12 Months...');
@@ -1603,8 +1631,10 @@
                             
                             var month = parseInt(MonthArray.indexOf(CategArray[0]) + 1);
                             
-                            var year = parseInt(YearIndex) == 21 ? d.getFullYear() :
-                            parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                            // var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                            let full_year = '20'
+                                // var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                            var year = full_year + YearIndex
                             var duration = '';
                             
                             var chartName = "Sales Pipeline Last 12 Months";
@@ -1688,8 +1718,18 @@
                     NewlySubmittedOpportunitiesData.push(MainArray);
                 }
                 
-                NewlySubmittedOpportunities();
                 
+
+                NewlySubmittedOpportunities();
+                let setted_month = []
+                NewlySubmittedOpportunitiesData[0].data.forEach(el => setted_month.push(el[0]))
+
+                for(let i = 0; i<12; i++){
+                    if(!setted_month.includes(i)){
+                        NewlySubmittedOpportunitiesData[0].data.push([i, 0])
+                    }
+                }
+                NewlySubmittedOpportunitiesData[0].data.sort((a, b) => b[0] - a[0]).reverse()
                 RenderNewlySubmittedOpportunitiesLast12Months(NewlySubmittedOpportunitiesData);
             } else if (event.type === 'exception') {
                 
@@ -1848,7 +1888,23 @@
                     midArray = {name:key, data:mainArray, custom:key};
                     NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceData.push(midArray);
                 }
+
+
                 NewlySubmittedOpportunitiesLeadSource();
+                //console.log('NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceData: '+JSON.stringify(NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceData))
+
+                NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceData.forEach(el => {
+                    let setted_month = []
+                    el.data.forEach(el => setted_month.push(el[0]))
+
+                    for(let i = 0; i<12; i++){
+                        if(!setted_month.includes(i)){
+                            el.data.push([i, 0])
+                        }
+                    }
+                    el.data.sort((a, b) => b[0] - a[0]).reverse()
+                })
+
                 RenderNewlySubmittedOpportunitiesLeadSource(NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceData);
             } else if (event.type === 'exception') {
                 
@@ -2007,7 +2063,15 @@
                 LostOpptysData.push(mainArray);
                 
                 LostOpportunities();
-                
+                let setted_month = []
+                LostOpptysData[0].data.forEach(el => setted_month.push(el[0]))
+
+                for(let i = 0; i<12; i++){
+                    if(!setted_month.includes(i)){
+                        LostOpptysData[0].data.push([i, 0])
+                    }
+                }
+                LostOpptysData[0].data.sort((a, b) => b[0] - a[0]).reverse()
                 RenderChartLostOpportunities(LostOpptysData);
             } else if (event.type === 'exception') {
                 
@@ -2174,7 +2238,17 @@
                 }
                 
                 LostOpportunitiesLossReason();
-                
+                LossReasonsData.forEach(el => {
+                    let setted_month = []
+                    el.data.forEach(el => setted_month.push(el[0]))
+
+                    for(let i = 0; i<12; i++){
+                        if(!setted_month.includes(i)){
+                            el.data.push([i, 0])
+                        }
+                    }
+                    el.data.sort((a, b) => b[0] - a[0]).reverse()
+                })
                 RenderChartLostOpportunitiesLossReason(LossReasonsData);
             } else if (event.type === 'exception') {
                 
@@ -2406,7 +2480,12 @@
     var NeglectedOpptyData = new Array();
     var NeglectedOpptyCategories = ['31 - 60 days', '61 - 90 days', '91 - 120 days', 'Over 120 days'];
     var midArray;
-    
+    let neglecte_obj = {
+                        0: 0,
+                        1: 0,
+                        2: 0,
+                        3: 0
+                    }
     Visualforce.remoting.timeout = 120000;
     
     Visualforce.remoting.Manager.invokeAction(
@@ -2414,24 +2493,30 @@
         function(result, event){
             
             if (event.status) {
-                for (var key in result) {
-                    
-                    mainArray = new Array();
-                    
-                    result[key].forEach(buildarray);
-                    
-                    function buildarray(item, index) {
-                        
-                        var subArray = new Array();
-                        subArray.push(item.valueindex, item.amount);
-                        mainArray.push(subArray);
+                for(let char in result){
+                    let item = result[char]
+                    if(item.Opportunity_Neglected_Days__c > 30 && item.Opportunity_Neglected_Days__c <61){
+                        neglecte_obj[0]++
+                    }else if(item.Opportunity_Neglected_Days__c > 60 && item.Opportunity_Neglected_Days__c <91){
+                        neglecte_obj[1]++
+                    }else if(item.Opportunity_Neglected_Days__c > 90 && item.Opportunity_Neglected_Days__c <121){
+                        neglecte_obj[2]++
+                    } else if(item.Opportunity_Neglected_Days__c > 120) {
+                        neglecte_obj[3]++
                     }
-                    
-                    midArray = {name:key, data:mainArray, custom:key};
-                    NeglectedOpptyData.push(midArray);
+                }
+                let neglected_data = []
+                for(let index = 0; index<NeglectedOpptyCategories.length; index++){
+                    let obj = {
+                        name: NeglectedOpptyCategories[index],
+                        data: [[index, neglecte_obj[index]]],
+                        custom: NeglectedOpptyCategories[index]
+                    }
+                    neglected_data.push(obj)
                 }
                 
-                RenderChartNeglectedOpportunities(NeglectedOpptyData);
+                RenderChartNeglectedOpportunities(neglected_data);
+                // RenderChartNeglectedOpportunities(NeglectedOpptyData);
             } else if (event.type === 'exception') {
                 
                 console.log('Exception has occured in Neglected Opportunities...');
@@ -2489,7 +2574,8 @@
                 layout: 'vertical',
                 align: 'right',
                 verticalAlign: 'top',
-                floating: false
+                floating: false,
+                enabled: false
             },
             plotOptions: {
                 series: {
@@ -2545,29 +2631,17 @@
     Visualforce.remoting.Manager.invokeAction(
         '{!$RemoteAction.SalesDashboardController.Active_Opportunities_By_Stage}',
         function(result, event){
-            console.log(result);
             if (event.status) {
-                for (var key in result) {
-                    
-                    mainArray = new Array();
-                    
-                    result[key].forEach(buildarray);
-                    
-                    ActiveOpptyCategories.push(key);
-                    
-                    function buildarray(item, index) {
-                        
-                        subArray = new Array();
-                        subArray.push(item.valueindex, item.amount);
-                        mainArray.push(subArray);
-                    }
-                    
-                    midArray = {name:key, data:mainArray, custom:key};
-                    ActiveOpptyData.push(midArray);
-                }
-                console.log("Data:");
-                console.log(ActiveOpptyData);
-                RenderChartActiveOpportunitiesbyStage(ActiveOpptyData);
+                let activity_data = []
+                result.forEach((el,index) => {
+                    ActiveOpptyCategories.push(el.stage)
+                    activity_data.push({
+                        name: el.stage,
+                        data: [[index, el.amount]],
+                        custom: el.stage
+                    })
+                })
+                RenderChartActiveOpportunitiesbyStage(activity_data);
             } else if (event.type === 'exception') {
                 
                 console.log('Exception has occured in Active Opportunities by Stage...');
@@ -2638,7 +2712,7 @@
                 align: 'right',
                 verticalAlign: 'top',
                 floating: false,
-                enabled: true
+                enabled: false
             },
             plotOptions: {
                 series: {

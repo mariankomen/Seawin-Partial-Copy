@@ -353,7 +353,6 @@ public class CreateBillingFromOpportunityExtension {
         public Decimal billTypeVal {get; set;}
         public Decimal BillAmount {get; set;}
         public Decimal BillAmountHidden {get; set;}
-        
         public wrapper(OpportunityLineItem line, Decimal qb, Decimal bt, Decimal ut, Decimal btm){
             
             Decimal BillTypePart = line.TotalPrice > 0 || line.TotalPrice < 0 ? 

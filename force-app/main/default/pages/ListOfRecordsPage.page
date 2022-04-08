@@ -1,7 +1,7 @@
 <apex:page controller="ListOfRecordsController">
-    <apex:includeScript value="//cdn.jsdelivr.net/jquery/1.7/jquery.min.js"/>    
-    <apex:includeScript value="//cdn.jsdelivr.net/jquery.colresizable/1.3/colResizable.min.js"/>
-    <apex:includescript value="//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js" />
+    <apex:includeScript value="https://cdn.jsdelivr.net/jquery/1.7/jquery.min.js"/>    
+    <apex:includeScript value="https://cdn.jsdelivr.net/jquery.colresizable/1.3/colResizable.min.js"/>
+    <apex:includescript value="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js" />
     <apex:includescript value="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"/>
 
     <style>
@@ -174,13 +174,13 @@
 
             <!-- END OPP DASHBOARD -->
             <apex:variable value="{!SerialNumber}" var="k"/>
-            <apex:pageBlockTable id="opptyblock" value="{!Opportunities}" var="o" rendered="{!Opportunities.size > 0}">
+            <apex:pageBlockTable id="opptyblock" value="{!Opportunities}" var="o" style="width:100%" rendered="{!Opportunities.size > 0 || list_opps_big.size > 0}">
                 <apex:column headerValue="#">
-                    <apex:outputText value="{!k + 1}"></apex:outputText>
+                    <apex:outputText value="{!k + 1}" style="width: 40px;"></apex:outputText>
                     <apex:variable value="{!k + 1}" var="k"/>
                 </apex:column>
                 <apex:column headerValue="Opportunity Name ⇅">
-                    <apex:outputLink value="/{!o.Id}">{!o.Name}</apex:outputLink>
+                    <apex:outputLink value="/{!o.Id}" style="width: 100%;">{!o.Name}</apex:outputLink>
                 </apex:column>
                 <apex:column headerValue="Account ⇅">
                     <apex:outputField value="{!o.AccountId}"></apex:outputField>
@@ -429,9 +429,9 @@
             
 
             <apex:outputPanel style="position: relative; top: 35px; float: right; right: 25px;"
-                                rendered="{!orders.size > 0 ||
+                                rendered="{!(orders.size > 0 ||
                                     Opportunities.size > 0 || 
-                                        billings.size > 0}">
+                                        billings.size > 0) && list_opps_big.size == 0}">
                     <apex:outputLabel value="TOTAL: " 
                                     style="font-weight: bold; margin-right: 10px;">
                     </apex:outputLabel>
@@ -441,7 +441,7 @@
             </apex:outputPanel>
 
             <apex:outputPanel style="position: relative; top: 35px; float: right; right: 25px;"
-                                rendered="{!opp_dashboards.size > 0}">
+                                rendered="{!opp_dashboards.size > 0 || list_opps_big.size > 0}">
                     <apex:outputLabel value="Current End Total: " 
                                     style="font-weight: bold; margin-right: 10px;">
                     </apex:outputLabel>
@@ -455,7 +455,7 @@
                                         top: 35px; 
                                         float: right; 
                                         right: 75px;"
-                                                rendered="{!opp_dashboards.size > 0}">
+                                                rendered="{!opp_dashboards.size > 0 || list_opps_big.size > 0}">
                     <apex:outputLabel value="Month End Total: " 
                                         style="font-weight: bold; margin-right: 10px;">
                     </apex:outputLabel>
@@ -466,11 +466,7 @@
 
 
             <apex:outputPanel style="position: relative; top: 20px;"
-            rendered="{!orders.size > 0 ||
-                Opportunities.size > 0 ||
-                accounts.size > 0 ||
-                tasks.size > 0 || billings.size > 0
-                || leads.size > 0} ">
+            rendered="{!opp_dashboards.size == 0}">
                 <apex:outputtext style="font-weight: bold;" styleclass="detailText"
                                  value="Page {!pageNumber} of {!TotalPages}" rendered="{!TotalPages > 0}"></apex:outputtext>
                 <apex:panelGrid columns="5"> 

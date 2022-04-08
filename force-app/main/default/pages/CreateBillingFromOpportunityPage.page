@@ -87,7 +87,7 @@
                         <apex:inputText id="billtype" title="myTitle" styleClass="align-right clearText billtypefilled" 
                                         value="{!sow.billTypeVal}" style="width:80px" 
                                         required="false" 
-                                        onkeyup="recalculateBill(this.id, this.title,this.value, {!sow.UnbilledAmount}, {!sow.oli.UnitPrice}, {!sow.oli.Quantity}, {!sow.quantityBilled}, {!sow.oli.TotalPrice}, {!sow.billedAmount})"
+                                        onchange="recalculateBill(this.id, this.title,this.value, {!sow.UnbilledAmount}, {!sow.oli.UnitPrice}, {!sow.oli.Quantity}, {!sow.quantityBilled}, {!sow.oli.TotalPrice}, {!sow.billedAmount})"
                                         disabled="{!sow.quantityBilled == sow.oli.Quantity}">
                         </apex:inputText>
                     </apex:actionRegion>
@@ -132,7 +132,6 @@
     <script>
     var keyvalue = [];
     function calculateBillOnload(isOnChange, inputtype = ''){
-        
         // selected
         var SelectedElement = document.getElementsByClassName('istype');
         var selected = SelectedElement[0].value;
@@ -222,12 +221,10 @@
         }
         var FooterAmountIdStr = '';
         // calculate the bill amount and footer amount for the already populated percentages
-        
         for(var i = 0; i < TextInputs.length; i++){
             
             // calcuate the ids of footer amount and bill amount so we can update their amounts based on billtype
             var id = TextInputs[i].id;
-            
             var splitted = id.split(':');
             var turn = id.split(':')[4];
             
@@ -257,7 +254,6 @@
             // entered
             var entered = (TextInputs[i].value == undefined) || (TextInputs[i].value == '') || 
                 (TextInputs[i].value == null) ? 0 : parseFloat(TextInputs[i].value);
-
             var totalforActual = document.getElementById(totalpricecell).innerHTML.indexOf('(') != -1 ?
                                       -document.getElementById(totalpricecell).innerHTML.replace(/[()]/g, '').replace('$', '').replace(/,/g, '') : 
                                       document.getElementById(totalpricecell).innerHTML.replace('$', '').replace(/,/g, '');
@@ -286,6 +282,22 @@
             var amount = 0;
             if(selected == 'percent'){
                 amount = forPercent * (entered/100);
+                let isFirstBill = '{!firstBilling}'
+                if(amount.toString().includes('.') && entered < 100 && isFirstBill == 'true'){
+                    amount = trueRound(amount, 2);
+                    let second_num_after_dot = amount.toString().split('.')[1][1]
+                    if(+second_num_after_dot % 2 !== 0){
+                        while(+second_num_after_dot % 2 !== 0){
+                            amount = trueRound((forPercent * (entered/100)),2)
+                            second_num_after_dot = amount.toString().split('.')[1][1]
+                            entered -= 0.01
+                            entered = entered.toFixed(2)
+                        }
+                        TextInputs[i].value = entered;
+                        //document.getElementById(id).value = entered;
+                    }
+                }
+                
             }else if(selected == 'amount'){
                 amount = forAmount;
             }else if(selected == 'quantity'){
@@ -344,7 +356,6 @@
     
     function recalculateBill(id,selected, entered, unbilledAmount, unitprice, 
                              quantityOrdered, quantityUnbilled, actual, billedAmount){
-        
         var splitted = id.split(':');
         var turn = id.split(':')[4];
         
@@ -364,16 +375,27 @@
         
         var amount = 0;
         if(selected == 'percent'){
-            
             amount = actual * (entered/100);
+            if(entered < 0){
+                alert('Percent cant be negative.')
+                document.getElementById(id).value = '';
+                amount = 0;
+            }
+            let isFirstBill = '{!firstBilling}'
+            if(entered < 100 && entered > 0 && isFirstBill == 'true'){
+                amount = trueRound(amount, 2);
+                let second_num_after_dot = amount.toString().split('.')[1][1]
+                if(+second_num_after_dot % 2 !== 0){
+                    while(+second_num_after_dot % 2 !== 0){
+                        amount = trueRound((actual * (entered/100)),2)
+                        second_num_after_dot = amount.toString().split('.')[1][1]
+                        entered -= 0.01
+                        entered = entered.toFixed(2)
+                    }
+                    document.getElementById(id).value = entered;
+                }
+            }
             
-            //amount = RectifyAmount(parseFloat(actual), parseFloat(billedAmount), parseFloat(amount));
-			
-            // if(entered != '' && (entered > 100 || entered < 1)){
-            //     alert('Incorrect percentage.');
-            //     document.getElementById(id).value = '';
-            //     amount = 0;
-            // }else 
             if((actual < 0 && unbilledAmount > amount) || (actual > 0 && amount > unbilledAmount)){
                 alert('For the entered percentage, the Amount to Bill cannot be more than the Unbilled Amount. Please enter a smaller percentage.');
                 document.getElementById(id).value = '';

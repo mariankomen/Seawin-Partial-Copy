@@ -451,31 +451,22 @@
             '{!$RemoteAction.OEMDashboardChinaController.Monthly_Sales_Last_12_Months_OEM}',
             function (result, event) {
 
-                console.log("result data...");
-                console.log(result);
+                console.log("result data OEM..."+JSON.stringify(result));
 
                 if (event.status) {
-                    for (var key in result) {
-
-                        mainArray = new Array();
-
-                        result[key].forEach(buildarray);
-
-                        function buildarray(item, index) {
-
-                            subArray = new Array();
-                            subArray.push(item.valueindex, item.amount);
-                            mainArray.push(subArray);
-
-                            midArray = { name: key, data: mainArray, custom: key };
-
-                            MonthlySalesOEMData.push(midArray);
-                        }
+                    let MonthlySalesOEMData = []
+                    for(let char in result){
+                        let data = []
+                        result[char].forEach(el => {
+                            data.push([el.valueindex, el.amount])
+                        })
+                        MonthlySalesOEMData.push({
+                            name: char,
+                            data,
+                            custom: char
+                        })
                     }
-
-                    console.log("monthly data...");
-                    console.log(MonthlySalesOEMData);
-
+                    
                     RenderChartMonthlySalesOEM(MonthlySalesOEMData);
                 } else if (event.type === 'exception') {
 

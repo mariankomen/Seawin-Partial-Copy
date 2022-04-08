@@ -2841,7 +2841,15 @@
                     }
                     
                     NewlySubmittedOpportunities();
+                    let setted_month = []
+                    NewlySubmittedOpportunitiesData[0].data.forEach(el => setted_month.push(el[0]))
 
+                    for(let i = 0; i<12; i++){
+                        if(!setted_month.includes(i)){
+                            NewlySubmittedOpportunitiesData[0].data.push([i, 0])
+                        }
+                    }
+                    NewlySubmittedOpportunitiesData[0].data.sort((a, b) => b[0] - a[0]).reverse()
                     RenderNewlySubmittedOpportunitiesLast12Months(NewlySubmittedOpportunitiesData);
                 } else if (event.type === 'exception') {
                     
@@ -3004,6 +3012,17 @@
                 			NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamData.push(midArray);
                         }
 						NewlySubmittedOpportunitiesSalesTeam();
+                        NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamData.forEach(el => {
+                            let setted_month = []
+                            el.data.forEach(el => setted_month.push(el[0]))
+
+                            for(let i = 0; i<12; i++){
+                                if(!setted_month.includes(i)){
+                                    el.data.push([i, 0])
+                                }
+                            }
+                            el.data.sort((a, b) => b[0] - a[0]).reverse()
+                        })
                         RenderNewlySubmittedOpportunitiesSalesRepTeam(NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamData);
                     } else if (event.type === 'exception') {
                         
@@ -3169,6 +3188,17 @@
                         NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceData.push(midArray);
                     }
                     NewlySubmittedOpportunitiesLeadSource();
+                    NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceData.forEach(el => {
+                        let setted_month = []
+                        el.data.forEach(el => setted_month.push(el[0]))
+
+                        for(let i = 0; i<12; i++){
+                            if(!setted_month.includes(i)){
+                                el.data.push([i, 0])
+                            }
+                        }
+                        el.data.sort((a, b) => b[0] - a[0]).reverse()
+                    })
                     RenderNewlySubmittedOpportunitiesLeadSource(NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceData);
                     // RenderNewlySubmittedOpportunitiesLeadSource(NewlySubmittedOpportunitiesLastTwelveMonthsByLeadSourceData);
                 } else if (event.type === 'exception') {
@@ -3333,7 +3363,15 @@
                     LostOpptysData.push(mainArray);
 
                     LostOpportunities();
+                    let setted_month = []
+                    LostOpptysData[0].data.forEach(el => setted_month.push(el[0]))
 
+                    for(let i = 0; i<12; i++){
+                        if(!setted_month.includes(i)){
+                            LostOpptysData[0].data.push([i, 0])
+                        }
+                    }
+                    LostOpptysData[0].data.sort((a, b) => b[0] - a[0]).reverse()
                     RenderChartLostOpportunities(LostOpptysData);
                 } else if (event.type === 'exception') {
                     
@@ -3500,7 +3538,17 @@
                 }
 
                 LostOpportunitiesSalesTeam();
+                LostOpptysBySalesRepTeamData.forEach(el => {
+                    let setted_month = []
+                    el.data.forEach(el => setted_month.push(el[0]))
 
+                    for(let i = 0; i<12; i++){
+                        if(!setted_month.includes(i)){
+                            el.data.push([i, 0])
+                        }
+                    }
+                    el.data.sort((a, b) => b[0] - a[0]).reverse()
+                })
                 RenderChartLostOpportunitiesSalesTeam(LostOpptysBySalesRepTeamData);
             } else if (event.type === 'exception') {
                 
@@ -3670,7 +3718,17 @@
                 }
 
                 LostOpportunitiesLossReason();
+                LossReasonsData.forEach(el => {
+                    let setted_month = []
+                    el.data.forEach(el => setted_month.push(el[0]))
 
+                    for(let i = 0; i<12; i++){
+                        if(!setted_month.includes(i)){
+                            el.data.push([i, 0])
+                        }
+                    }
+                    el.data.sort((a, b) => b[0] - a[0]).reverse()
+                })
                 RenderChartLostOpportunitiesLossReason(LossReasonsData);
             } else if (event.type === 'exception') {
                 
@@ -4111,48 +4169,29 @@
         </script>
         <script>
             /* --------------------- Active Opportunities by Stage -------------------- */
-        var ActiveOpptyData = new Array();
+        //var ActiveOpptyData = new Array();
         var ActiveOpptyCategories = new Array();
         
         var midArray;
         var subArray = new Array();
+        let ActiveOpptyData = []
 
         Visualforce.remoting.timeout = 120000;
 
         Visualforce.remoting.Manager.invokeAction(
         '{!$RemoteAction.HospitalityDashboardUSAController.Active_Opportunities_By_Stage}',
             function(result, event){
-
+                console.log('active by stage result: ', result)
                 if (event.status) {
-                    let counter = 0;
-                    for (var key in result) {
 
-                        // mainArray = new Array();
-
-                        // result[key].forEach(buildarray);
-                        
-                        // function buildarray(item, index) {
-
-                        //     ActiveOpptyCategories.push(item.name);
-
-                        //     subArray = new Array();
-                        //     subArray.push(item.valueindex, item.amount);
-                            
-                        //     mainArray.push(subArray);
-                        // }
-                        
-                        // midArray = {name:key, data:mainArray, custom:key};
+                    result.forEach((el,index) => {
                         ActiveOpptyData.push({
-                                name: key,
-                                custom: key,
-                                data : [[counter, result[key].map(el => el.amount).reduce((a,b) => a+b)]]
-                            })
-                            counter++
-                        // ActiveOpptyData.push(midArray);
-                    }
-
-                    ActiveOpptyCategories = ActiveOpptyData.map(el => el.name)
-                    ActiveOpptyCategories.sort();
+                            name: el.stage,
+                            custom: el.stage,
+                            data: [[index, el.amount]]
+                        })
+                        ActiveOpptyCategories.push(el.stage)
+                    })
 
                     RenderChartActiveOpportunitiesByStage(ActiveOpptyData);
                 } else if (event.type === 'exception') {

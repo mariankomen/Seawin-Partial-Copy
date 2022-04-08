@@ -120,8 +120,25 @@ public class ListOfRecordsControllerTest {
 		insert glList;
 		
 		// --------- Create User
-		User usr = [select id from user where name='House Account' limit 1];
-		
+		// User usr = [select id from user where name='House Account' limit 1];
+		Profile pf = [Select Id from profile where Name = 'System Administrator'];
+        
+        String orgId = UserInfo.getOrganizationId(); 
+        String dateString = String.valueof(Datetime.now()).replace(' ','').replace(':','').replace('-','') ;
+        Integer RandomId = Integer.valueOf(Math.rint(Math.random()*1000000)); 
+        String uniqueName = orgId + dateString + RandomId; 
+		User usr = new User(firstname = 'House', 
+                            lastName = 'Account', 
+                            email = uniqueName + '@test' + orgId + '.org', 
+                            Username = uniqueName + '@test' + orgId + '.org', 
+                            EmailEncodingKey = 'ISO-8859-1', 
+                            Alias = uniqueName.substring(18, 23), 
+                            TimeZoneSidKey = 'America/Los_Angeles', 
+                            LocaleSidKey = 'en_US', 
+                            LanguageLocaleKey = 'en_US', 
+                            ProfileId = pf.Id
+                           ); 
+		insert usr;
 		Date d = Date.today();
 		
 		Id RecordTypeIdOpportunity = Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get('Seawin USA Hospitality').getRecordTypeId();
@@ -391,7 +408,7 @@ public class ListOfRecordsControllerTest {
 		Test.setCreatedDate(opp2.id, Date.newInstance(2020, 11, 10));
 		Test.setCreatedDate(opp4.id, Date.newInstance(TM_Start_Year, TM_Start_Month, 10));
 		
-		List<Opportunity> opps = [SELECT Id, Name, AccountId, Type, StageName, CloseDate, ContactPerson__c, GL_Account_Variable_1__c, Sales_Rep_O__c, RecordType.Name FROM Opportunity];
+		List<Opportunity> opps = [SELECT Id, Name, AccountId, Type, StageName, CloseDate, ContactPerson__c, GL_Account_Variable_1__c, Sales_Rep_O__c, RecordType.Name FROM Opportunity LIMIT 50];
 		List<Opportunity_Dashboard__c> opp_dashb = new List<Opportunity_Dashboard__c>();
 
 		for(Opportunity opportu :opps){

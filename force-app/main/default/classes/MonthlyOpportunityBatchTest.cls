@@ -73,7 +73,7 @@ public with sharing class MonthlyOpportunityBatchTest {
 
         insert opp;
 
-        Datetime testDT = Datetime.newInstance(2022, 1, 1, 1, 1, 1);
+        Datetime testDT = Datetime.newInstance(2020, 1, 1, 1, 1, 1);
         Test.setCreatedDate(opp.Id, testDT);
 
 
@@ -81,8 +81,10 @@ public with sharing class MonthlyOpportunityBatchTest {
 
     @IsTest
     public static void MonthlyOpportunityBatch_Test(){
+        Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
         Test.startTest();
         MonthlyOpportunityBatch batch = new MonthlyOpportunityBatch();
+        MonthlyOpportunityBatch.ErrorWrapper k= new MonthlyOpportunityBatch.ErrorWrapper(opp.Id, 'Test');
         Database.executeBatch(batch, 1);
         Test.stopTest();
     }
