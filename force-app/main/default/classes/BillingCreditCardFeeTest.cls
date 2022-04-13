@@ -134,6 +134,10 @@ public class BillingCreditCardFeeTest {
         ApexPages.StandardController std = new ApexPages.StandardController(billing);
         
         BillingCreditCardFeeExtension ext = new BillingCreditCardFeeExtension(std);
+        ext.lines = new List<AcctSeed__Billing_Line__c>();
+        ext.sortorder = 1;
+        ext.existing_credit_card_fee = billingline;
+
         
         BillingCreditCardFeeExtension.Wrapper wrap = new BillingCreditCardFeeExtension.Wrapper(billingline, 'TestABC'); 
         
@@ -149,6 +153,41 @@ public class BillingCreditCardFeeTest {
         ext.saveBillingLine();
 
         Test.stopTest();
+    }
 
+    @isTest
+    public static void withExistingCardFeeTest(){
+        product2 prod = [select id from product2 limit 1];
+        acctseed__Billing__c billing = [select id from acctseed__Billing__c limit 1];
+
+        AcctSeed__GL_Account__c glAcc = [SELECT Id FROM AcctSeed__GL_Account__c WHERE Name='glaccount 2' LIMIT 1];
+        acctseed__billing_line__c billingline = new acctseed__billing_line__c(AcctSeed__Billing__c=billing.id,
+                                                                                product_info__c=prod.id, 
+                                                                                Item_Description__c='test', 
+                                                                                AcctSeed__Hours_Units__c=1, 
+                                                                                AcctSeed__Rate__c=1,
+                                                                                Credit_Card_Fee__c=true,
+                                                                                AcctSeed__Revenue_GL_Account__c=glAcc.Id);
+        insert billingline;
+
+        Test.startTest();
+        
+        ApexPages.StandardController std = new ApexPages.StandardController(billing);
+        
+        BillingCreditCardFeeExtension ext = new BillingCreditCardFeeExtension(std);
+        BillingCreditCardFeeExtension.Wrapper wrap = new BillingCreditCardFeeExtension.Wrapper(billingline, 'TestABC'); 
+        
+        List<BillingCreditCardFeeExtension.Wrapper> listWrap = new List<BillingCreditCardFeeExtension.Wrapper>();
+        listWrap.add(wrap);
+        
+        ext.wrap = listWrap;
+        
+        // on product select
+        ApexPages.currentPage().getParameters().put('productId', prod.id);
+        ext.OnProductSelect();
+        
+        ext.saveBillingLine();
+
+        Test.stopTest();
     }
 }

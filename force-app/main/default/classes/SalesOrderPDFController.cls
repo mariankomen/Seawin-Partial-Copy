@@ -44,7 +44,7 @@ public without sharing class SalesOrderPDFController {
                  Sales_Price__c,Total_Price__c,AcctSeedERP__Product__r.name,
                  AcctSeedERP__Product__r.Product_Image_Short_URL__c,
                  AcctSeedERP__Product__r.ProductImageURL__c,AcctSeedERP_Description__c, ProductCode__c 
-                 FROM AcctSeedERP__Sales_Order_Line__c where  Kit__c=true AND  AcctSeedERP__Sales_Order__c =:soId 
+                 FROM AcctSeedERP__Sales_Order_Line__c where AcctSeedERP__Sales_Order__c =:soId 
                  order by sortorder__c,name,createddate asc];
         
         List<AcctSeedERP__Sales_Order_line__c> not_kit_not_kitprod = new List<AcctSeedERP__Sales_Order_line__c>();
@@ -112,12 +112,12 @@ public without sharing class SalesOrderPDFController {
 
     /*****************************************************************************************************
     *   @method      : getKitsRelation
-    *   @description : non static method used to get map of Kit parent Id and List of related children Kit Ids 
+    *   @description : static method used to get map of Kit parent Id and List of related children Kit Ids 
     *   @return      : Map<Id, List<Id>>
     *   @author      : Marian Lyzhychka ©Peeklogic
     *****************************************************************************************************/
 
-    public Map<Id, List<Id>> getKitsRelation(){
+    public static Map<Id, List<Id>> getKitsRelation(){
         List<AcctSeed__Product_Part__c> kits = [SELECT Id, Kit_Product__c, Kit_Children__c FROM AcctSeed__Product_Part__c LIMIT 50000];
         Map<Id, List<Id>> kit_parent_childrens = new Map<Id, List<Id>>();
 
@@ -219,15 +219,20 @@ public without sharing class SalesOrderPDFController {
     *************************************************************************************************************/
 
     public void checkBillingCreditMemos(Set<Id> billing_credit_memo_ids){
+        
         List<AcctSeed__Billing_Credit_Memo__c> all_credit_memos = [SELECT Id, Name,
                                                                             AcctSeed__Amount__c, 
                                                                             AcctSeed__Billing_Credit_Memo__c, 
-                                                                            AcctSeed__Billing_Invoice__c, 
+                                                                            AcctSeed__Billing_Invoice__c,
+                                                                            AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c,
+                                                                            AcctSeed__Billing_Credit_Memo__r.AcctSeed__Customer__r.Name,
+                                                                            AcctSeed__Billing_Credit_Memo__r.AcctSeed__Date__c, 
                                                                             AcctSeed__Billing_Credit_Memo__r.Name, 
                                                                             AcctSeed__Billing_Invoice__r.Name, 
                                                                             AcctSeed__Applied_Date__c
                                                                             FROM  AcctSeed__Billing_Credit_Memo__c
-                                                                            WHERE AcctSeed__Billing_Credit_Memo__c IN:billing_credit_memo_ids];
+                                                                            WHERE AcctSeed__Billing_Credit_Memo__c IN:billing_credit_memo_ids
+                                                                            AND AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c =:soId];
         if(!all_credit_memos.isEmpty()){
 
             for(AcctSeed__Billing_Credit_Memo__c mem:all_credit_memos){
@@ -293,12 +298,12 @@ public without sharing class SalesOrderPDFController {
 
     public class memo_wrapper{
 
-        public AcctSeed__Billing_Credit_Memo__c bill_memo {get; set;}
+        public AcctSeed__Billing_Credit_Memo__c billing {get; set;}
         public decimal total {get; set;}
         
         public memo_wrapper(AcctSeed__Billing_Credit_Memo__c b, decimal t){
             
-            bill_memo = b;
+            billing = b;
 			total = Math.abs(t);	
         }
     }

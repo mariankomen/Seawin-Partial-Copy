@@ -36,7 +36,7 @@
                     <apex:inputField value="{!w.line.Item_Description__c}" style="height: 50px; width: 250px;"></apex:inputField>
                 </apex:column>
                 <apex:column headerValue="Quantity">
-                    <apex:inputField value="{!w.line.AcctSeed__Hours_Units__c}"></apex:inputField>
+                    <apex:inputField value="{!w.line.AcctSeed__Hours_Units__c}" html-disabled="true"></apex:inputField>
                 </apex:column>
                 <apex:column headerValue="Unit Price">
                     <apex:inputField value="{!w.line.AcctSeed__Rate__c}"></apex:inputField>

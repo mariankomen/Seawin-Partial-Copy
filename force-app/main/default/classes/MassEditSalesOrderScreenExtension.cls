@@ -50,12 +50,28 @@ public with sharing class MassEditSalesOrderScreenExtension {
             so = [SELECT Id,name,AcctSeedERP__Status__c, AcctSeedERP__Opportunity__r.name, 
                   AcctSeedERP__Customer__r.name, AcctSeedERP__Total__c FROM AcctSeedERP__Sales_Order__c where id=:soId];
             
-            lines = [SELECT Id, Name, AcctSeedERP__Sales_Order__c, AcctSeedERP_Description__c,quantity_allocated_formula__c, 
-                     AcctSeedERP__Quantity_Ordered__c, AcctSeedERP__Product__r.name,ProductCode__c, quantity_shipped_formula__c,
-                     Item_Description__c, Sales_Price__c, Size__c,AcctSeedERP__Total__c, AcctSeedERP__Unit_Price__c, sortorder__c,
-                     Kit_Children__c, Kit__c,AcctSeedERP__Product__c, Allow_Product_Description_Change__c
-                     FROM AcctSeedERP__Sales_Order_Line__c where AcctSeedERP__Sales_Order__c =:soId 
-                     order by sortorder__c,name,createddate asc];
+            lines = [SELECT Id, 
+                            Name, 
+                            AcctSeedERP__Sales_Order__c, 
+                            AcctSeedERP_Description__c,
+                            quantity_allocated_formula__c, 
+                            AcctSeedERP__Quantity_Ordered__c, 
+                            AcctSeedERP__Product__r.name,
+                            AcctSeedERP__Product__r.Allow_Product_Description_Change__c,
+                            ProductCode__c, 
+                            quantity_shipped_formula__c,
+                            Item_Description__c, 
+                            Sales_Price__c, 
+                            Size__c,
+                            AcctSeedERP__Total__c, 
+                            AcctSeedERP__Unit_Price__c, 
+                            sortorder__c,
+                            Kit_Children__c, Kit__c,
+                            AcctSeedERP__Product__c, 
+                            Allow_Product_Description_Change__c
+                     FROM AcctSeedERP__Sales_Order_Line__c 
+                     WHERE AcctSeedERP__Sales_Order__c =:soId 
+                     ORDER BY sortorder__c,name,createddate asc];
 
             system.debug('TSETST ST lines: '+JSON.serialize(lines));
             if(lines.IsEmpty()){
