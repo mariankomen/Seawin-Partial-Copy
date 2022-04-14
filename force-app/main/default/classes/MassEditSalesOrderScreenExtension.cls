@@ -3,9 +3,10 @@ public with sharing class MassEditSalesOrderScreenExtension {
     public String soId {get; set;}
     public String solId {get; set;}
     public AcctSeedERP__Sales_Order__c so {get; set;}
-    public AcctSeedERP__Sales_Order_Line__c sol {get; set;}
     public List<AcctSeedERP__Sales_Order_Line__c> lines {get; set;}
     public Map<Id, AcctSeedERP__Sales_Order_Line__c> lines_map {get; set;}
+    
+    public Map<Id, List<childrenWrapper>> kits_parent_childs {get; set;}
     public boolean visible {get; set;}
     public Boolean LasttoDelete {get{
         
@@ -21,15 +22,21 @@ public with sharing class MassEditSalesOrderScreenExtension {
 
 
     public MassEditSalesOrderScreenExtension(ApexPages.StandardSetController std){
+        soId = ApexPages.currentPage().getParameters().get('id');
         visible = true;
         editAllProductPermission = true;
         showBack = false;
-        soId = ApexPages.currentPage().getParameters().get('id');
-        
-        String desireUserId = UserInfo.getUserId();
-        User u = [select profileId from user where id =: desireUserId];
-        String profileId = u.profileId;
+        kits_parent_childs = new Map<Id, List<childrenWrapper>>();
+
+
         LIST<ObjectPermissions> ObjPermissionList = new LIST<ObjectPermissions>();
+
+        String desireUserId = UserInfo.getUserId();
+
+        User u = [select profileId from user where id =: desireUserId];
+
+        String profileId = u.profileId;
+
         ObjPermissionList = [SELECT Id, SObjectType, PermissionsEdit FROM ObjectPermissions WHERE parentid in 
                              (select id from permissionset where PermissionSet.Profile.Id=: profileId)];
         for(ObjectPermissions objPerm :ObjPermissionList){
@@ -43,46 +50,54 @@ public with sharing class MassEditSalesOrderScreenExtension {
                 }
             }
         }
-        
+        //If user has Edit permission for Sales Order Lines
         if(editAllProductPermission == true){
             if(soId != null){ 
             
-            so = [SELECT Id,name,AcctSeedERP__Status__c, AcctSeedERP__Opportunity__r.name, 
-                  AcctSeedERP__Customer__r.name, AcctSeedERP__Total__c FROM AcctSeedERP__Sales_Order__c where id=:soId];
-            
-            lines = [SELECT Id, 
-                            Name, 
-                            AcctSeedERP__Sales_Order__c, 
-                            AcctSeedERP_Description__c,
-                            quantity_allocated_formula__c, 
-                            AcctSeedERP__Quantity_Ordered__c, 
-                            AcctSeedERP__Product__r.name,
-                            AcctSeedERP__Product__r.Allow_Product_Description_Change__c,
-                            ProductCode__c, 
-                            quantity_shipped_formula__c,
-                            Item_Description__c, 
-                            Sales_Price__c, 
-                            Size__c,
-                            AcctSeedERP__Total__c, 
-                            AcctSeedERP__Unit_Price__c, 
-                            sortorder__c,
-                            Kit_Children__c, Kit__c,
-                            AcctSeedERP__Product__c, 
-                            Allow_Product_Description_Change__c
-                     FROM AcctSeedERP__Sales_Order_Line__c 
-                     WHERE AcctSeedERP__Sales_Order__c =:soId 
-                     ORDER BY sortorder__c,name,createddate asc];
+                so = [SELECT Id,
+                            name,
+                            AcctSeedERP__Status__c, 
+                            AcctSeedERP__Opportunity__r.name, 
+                            AcctSeedERP__Customer__r.name, 
+                            AcctSeedERP__Total__c
+                        FROM AcctSeedERP__Sales_Order__c 
+                        WHERE id=:soId];
+                
+                lines = [SELECT Id, 
+                                Name, 
+                                AcctSeedERP__Sales_Order__c, 
+                                AcctSeedERP_Description__c,
+                                quantity_allocated_formula__c, 
+                                AcctSeedERP__Quantity_Ordered__c, 
+                                AcctSeedERP__Product__r.name,
+                                AcctSeedERP__Product__r.Allow_Product_Description_Change__c,
+                                ProductCode__c, 
+                                quantity_shipped_formula__c,
+                                Item_Description__c, 
+                                Sales_Price__c, 
+                                Size__c,
+                                AcctSeedERP__Total__c, 
+                                AcctSeedERP__Unit_Price__c, 
+                                sortorder__c,
+                                Kit_Children__c, Kit__c,
+                                AcctSeedERP__Product__c, 
+                                Allow_Product_Description_Change__c
+                        FROM AcctSeedERP__Sales_Order_Line__c 
+                        WHERE AcctSeedERP__Sales_Order__c =:soId 
+                        ORDER BY sortorder__c,name,createddate asc];
 
-            system.debug('TSETST ST lines: '+JSON.serialize(lines));
-            if(lines.IsEmpty()){
-                visible = false;
-                ApexPages.addmessage(new ApexPages.message(
-                    ApexPages.severity.ERROR,
-                    'No Products found.'));
+                lines_map = new Map<Id,AcctSeedERP__Sales_Order_Line__c>(lines);
+
+                if(lines.IsEmpty()){
+                    visible = false;
+                    ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,'No Products found.'));
+                }
+                //Current method will initialize kits_parent_childs Map, which we will use later
+                getKitsRelation();
             }
+            
+
         }
-        }
-        lines_map = new Map<Id,AcctSeedERP__Sales_Order_Line__c>(lines);
     }
 
 
@@ -93,18 +108,19 @@ public with sharing class MassEditSalesOrderScreenExtension {
     *   @author      : Marian Lyzhychka ©Peeklogic
     *****************************************************************************************************/
     public void handleQuantity(){
-
-        Map<Id, List<Id>> kit_parent_childrens = getKitsRelation();
-        AcctSeedERP__Sales_Order_Line__c current_updated_record = lines_map.get(newQuantity);
-        List<Id> related = kit_parent_childrens.get(current_updated_record.AcctSeedERP__Product__c);
-        
-        for(AcctSeedERP__Sales_Order_Line__c sol: lines){
-            if(related.contains(sol.AcctSeedERP__Product__c)){
-                sol.AcctSeedERP__Quantity_Ordered__c = current_updated_record.AcctSeedERP__Quantity_Ordered__c;
+        Id current_updated_parent = lines_map.get(newQuantity).AcctSeedERP__Product__c;
+        // First of all we run throught related childrens to updated line
+        // Next we check every child with every line and check does their ids is equal
+        if(kits_parent_childs.containsKey(current_updated_parent)){
+            for(childrenWrapper child: kits_parent_childs.get(current_updated_parent)){
+                for(AcctSeedERP__Sales_Order_Line__c l: lines){
+                    if(l.AcctSeedERP__Product__c == child.childrenId){
+                        l.AcctSeedERP__Quantity_Ordered__c = (lines_map.get(newQuantity).AcctSeedERP__Quantity_Ordered__c * child.children_amount).setScale(2);
+                    }
+                }
             }
         }
     }
-
 
     /*****************************************************************************************************
     *   @method      : UpdateLine
@@ -113,8 +129,12 @@ public with sharing class MassEditSalesOrderScreenExtension {
     *   @author      : Marian Lyzhychka ©Peeklogic
     *****************************************************************************************************/
     public PageReference UpdateLine(){
-        
-        update lines;
+        //On frontend part uses apex:inputfields, data will change dynamicly and we need only update records in database
+        try{
+            update lines;
+        } catch(Exception e){
+            System.debug('MassEditSalesOrderScreenExtension: '+e.getMessage());
+        }
         
         PageReference page = new PageReference('/' + soId);
         page.setRedirect(true);
@@ -129,23 +149,38 @@ public with sharing class MassEditSalesOrderScreenExtension {
     *   @author      : Marian Lyzhychka ©Peeklogic
     *****************************************************************************************************/
 
-    public Map<Id, List<Id>> getKitsRelation(){
-        List<AcctSeed__Product_Part__c> kits = [SELECT Id, Kit_Product__c, Kit_Children__c FROM AcctSeed__Product_Part__c];
-        Map<Id, List<Id>> kit_parent_childrens = new Map<Id, List<Id>>();
+    public void getKitsRelation(){
+        //Make set of uniq products from all sales order lines
+        Set<Id> ProductIds = new Set<Id>();
 
-        for(AcctSeed__Product_Part__c kit:kits){
-            if(kit.Kit_Product__c != null){
-                if(!kit_parent_childrens.containsKey(kit.Kit_Product__c)){
-                    List<Id> childrenIds = new List<Id>{kit.Kit_Children__c};
-                    kit_parent_childrens.put(kit.Kit_Product__c, childrenIds);
-                } else {
-                    kit_parent_childrens.get(kit.Kit_Product__c).add(kit.Kit_Children__c);
-                }
-            }
-            
+        for(AcctSeedERP__Sales_Order_Line__c line: lines){
+            ProductIds.add(line.AcctSeedERP__Product__c);
         }
 
-        return kit_parent_childrens;
+        List<childrenWrapper> childrensWrapper = new List<childrenWrapper>();
+
+        //Query and making list of wrapper of kit childrens, kit parents and quantity of childrens kits related to parent
+        for(AcctSeed__Product_Part__c kit_product:[SELECT Id, Name, Kit_Product__c, 
+                                                            Kit_Children__c,
+                                                            Kit_Children__r.ProductCode,
+                                                            Kit_Children__r.Description,
+                                                            Kit_Children__r.Name,
+                                                            Kit_Children__r.Allow_Product_Description_Change__c,
+                                                            Kit_Children__r.Size__c,
+                                                            AcctSeed__Quantity__c 
+                                                    FROM AcctSeed__Product_Part__c 
+                                                    WHERE Kit_Product__c in:ProductIds]){
+
+            childrensWrapper.add(new childrenWrapper(kit_product.Kit_Product__c, kit_product.Kit_Children__c, kit_product.AcctSeed__Quantity__c));                                            
+        }
+        //Making map <ParentId, List<ChildrensWrappers>>
+        for(childrenWrapper child: childrensWrapper){
+            if(!kits_parent_childs.containsKey(child.parentId)){
+                kits_parent_childs.put(child.parentId, new List<childrenWrapper>{child});
+            }else{
+                kits_parent_childs.get(child.parentId).add(child);
+            }
+        }
     }
 
     /*********************************************************************************************************************************
@@ -158,10 +193,6 @@ public with sharing class MassEditSalesOrderScreenExtension {
         
         solId = ApexPages.currentPage().getParameters().get('solId');
 
-        List<AcctSeed__Product_Part__c> kits = [SELECT Id, Kit_Product__c, Kit_Children__c FROM AcctSeed__Product_Part__c];
-        Map<Id, List<Id>> kit_parent_childrens = getKitsRelation();
-
-
         if(solid != null){
             
             // check if there are lines left
@@ -171,37 +202,48 @@ public with sharing class MassEditSalesOrderScreenExtension {
             if(leftLines.IsEmpty()){
                 // show warning that just one line left
                 LasttoDelete = true;
-                ApexPages.addmessage(new ApexPages.message(
-                    ApexPages.severity.WARNING,'Are you sure you want to delete.'));
+                ApexPages.addmessage(new ApexPages.message(ApexPages.severity.WARNING,'Are you sure you want to delete.'));
                 return null;                
             }           
             
 
-
+            
             AcctSeedERP__Sales_Order_Line__c delete_item = [SELECT Id, Kit_Children__c,
                                                                         Kit__c, 
                                                                         AcctSeedERP__Product__c
                                                                         FROM AcctSeedERP__Sales_Order_Line__c 
                                                                         where id =:solid];
-            
+
+            // First of all we check does deletable item is KIT, if its true, than we need also delete related child lines.
             if(delete_item.Kit__c){
-                if(kit_parent_childrens.containsKey(delete_item.AcctSeedERP__Product__c)){
-                    List<AcctSeedERP__Sales_Order_Line__c> deletableLine = [SELECT Id,  AcctSeedERP__Product__c,
+                Set<Id> childIds = new Set<Id>();
+                if(kits_parent_childs.containsKey(delete_item.AcctSeedERP__Product__c)){
+                    for(childrenWrapper child:kits_parent_childs.get(delete_item.AcctSeedERP__Product__c)){
+                        childIds.add(child.childrenId);
+                    }
+                    //Query related to KIT children lines
+                    List<AcctSeedERP__Sales_Order_Line__c> deletable_sol = [SELECT  Id,  
+                                                                                    AcctSeedERP__Product__c,
                                                                                     AcctSeedERP__Sales_Order__c
-                                                                                FROM AcctSeedERP__Sales_Order_Line__c 
-                                                                                where AcctSeedERP__Sales_Order__c  =:soId 
-                                                                                AND AcctSeedERP__Product__c IN: kit_parent_childrens.get(delete_item.AcctSeedERP__Product__c)]; 
-                    deletableLine.add(delete_item);
-                    delete deletableLine;
-                } else {
+                                                                            FROM AcctSeedERP__Sales_Order_Line__c 
+                                                                            WHERE AcctSeedERP__Sales_Order__c  =:soId 
+                                                                            AND AcctSeedERP__Product__c IN: childIds];
+
+                    //Out of childs we need delete also parent KIT, and we add it to deletable list.
+                    deletable_sol.add(delete_item);
+
+                    delete deletable_sol;
+                }else {
+                    //If parent dont have childrens we delete only parent
                     delete delete_item;
                 }
-            } else {
+            //If its not KIT than we just delete it.    
+            }else{
                 delete delete_item;
-            }                                                            
+            }
+                                                          
             
             String hostVal  = ApexPages.currentPage().getHeaders().get('Host');
-            system.debug(hostVal + '/apex/MassEditSalesOrderScreenPage?id='+soId);
             // redirect
             PageReference page = new PageReference('https://' + hostVal + '/apex/MassEditSalesOrderScreenPage?id='+soId); 
             Page.setRedirect(true);
@@ -270,5 +312,17 @@ public with sharing class MassEditSalesOrderScreenExtension {
         i++;
         i++;
         i++;
+    }
+
+    public class childrenWrapper{
+        Id parentId {get; set;}
+        Id childrenId {get; set;}
+        Decimal children_amount {get; set;}
+
+        public childrenWrapper(Id parId, Id chilId, Decimal amount){
+            parentId = parId;
+            childrenId = chilId;
+            children_amount = amount;
+        }
     }
 }

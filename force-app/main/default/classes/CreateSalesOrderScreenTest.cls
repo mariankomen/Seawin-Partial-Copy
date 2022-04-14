@@ -183,6 +183,7 @@ public class CreateSalesOrderScreenTest {
                                         AcctSeed__GL_Account_Variable_4__c
                                         from opportunitylineitem where
                                         opportunityid =:opp.id limit 1];
+        CreateSalesOrderScreenExtension.childrenWrapper wrapp = new CreateSalesOrderScreenExtension.childrenWrapper(lineitem.id, lineitem.id, 4);
         
         AcctSeed__Ledger__c ledger = [select id from AcctSeed__Ledger__c where name='myLedger' limit 1];
 
@@ -216,6 +217,7 @@ public class CreateSalesOrderScreenTest {
         system.assert(ext.linesList != null);
         
         ext.TryCreate();
+        ext.handleQuantity();
         
         ext.showError = false;
         system.assert(ext.showError != null);
@@ -233,7 +235,6 @@ public class CreateSalesOrderScreenTest {
         system.assert(ext.validKeys == null);
         system.assert(ext.hasSalesOrder == null);
        
-        
         test.stopTest();
     }
 }

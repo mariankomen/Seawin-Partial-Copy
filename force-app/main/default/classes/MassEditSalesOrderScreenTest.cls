@@ -261,17 +261,8 @@ public class MassEditSalesOrderScreenTest
         PageReference pageRef = Page.MassEditSalesOrderScreenPage;//Observe how we set the Page here
         Test.setCurrentPage(pageRef);
         
-        // with sales order lines
-        ApexPages.currentPage().getParameters().put('id', so.id);
-        ApexPages.StandardSetController stdset = new ApexPages.StandardSetController(soList);
-        MassEditSalesOrderScreenExtension exts = new MassEditSalesOrderScreenExtension(stdset);
-        ApexPages.currentPage().getParameters().put('solId', sol.id);
-        
-        exts.no();
-        exts.UpdateLine();
-        
-        exts.trashIt();
-        
+
+
         AcctSeedERP__Sales_Order_Line__c soliness = new AcctSeedERP__Sales_Order_Line__c(); 
         
         soliness.AcctSeedERP__Sales_Order__c = so.id;
@@ -281,12 +272,28 @@ public class MassEditSalesOrderScreenTest
         soliness.AcctSeedERP__Quantity_Ordered__c = 0;
         
         insert soliness;
+        // with sales order lines
+        ApexPages.currentPage().getParameters().put('id', so.id);
+        ApexPages.StandardSetController stdset = new ApexPages.StandardSetController(soList);
+        MassEditSalesOrderScreenExtension exts = new MassEditSalesOrderScreenExtension(stdset);
+        ApexPages.currentPage().getParameters().put('solId', sol.id);
+        
+        exts.no();
+        exts.solid = sol.id;
+        exts.UpdateLine();
+        
+        exts.trashIt();
+        MassEditSalesOrderScreenExtension.childrenWrapper wrapp = new MassEditSalesOrderScreenExtension.childrenWrapper(so.id,so.id,1);
+        
+        
         
         ApexPages.currentPage().getParameters().put('solId', soliness.id);
+        exts.newQuantity = soliness.Id;
+        exts.handleQuantity();
         exts.helpTest();
         exts.UpdateLine();
-        exts.yes();
-        
+        // exts.yes();
+        exts.handleQuantity();
         exts.back();
         
         exts.trashIt();

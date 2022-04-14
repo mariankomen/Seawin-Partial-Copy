@@ -1235,7 +1235,7 @@
         var SalesContestYTDData = new Array();
         var SalesContestYTDCategories = new Array();
         
-    	var midArray;
+        var midArray;
             var mainArray = new Array(); 
             
                 Visualforce.remoting.timeout = 120000;
@@ -1375,9 +1375,9 @@
         var SalesContestQTDCategories = new Array();
         
         var midArray;
-    	var mainArray = new Array(); 
+        var mainArray = new Array(); 
     
-    	Visualforce.remoting.timeout = 120000;
+        Visualforce.remoting.timeout = 120000;
 
         Visualforce.remoting.Manager.invokeAction(
         '{!$RemoteAction.HospitalityDashboardChinaController.Current_Sales_Contest_QTD}',
@@ -1400,7 +1400,7 @@
 
                         midArray = {name:key.split(',')[0], data:mainArray, custom:key};
             
-            			SalesContestQTDData.push(midArray);
+                        SalesContestQTDData.push(midArray);
                     }
 
                     RenderCurrentSalesContestQTD(SalesContestQTDData);
@@ -1521,29 +1521,22 @@
                 Visualforce.remoting.Manager.invokeAction(
                 '{!$RemoteAction.HospitalityDashboardChinaController.Current_Sales_Contest_TM}',
                     function(result, event){
-                        
+                        console.log('resjdhfskjdhfskjdhf:',JSON.stringify(result))
                         if (event.status) {
-                            for (var key in result) {
-                                mainArray = new Array();
-                                
-                                result[key].forEach(buildarray);
-                                
-                                SalesContestTMCategories.push(key);
-                                
-                                function buildarray(item, index) {
-        
-                                    subArray = new Array();
-                
-                                    subArray.push(item.valueindex, item.amount);
-                                    mainArray.push(subArray);
-                                }
-        
-                                midArray = {name:key, data:mainArray, custom:key};
-                    
-                                SalesContestTMData.push(midArray);
+                            let renderer_data = []
+
+                            for(let char in result){
+                                SalesContestTMCategories.push(char)
                             }
-        
-                            RenderCurrentSalesContestTM(SalesContestTMData);
+                            let first_arr = result[SalesContestTMCategories[0]]
+                            for(let char in first_arr){
+                                renderer_data.push({
+                                    name: SalesContestTMCategories[first_arr[char].valueindex],
+                                    data: [[first_arr[char].valueindex, first_arr[char].amount]],
+                                    custom: SalesContestTMCategories[first_arr[char].valueindex]
+                                })
+                            }
+                            RenderCurrentSalesContestTM(renderer_data);
                         } else if (event.type === 'exception') {
                             
                                 console.log('Exception has occured in Current Sales Contest TM...');
@@ -1654,8 +1647,8 @@
                 window.open(url, '_blank');
                 
             }
-    	
-    	var opts = {
+        
+        var opts = {
                 angle: 0, // The span of the gauge arc
                 lineWidth: 0.1, // The line thickness
                 radiusScale: 1, // Relative radius
@@ -1697,23 +1690,23 @@
                 ]
             };
     
-    		var UptodateQuota = 0.00;
-    		var UptoDatePercentage = 0.00;
-    		var UptoDateAmount = 0.00; 
+            var UptodateQuota = 0.00;
+            var UptoDatePercentage = 0.00;
+            var UptoDateAmount = 0.00; 
             var UptodateQuotaYTD = 0.00;
     
             Visualforce.remoting.timeout = 120000;
 
             // penguin
     
-    		Visualforce.remoting.Manager.invokeAction(
+            Visualforce.remoting.Manager.invokeAction(
             '{!$RemoteAction.HospitalityDashboardChinaController.Team_Quota_YTD_Check}',
                 function(result, event){
                     
                     if (event.status) {
                         
                         UptodateQuota = result;
-							
+                            
                         CallTheRenderTeamQuotaYTD(UptodateQuota);
                     } else if (event.type === 'exception') {
                         
@@ -1728,7 +1721,7 @@
                 {escape: true}
             );
 
-    	function CallTheRenderTeamQuotaYTD(UptodateQuota){
+        function CallTheRenderTeamQuotaYTD(UptodateQuota){
             
             UptodateQuotaYTD = 0.00;
             
@@ -3006,9 +2999,9 @@
                             }
 
                             midArray = {name:key, data:mainArray, custom:key};
-                			NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamData.push(midArray);
+                            NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamData.push(midArray);
                         }
-						NewlySubmittedOpportunitiesSalesTeam();
+                        NewlySubmittedOpportunitiesSalesTeam();
 
 
                         NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamData.forEach(el => {
@@ -3036,7 +3029,7 @@
                 {escape: true}
             );
 
-			function RenderNewlySubmittedOpportunitiesSalesRepTeam(NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamData){
+            function RenderNewlySubmittedOpportunitiesSalesRepTeam(NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamData){
                 var NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamLastTwelveMonths = Highcharts.chart('NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeam', {
     
                     credits: {
@@ -3130,7 +3123,7 @@
                 //For redraw the chart to add colors to the legend symbols
                 NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamLastTwelveMonths.addSeries({"data":[]});
                 NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamLastTwelveMonths.series[NewlySubmittedOpportunitiesLastTwelveMonthsBySalesRepTeamLastTwelveMonths.series.length - 1].remove();
-			}
+            }
             </script>
     <script>
         /* ------------------------- Newly Submitted Opportunities Last 12 Months by Lead Source ---------------------- */
@@ -4205,7 +4198,7 @@
                     ActiveOpptyCategories = ActiveOpptyCategories.filter(onlyUnique);
 
                     ActiveOpptyCategories.sort();
-                    console.log('ActiveOpptyData CHINA : ', JSON.stringify(ActiveOpptyData))
+
                     RenderChartActiveOpportunitiesByStage(ActiveOpptyData);
                 } else if (event.type === 'exception') {
                     

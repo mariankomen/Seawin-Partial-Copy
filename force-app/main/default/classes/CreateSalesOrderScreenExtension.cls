@@ -267,78 +267,27 @@ public class CreateSalesOrderScreenExtension {
                     Allow_Product_Description_Change__c = lw.oli.Allow_Product_Description_Change__c
                 ));
 
-                for(AcctSeed__Product_Part__c child: KitMap.get(lw.oli.Product2Id)){
-                    sortSequence++;
-                    slines.add(new AcctSeedERP__Sales_Order_Line__c(
-                        AcctSeedERP__Product__c = child.Kit_Children__c,
-                        AcctSeedERP_Description__c = child.Kit_Children__r.Description,
-                        Item_description__c = child.Kit_Children__r.Description,
-                        AcctSeedERP__Quantity_Ordered__c = child.AcctSeed__Quantity__c,
-                        size__c = child.Kit_Children__r.Size__c,
-                        AcctSeedERP__Unit_Price__c = 0,
-                        sortorder__c = sortSequence,
-                        AcctSeedERP__GL_Account_Variable_1__c = oppty.GL_Account_Variable_1__c,
-                        Kit_Children__c = true
-                    ));
+                if(KitMap.containsKey(lw.oli.Product2Id)){
+                    for(AcctSeed__Product_Part__c child: KitMap.get(lw.oli.Product2Id)){
+                        sortSequence++;
+                        slines.add(new AcctSeedERP__Sales_Order_Line__c(
+                            AcctSeedERP__Product__c = child.Kit_Children__c,
+                            AcctSeedERP_Description__c = child.Kit_Children__r.Description,
+                            Item_description__c = child.Kit_Children__r.Description,
+                            AcctSeedERP__Quantity_Ordered__c = child.AcctSeed__Quantity__c,
+                            size__c = child.Kit_Children__r.Size__c,
+                            AcctSeedERP__Unit_Price__c = 0,
+                            sortorder__c = sortSequence,
+                            AcctSeedERP__GL_Account_Variable_1__c = oppty.GL_Account_Variable_1__c,
+                            Kit_Children__c = true
+                        ));
+                    }
                 }
+                
 
                 
             }
         }
-
-
-
-
-
-
-
-        //Childrens
-
-        // for(Id childrens:KitMap.keySet()){
-
-        //     for(AcctSeed__Product_Part__c child: KitMap.get(childrens)){
-        //         sortSequence++;
-        //         slines.add(new AcctSeedERP__Sales_Order_Line__c(
-        //             AcctSeedERP__Product__c = child.Kit_Children__c,
-        //             AcctSeedERP_Description__c = child.Kit_Children__r.Description,
-        //             Item_description__c = child.Kit_Children__r.Description,
-        //             AcctSeedERP__Quantity_Ordered__c = child.AcctSeed__Quantity__c,
-        //             size__c = child.Kit_Children__r.Size__c,
-        //             AcctSeedERP__Unit_Price__c = 0,
-        //             sortorder__c = sortSequence,
-        //             AcctSeedERP__GL_Account_Variable_1__c = oppty.GL_Account_Variable_1__c,
-        //             Kit_Children__c = true
-        //         ));
-        //     }
-
-        // }
-
-
-        // for(AcctSeed__Product_Part__c part : [SELECT Id, Name, Kit_Product__c, 
-        //     Kit_Children__c,
-        //     Kit_Children__r.ProductCode,
-        //     Kit_Children__r.AcctSeed__Unit_Cost__c,
-        //     Kit_Children__r.Description,
-        //     Kit_Children__r.Size__c,
-        //     AcctSeed__Quantity__c 
-        //     FROM AcctSeed__Product_Part__c 
-        //     where Kit_Product__c in:ProductIds]){
-        //         sortSequence++;
-        //         system.debug('ID part: '+ JSON.serialize(part));
-        //         // add it to the the new sales order item list
-        //         slines.add(new AcctSeedERP__Sales_Order_Line__c(
-        //             AcctSeedERP__Product__c = part.Kit_Children__c,
-        //             AcctSeedERP_Description__c = part.Kit_Children__r.Description,
-        //             Item_description__c = part.Kit_Children__r.Description,
-        //             AcctSeedERP__Quantity_Ordered__c = KitMap.get(part.Kit_Product__c)[0].AcctSeed__Quantity__c, //part.AcctSeed__Quantity__c, //!
-        //             size__c = part.Kit_Children__r.Size__c,
-        //             AcctSeedERP__Unit_Price__c = part.Kit_Children__r.AcctSeed__Unit_Cost__c,
-        //             sortorder__c = sortSequence,
-        //             AcctSeedERP__GL_Account_Variable_1__c = oppty.GL_Account_Variable_1__c,
-        //             Kit_Children__c = true
-        //         ));
-        //     }
-        
 
 
         if(slines.IsEmpty()){

@@ -27,7 +27,7 @@ public with sharing class MassEditPurchaseOrderScreenExtension {
             
             lines = [SELECT Id, Name, AcctSeedERP__Purchase_Order__c, Description__c, 
                      AcctSeedERP__Quantity__c, AcctSeedERP__Quantity_Received__c,Quantity_Received_Formula__c,Quantity_Unreceived_Formula__c,Purchase_Price__c,
-                     AcctSeedERP__Quantity_Unreceived__c,AcctSeedERP__Product__r.name,Product_Code__c, 
+                     AcctSeedERP__Quantity_Unreceived__c,AcctSeedERP__Product__r.name,AcctSeedERP__Product__r.Allow_Product_Description_Change__c, Product_Code__c, 
                      Size__c,AcctSeedERP__Total__c, AcctSeedERP__Unit_Price__c, sort_order__c
                      FROM AcctSeedERP__Purchase_Order_Line__c where AcctSeedERP__Purchase_Order__c =:poId 
                      order by sort_order__c,name,createddate asc];

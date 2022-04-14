@@ -3,8 +3,8 @@ public class SalesOrderLineSortOrderTest {
     
     @testSetup static void createSortOrderData(){
        
-        // Profile pf = [Select Id from profile where Name = 'System Administrator']; 
-        Profile pf = [Select Id from profile where Name = 'Sales Rep'];
+        Profile pf = [Select Id from profile where Name = 'System Administrator']; 
+        // Profile pf = [Select Id from profile where Name = 'Sales Rep'];
          
         String orgId = UserInfo.getOrganizationId(); 
         String dateString = String.valueof(Datetime.now()).replace(' ','').replace(':','').replace('-','') ;
@@ -52,14 +52,19 @@ public class SalesOrderLineSortOrderTest {
         cont.AccountId = acct.Id;
         
         insert cont;
-        
+
+        AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
+        accVar.Name = 'GL acc var1';
+        accVar.AcctSeed__Type__c = 'GL Account Variable 1';
+        insert accVar;
+
         AcctSeed__GL_Account__c aegl = new AcctSeed__GL_Account__c();
         aegl.name = 'glaccount';
         aegl.AcctSeed__Type__c = 'Expense';
         aegl.AcctSeed__Sub_Type_1__c = 'Facilities';
         aegl.AcctSeed__Sub_Type_2__c = 'Rent';
         aegl.AcctSeed__Bank__c = true;
-        
+        aegl.GL_Account_Variable_1__c = accVar.Id;
         insert aegl;
         
         // create product
@@ -86,7 +91,7 @@ public class SalesOrderLineSortOrderTest {
         opp.StageName = 'Follow up';
         opp.CloseDate = system.today();
         opp.ContactPerson__c = cont.Id;
-        
+        opp.GL_Account_Variable_1__c = accVar.Id;
         insert opp;
         
         // create pricebook2
@@ -167,7 +172,7 @@ public class SalesOrderLineSortOrderTest {
         salesorder.Contact__c = cont.Id;
         salesorder.AcctSeedERP__Status__c = 'Open';
        	salesorder.AcctSeedERP__Ledger__c = ledger.id;
-
+        salesorder.GL_Account_Variable_1__c = accVar.Id;
         insert salesorder;
         
         // create a sales order
@@ -218,9 +223,14 @@ public class SalesOrderLineSortOrderTest {
         SalesOrderLineSortOrder sls = new SalesOrderLineSortOrder(stdset);
         
         ApexPages.currentPage().getParameters().put('sortstring', '[{"'+solinelist[0].id+'": 1}]');
+
         
         sls.createsort();
-        
         sls.back();
+        sls.jsonStr = 's';
+        SalesOrderLineSortOrder.SortingWrapper sortWrapper = new SalesOrderLineSortOrder.SortingWrapper(solinelist[0].id, 1);
+        SalesOrderLineSortOrder.childrenWrapper childWrapper = new SalesOrderLineSortOrder.childrenWrapper(solinelist[0].id, solinelist[0].id, 1);
+        SalesOrderLineSortOrder.saveSorting('[{"solId": "'+solinelist[0].Id+'","sortNumber": 1}]',String.valueOf(so.Id));
+        
     }
 }

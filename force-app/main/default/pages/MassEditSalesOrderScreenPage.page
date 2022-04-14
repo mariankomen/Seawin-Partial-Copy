@@ -1,4 +1,6 @@
 <apex:page standardcontroller="AcctSeedERP__Sales_Order_Line__c" recordSetVar="solines" extensions="MassEditSalesOrderScreenExtension">
+    <apex:includeScript value="https://cdn.jsdelivr.net/jquery/1.7/jquery.min.js"/>    
+    <apex:includeScript value="https://cdn.jsdelivr.net/jquery.colresizable/1.3/colResizable.min.js"/>
     <style>
         .empty{
         display: none !important;
@@ -10,6 +12,7 @@
         body .hoverDetail .bPageBlock .detailList tr th {
         border-color: transparent !important;
         }
+
     </style>
     
     <apex:sectionHeader title="Sales Order" subtitle="Edit all Sales Order Lines" rendered="{!showBack}"></apex:sectionHeader>
@@ -25,7 +28,7 @@
     
     <apex:form rendered="{!editAllProductPermission}" id="form_columns">
         <apex:sectionHeader title="Sales Order" subtitle="{!so.name}"/>
-        <apex:pageBlock title="Sales Order Lines Edit"  >
+        <apex:pageBlock title="Sales Order Lines Edit" >
             <apex:pageMessages id="msg" escape="false"></apex:pageMessages>
             <div style="text-align: right; margin-bottom: 5px" rendered="{!visible}">
                 <apex:outputPanel id="buttonsmsg">
@@ -53,45 +56,31 @@
             </apex:pageBlockSection>
 
             <apex:pageBlockSection title="Sales Order Lines" id="pbs" collapsible="false" rendered="{!visible}">
-                <apex:pageBlockTable value="{!lines}" var="line"> 
-                    <apex:column >
+                <apex:pageBlockTable value="{!lines}" var="line"  id='main_table'> 
+                    <apex:column style='width: 75px;'>
                         <apex:commandLink value="Delete" action="{!TrashIt}">
                             <apex:param name="solId" value="{!line.id}"/>
                         </apex:commandLink>
                     </apex:column> 
                     <apex:column headervalue="Product">
-                        <apex:outputText value="----" rendered="{!line.Kit_Children__c}"></apex:outputText>
+                        <apex:outputPanel>
+
+                        </apex:outputPanel>
+                        <apex:outputText value="ㅤㅤㅤ" rendered="{!line.Kit_Children__c}"></apex:outputText>
                         <apex:outputText value="{!line.AcctSeedERP__Product__r.name}"></apex:outputText>
                     </apex:column>               
                     <apex:column headervalue="Product Code">
                         <apex:outputText value="{!line.ProductCode__c}"></apex:outputText>
                     </apex:column>
-                    <apex:column headervalue="Item Description">
-                        <!-- <apex:inputField value="{!line.Item_Description__c}"></apex:inputField> -->
+                    <apex:column headervalue="Item Description" style="width:250px" >
 
+                        <apex:inputField value="{!line.Item_Description__c}" rendered="{!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:inputField>
+                        <apex:outputText value="{!line.Item_Description__c}" rendered="{!!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:outputText>
 
-
-                        <apex:outputPanel rendered="{!line.Allow_Product_Description_Change__c}">
-
-                            <apex:inputField value="{!line.Item_Description__c}" rendered="{!!line.Kit_Children__c}"></apex:inputField>
-                            <apex:outputText value="{!line.Item_Description__c}" rendered="{!line.Kit_Children__c}"></apex:outputText>
-                        </apex:outputPanel>
-                        <apex:outputPanel rendered="{!!line.Allow_Product_Description_Change__c}">
-                            <apex:outputText value="{!line.Item_Description__c}" ></apex:outputText>
-                        </apex:outputPanel>
                     </apex:column>
                     <apex:column headervalue="Size">
-
-                        <apex:outputPanel rendered="{!line.Allow_Product_Description_Change__c}">
-
-                            <apex:inputField value="{!line.Size__c}" rendered="{!!line.Kit_Children__c}"></apex:inputField>
-                            <!-- Size KIT  -->
-                            <apex:outputText value="{!line.Size__c}" rendered="{!line.Kit_Children__c}"></apex:outputText>
-                        </apex:outputPanel>
-                        <apex:outputPanel rendered="{!!line.Allow_Product_Description_Change__c}">
-                            <apex:outputText value="{!line.Size__c}" ></apex:outputText>
-                        </apex:outputPanel>
-                        
+                        <apex:inputField value="{!line.Size__c}" rendered="{!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:inputField>
+                        <apex:outputText value="{!line.Size__c}" rendered="{!!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:outputText>
                     </apex:column>
                     <apex:column headervalue="Quantity">
                         <apex:outputPanel id="quantity_field">
@@ -121,7 +110,12 @@
 
                         <apex:outputText value="{!line.AcctSeedERP__Unit_Price__c}" rendered="{!line.Kit_Children__c}"></apex:outputText> 
 
-                        <script>    
+                        <script>
+                        // $("[id$=main_table]").colResizable({
+                        //     liveDrag: true,
+                        //     draggingClass: "dragging"
+                        // }); 
+
                         var val = document.getElementById('{!$Component.salesprice}').value.replace(/,/g,'');
                         document.getElementById('{!$Component.salesprice}').value = 
                             (val == '' || val == null)?'':parseFloat(val).toFixed(2);

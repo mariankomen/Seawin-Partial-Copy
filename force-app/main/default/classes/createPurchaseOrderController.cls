@@ -57,6 +57,7 @@ public with sharing class createPurchaseOrderController {
         //fetching sales order line items
         totalitems = [SELECT count() FROM AcctSeedERP__Sales_Order_Line__c WHERE Id IN :SalesOrderLineIds];
         SalesOrderLineItems = [SELECT Id, Name, AcctSeedERP__Product__r.Name,AcctSeedERP__Unit_Price__c,
+                               AcctSeedERP__Product__r.Allow_Product_Description_Change__c,
                                AcctSeedERP__Product__r.Description,AcctSeedERP__Product__r.AcctSeedERP__Default_Vendor__c,
                                AcctSeedERP__Comment__c, AcctSeedERP__Product__c, AcctSeedERP_Description__c,SortOrder__c,
                                AcctSeedERP__Product__r.AcctSeed__Unit_Cost__c, size__c, Quantity_Allocated_formula__c,
@@ -277,6 +278,8 @@ public with sharing class createPurchaseOrderController {
             
             showdraftError = true;
         }
+
+        system.debug('Drafting: '+JSON.serialize(Drafting));
 
     }
     public PageReference create() {

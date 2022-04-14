@@ -52,10 +52,12 @@
                         <apex:outputText value="{!line.Product_Code__c}"></apex:outputText>
                     </apex:column>
                     <apex:column headervalue="Item Description">
-                        <apex:inputField value="{!line.Description__c}"></apex:inputField>
+                        <apex:inputField value="{!line.Description__c}" rendered="{!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:inputField>
+                        <apex:outputText value="{!line.Description__c}" rendered="{!!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:outputText>
                     </apex:column>
                     <apex:column headervalue="Size">
-                        <apex:inputField value="{!line.Size__c}"></apex:inputField>
+                        <apex:inputField value="{!line.Size__c}" rendered="{!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:inputField>
+                        <apex:outputText value="{!line.Size__c}" rendered="{!!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:outputText>
                     </apex:column>
                     <apex:column headervalue="Quantity">
                         <apex:inputField id="quantityfield" value="{!line.AcctSeedERP__Quantity__c}" html-min="1" required="true">

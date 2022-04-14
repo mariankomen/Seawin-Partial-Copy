@@ -5,8 +5,8 @@ public class MassEditPurchaseOrderScreenTest
         
         //TestUtility.CreateData();
         
-		Profile profile = [Select Id From Profile where Name = 'System Administrator' limit 1];
-        Profile pf = [Select Id from profile where Name = 'Sales Rep'];
+		Profile pf = [Select Id From Profile where Name = 'System Administrator' limit 1];
+        // Profile profile = [Select Id from profile where Name = 'Sales Rep'];
         
         String orgId = UserInfo.getOrganizationId(); 
         String dateString = String.valueof(Datetime.now()).replace(' ','').replace(':','').replace('-','') ;
@@ -37,7 +37,12 @@ public class MassEditPurchaseOrderScreenTest
        	cont.LastName = 'myLastName';
        	cont.AccountId = acct.Id;
        	insert cont;
-    
+
+        AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
+        accVar.Name = 'GL acc var1';
+        accVar.AcctSeed__Type__c = 'GL Account Variable 1';
+        insert accVar;
+
         Opportunity opt = new Opportunity();
         opt.Name = 'myOpportunity';
        	opt.AccountId = acct.Id;
@@ -45,6 +50,7 @@ public class MassEditPurchaseOrderScreenTest
        	opt.StageName = 'Closed Won';
        	opt.CloseDate = system.today();
        	opt.ContactPerson__c = cont.Id;
+        opt.GL_Account_Variable_1__c = accVar.Id;
        	insert opt;
         
         AcctSeed__Billing_Format__c abf = new AcctSeed__Billing_Format__c();
@@ -60,6 +66,7 @@ public class MassEditPurchaseOrderScreenTest
         gl.AcctSeed__Sub_Type_1__c = 'Liabilities';
         gl.AcctSeed__Sub_Type_2__c = 'Current Liabilities';
         gl.AcctSeed__Bank__c = true;
+        gl.GL_Account_Variable_1__c = accVar.Id;
         insert gl;
         
         Product2 prod = new Product2();
@@ -99,6 +106,7 @@ public class MassEditPurchaseOrderScreenTest
         //salesorder.GL_Account_Variable_1__c = avList[0].id;
         salesorder.Stage__c = 'Production';
         salesorder.RecordTypeId = RecordTypeIdSO;
+        salesorder.GL_Account_Variable_1__c = accVar.Id;
         //salesorder.Sales_Rep_O__c = salesrepList[0].id;
         //salesorder.Sales_Rep_O_2__c = salesrepList[1].id;
         insert salesorder;
@@ -107,10 +115,11 @@ public class MassEditPurchaseOrderScreenTest
         po.AcctSeedERP__Order_Date__c = date.today();
         po.AcctSeedERP__Status__c = 'Open';
         po.AcctSeedERP__Type__c = 'Drop Shipment';
-        po.Stage__c = 'In Production';
+        po.Stage__c = 'Production';
         po.AcctSeedERP__Purchase_Order_Format__c = abf.Id;
         po.AcctSeedERP__Ledger__c = ledger.Id;
-       // po.GL_Account_Variable_1__c = avList[0].id;
+        po.GL_Account_Variable_1__c = accVar.Id;
+
         po.Sales_Order__c = salesorder.id;
         po.AcctSeedERP__Vendor_Contact__c = cont.id;
         po.AcctSeedERP__Vendor__c = acct.Id;

@@ -27,7 +27,7 @@ public with sharing class SalesOrderLineSortOrder {
         kits_parents = new List<AcctSeedERP__Sales_Order_line__c>();
         render_childs = false;
         soId = ApexPages.currentPage().getParameters().get('id');
-        
+        isLoaded = false;
         so = [select name from acctseederp__sales_order__c where id=:soId];
         
         lines = [select id, name,acctseederp__product__c, acctseederp__product__r.name, productCode__c, 
@@ -189,7 +189,7 @@ public with sharing class SalesOrderLineSortOrder {
         public string id,sorts;
         
     }
-    class SortingWrapper{
+    public class SortingWrapper{
         public Id solId {get;set;}
         public Integer sortNumber {get;set;}
 

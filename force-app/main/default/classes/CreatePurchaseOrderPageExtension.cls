@@ -344,7 +344,7 @@ public with sharing class CreatePurchaseOrderPageExtension {
                         newsol.AcctSeedERP__Product__c = wp.SalesOrderLine.AcctSeedERP__Product__c;  
                         newsol.AcctSeedERP__Unit_Price__c = wp.SalesOrderLine.AcctSeedERP__Unit_Price__c; 
                         newsol.AcctSeedERP__Quantity_Ordered__c = POLQuantity;
-                        newsol.Allow_Product_Description_Change__c = wp.SalesOrderLine.Kit_Children__c ? false : wp.SalesOrderLine.AcctSeedERP__Product__r.Allow_Product_Description_Change__c;
+                        newsol.Allow_Product_Description_Change__c = wp.SalesOrderLine.AcctSeedERP__Product__r.Allow_Product_Description_Change__c;
                         // Line Added
                         newsol.AlternateImageURL__c = wp.SalesOrderLine.AlternateImageURL__c;
                         

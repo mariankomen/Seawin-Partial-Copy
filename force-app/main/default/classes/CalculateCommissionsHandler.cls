@@ -56,7 +56,7 @@ public class CalculateCommissionsHandler {
 
                             Decimal BillingLineTotal = BillingLineMap.containsKey(data.acctseed__billing__c) ? 
                                 BillingLineMap.get(data.acctseed__billing__c) : 0;
-                            
+                            System.debug('BillingLineTotal: '+BillingLineTotal);
                             if(data.AcctSeed__Adjustment_Amount__c == null) data.AcctSeed__Adjustment_Amount__c = 0;
                             if(data.AcctSeed__Billing__r.AcctSeed__Credit_Memo_Applied_Amount__c == null)
                                 data.AcctSeed__Billing__r.AcctSeed__Credit_Memo_Applied_Amount__c = 0;
@@ -64,7 +64,7 @@ public class CalculateCommissionsHandler {
                             Decimal BillingTotal = data.AcctSeed__Billing__r.AcctSeed__Total__c - 
                                 data.AcctSeed__Adjustment_Amount__c - 
                                 data.AcctSeed__Billing__r.AcctSeed__Credit_Memo_Applied_Amount__c;
-                            
+                                System.debug('BillingTotal: '+BillingTotal);
                             if(BillingTotal > 0 && BillingLineTotal > 0)
                                 commissions.addAll(CompileCommissions(
                                     true,
@@ -627,7 +627,7 @@ public class CalculateCommissionsHandler {
             
             SalesPercentAmount = SalesPercentAmount > ReferralPercentAmount ? 
                 SalesPercentAmount - ReferralPercentAmount : 0;
-            
+            system.debug('630 SalesPercentAmount: '+SalesPercentAmount);
             if(SalesPercentAmount > 0){
                 if((IsTeam && OwnerId != null) || (!IsTeam && SalesRepCompanyId != null))
                     commissions.add(MakeCommissions(IsCash, ReceiptId, OwnerId, ReferralId, ManufacturerId,
@@ -695,7 +695,9 @@ public class CalculateCommissionsHandler {
             else if(typeOfCommission == 'Specified'){ 
                 commission.Specified_Rep__c = SpecifiedId;
             }
-            
+            system.debug('698 IsCash:'+IsCash);
+            system.debug('698 amt:'+amt);
+            system.debug('698 amt.setScale(2, System.RoundingMode.HALF_EVEN):'+amt.setScale(2, System.RoundingMode.HALF_EVEN));
             commission.Commission_Amount__c = IsCash ? amt.setScale(2, System.RoundingMode.HALF_EVEN) : 
             amt.setScale(2, System.RoundingMode.HALF_EVEN);
             // -amt.setScale(2, System.RoundingMode.HALF_EVEN);
@@ -737,7 +739,7 @@ public class CalculateCommissionsHandler {
         
         List<AggregateResult> agrs = [select SUM(acctseed__total__c) total, acctseed__billing__c billingId
                                       from acctseed__billing_line__c where acctseed__billing__c in:billingIds
-                                      and acctseed__product__r.Commissionable_Product__c = true and acctseed__total__c > 0
+                                      and acctseed__product__r.Commissionable_Product__c = true
                                       and acctseed__total__c != null
                                       group by acctseed__billing__c LIMIT 100];
 
