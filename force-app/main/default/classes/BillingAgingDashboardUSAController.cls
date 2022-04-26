@@ -95,7 +95,7 @@ global without sharing class BillingAgingDashboardUSAController extends MainSale
                 //AverageDueDays = (TotalPricesWithDays / TotalAmounts).setScale(2);
             }
         }
-        
+        system.debug('BillingAgingMap: '+JSON.serialize(BillingAgingMap));
         return BillingAgingMap;
     }
     

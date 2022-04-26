@@ -85,8 +85,9 @@ public class OpportunitySalesProcessPathTest {
         ospp.changeStage();
         ospp.CheckUncheck();
         ospp.ReAssign();
-        
+        ospp.updateSubStage();
         test.stopTest();
 
     }
+    
 }

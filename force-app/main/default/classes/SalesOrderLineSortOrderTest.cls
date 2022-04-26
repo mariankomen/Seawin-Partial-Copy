@@ -224,7 +224,7 @@ public class SalesOrderLineSortOrderTest {
         
         ApexPages.currentPage().getParameters().put('sortstring', '[{"'+solinelist[0].id+'": 1}]');
 
-        
+        Boolean test = sls.visible;
         sls.createsort();
         sls.back();
         sls.jsonStr = 's';

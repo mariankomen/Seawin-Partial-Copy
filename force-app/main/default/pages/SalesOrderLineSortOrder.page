@@ -116,7 +116,7 @@
                                 <td class='col_9'><b>Total</b></td>
                             </tr>
                         </div>
-                        <apex:repeat value="{!kits_parents}" var="item" rendered='{!isLoaded}'>    
+                        <apex:repeat value="{!kits_parents}" var="item" >    
                             <apex:outputPanel >
                                 <table class='table_item' >
                                         <tr style="background: #fff; border-bottom: 1px solid f2f3f3;" title="{!item.Id}">
@@ -131,8 +131,8 @@
                                             <td class='col_t_9'>{!item.Total_Price__c}</td>
                                         </tr>
 
-
-                                        <apex:outputText rendered="{!render_childs}"> <!-- kind of containsKey(...) -->
+<!-- kind of containsKey(...) -->
+                                        <apex:outputText rendered="{!render_childs}"> 
                                             <apex:repeat value="{!childrens[kits[item]]}" var="item_v">
                                                 <tr style="background: #fff; border-bottom: 1px solid f2f3f3; margin-left: 25px;" title='{!item_v.Id}'>
                                                     <td class='col_t_1' style='padding-left: 25px;'>{!item_v.acctseederp__product__r.name}</td>

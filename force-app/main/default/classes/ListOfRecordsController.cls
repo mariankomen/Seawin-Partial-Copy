@@ -217,7 +217,7 @@ public class ListOfRecordsController {
 
         for(AcctSeed__Billing__c billing : billingList){
 
-            summedupamount += chart.contains('Billing_Aging') ? billing.AcctSeed__Balance__c : billing.AcctSeed__Total__c;
+            //summedupamount += chart.contains('Billing_Aging') ? billing.AcctSeed__Balance__c : billing.AcctSeed__Total__c;
 
         }
 
@@ -1626,7 +1626,7 @@ public class ListOfRecordsController {
 
             QueryStr += ' order by AcctSeed__Age__c asc, AcctSeed__Balance__c desc ';
             //! Checked does contains Billing Aging
-            calculateTotalAmount((List<AcctSeed__Billing__c>)Database.query(QueryStr), 'AcctSeed__Total__c');
+            calculateTotalAmount((List<AcctSeed__Billing__c>)Database.query(QueryStr), 'AcctSeed__Balance__c');
 
             Con = new ApexPages.StandardSetController(
                 Database.getQueryLocator(QueryStr)

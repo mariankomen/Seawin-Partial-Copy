@@ -69,6 +69,12 @@
                             <apex:selectOptions value="{!SelectedValues}" />
                         </apex:selectList>
                     </apex:panelGrid>
+
+                    
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Receive Commission</apex:outputLabel>
+                    <apex:inputField value="{!Sales_Rep__c.Receive_Commission__c}"></apex:inputField>
                 </apex:pageBlockSectionItem>
                 <apex:pageBlockSectionItem >
                     <apex:outputLabel value="Team"></apex:outputLabel>

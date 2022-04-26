@@ -1,6 +1,9 @@
 <apex:page docType="html-5.0" standardcontroller="Opportunity" extensions="OpportunitySalesProcessPathExtension" 
                showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" 
                applyBodyTag="false" id="OpportunitySalesProcessPath">
+               <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"/>
+               <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.js"/>
+               <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.ui.position.js"/>
         <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
             <head>
                 <meta charset="utf-8" />
@@ -22,10 +25,39 @@
                     /*background-color: rgba(255,255,255,0.7);*/
                     z-index:9998;
                     }
+                    
+                    .triangle{
+                        width: 16px;
+                        height: 21px;
+                        border: none;
+                        background: none;
+                    }
+                    option {
+                        background-color: #fff;
+                        color: #000;
+                        font-size: 14px;
+                    } 
+                    select {
+                        border: none;
+                        outline: none;
+                        scroll-behavior: smooth;
+                    }
+                    select:hover{
+                        cursor: pointer;
+                    } 
+                    
                 </style>
+
+                
+
+                
             </head>
             <body>
                 <apex:form >
+                <apex:actionFunction name="updateSS" action="{!updateSubStage}" rerender="" oncomplete="window.top.location.reload();" status="status">
+                    <apex:param name="newStage" value=""/>
+                </apex:actionFunction>   
+
                     <div class="slds-scope">
                         <div class="slds-grid">
                             <div class="slds-tabs--path" role="application">
@@ -55,7 +87,27 @@
                                                     </svg>
                                                     <span class="slds-assistive-text">Stage Complete</span>
                                                 </span>
-                                                <span class="slds-tabs--path__title">{!key}</span>
+                                                <span class="slds-tabs--path__title " >
+                                                    {!key} 
+
+                                                    <!-- Render substage picklist only for current stage -->
+                                                    <apex:variable value="{!dependendPicklistValues[key]}"  var="myMap"/>
+
+                                                    <apex:outputPanel rendered="{!IF(currentStage == key && myMap.size > 0, true, false)}">
+                                                        <span class='context-menu-one' >
+                                                            <select id="example3" class='triangle' onclick='substageClick(event)' onchange="substageHandler(event)">
+                                                                <option value=""></option>
+                                                                <apex:repeat value="{!dependendPicklistValues[key]}" var="stage">
+                                                                    
+                                                                    <option value="{!stage}">{!stage}</option>
+                                                                </apex:repeat>
+                                                            </select>
+                                                        </span>
+                                                    </apex:outputPanel>
+                                                    
+                                                    
+                                                    
+                                                </span>
                                             </a>
                                         </li>
                                     </apex:repeat>
@@ -147,6 +199,13 @@
                             ReAssign();
                         }
                     }
+
+                    
+
+
+                    function substageClick(e){
+                        e.stopPropagation();
+                    }
                     function changeStage(val){
                         var sentForApproval = "{!Opportunity.Sent_for_Approval__c}";
                             if((val == "Pre-Order" || val == 'Closed Won') && 
@@ -171,7 +230,18 @@
                                   midFunction(val);
                                 }
                             }
+
+
+
                     }
+                    
+                    function substageHandler(e){
+                            e.stopPropagation();
+                            let newSubStage = e.target.value
+                            updateSS(newSubStage);
+                            
+                    }
+                    
                     </script>
                     <apex:outputPanel id="redirectPanel" >
                         <apex:outputText rendered="{!shouldRedirect}">

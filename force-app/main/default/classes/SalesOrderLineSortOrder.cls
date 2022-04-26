@@ -46,7 +46,7 @@ public with sharing class SalesOrderLineSortOrder {
 
         getLinesRenderWrapper(lines);
         render_childs = childrens.size() > 0 ? true : false;
-
+        isLoaded = true;
     }
     public PageReference back(){
         
@@ -57,9 +57,6 @@ public with sharing class SalesOrderLineSortOrder {
         
     }
 
-    public List<AcctSeedERP__Sales_Order_Line__c> getLines(){
-        return lines;
-    }
     public void getLinesRenderWrapper(List<AcctSeedERP__Sales_Order_Line__c> lines){
         Map<Id, List<Id>> kit_relation = SalesOrderPDFController.getKitsRelation();
         Map<Id, AcctSeedERP__Sales_Order_Line__c> sol_map = new Map<Id, AcctSeedERP__Sales_Order_Line__c>();
@@ -75,7 +72,7 @@ public with sharing class SalesOrderLineSortOrder {
                 not_kit_not_kitprod.add(sol);
             }
         }
-
+        system.debug('not_kit_not_kitprod: '+JSON.serialize(not_kit_not_kitprod));
         /* This part of code sort Sales Order Lines in order KIT parent and above him related Kit Products */
 
         for(Id solId: sol_map.keySet()){
@@ -105,8 +102,8 @@ public with sharing class SalesOrderLineSortOrder {
             index++;
 
         }
-
-
+        
+        
         for(Id line: current_so_relation.keySet()){
             List<AcctSeedERP__Sales_Order_line__c> childrens_k = new List<AcctSeedERP__Sales_Order_line__c>();
             for(Id child: current_so_relation.get(line)){
@@ -119,8 +116,16 @@ public with sharing class SalesOrderLineSortOrder {
             childrens.add(childrens_k);
             
         }
-        kits_parents.addAll(not_kit_not_kitprod);
-        isLoaded = true;
+        
+        for(AcctSeedERP__Sales_Order_line__c not_kit:not_kit_not_kitprod){
+            List<AcctSeedERP__Sales_Order_line__c> childrens_k = new List<AcctSeedERP__Sales_Order_line__c>();
+            kits.put(not_kit, index);
+            kits_parents.add(not_kit);
+            childrens.add(childrens_k);
+            index++;
+        }
+        system.debug('kits_parents: '+kits_parents.size());
+        system.debug('childrens: '+childrens.size());
     }
 
 

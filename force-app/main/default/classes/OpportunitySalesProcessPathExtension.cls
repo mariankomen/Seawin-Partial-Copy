@@ -10,7 +10,8 @@ public class OpportunitySalesProcessPathExtension {
     private ApexPages.StandardController stdController;
     public String redirectUrl {public get; private set;}
     public boolean shouldRedirect {public get; private set;}
-    
+    public Map<String, List<String>> dependendPicklistValues {get;set;}
+    public String currentStage {get; set;}
     public string communityUrl {
         
         get{
@@ -21,6 +22,7 @@ public class OpportunitySalesProcessPathExtension {
         
     }
     
+
     private String oldStage {get; set;}
     
     public boolean hasClearanceStage {get; set;}
@@ -30,7 +32,19 @@ public class OpportunitySalesProcessPathExtension {
     }
     
     public OpportunitySalesProcessPathExtension(ApexPages.StandardController std){
-        
+        dependendPicklistValues = DependentPicklistExtension.getDependentPicklistValues(Opportunity.Sub_Stage__c);
+        List<String> picklistValues = DependentPicklistExtension.getOpportunityStages();
+
+        for(String pv: picklistValues){
+            if(!dependendPicklistValues.containsKey(pv)){
+                dependendPicklistValues.put(pv, new List<String>());
+            }
+        }
+
+
+
+
+
         this.stdController = stdController;
         
         Opp = new Opportunity();
@@ -45,7 +59,8 @@ public class OpportunitySalesProcessPathExtension {
                Approval_Package__c, submittal_approval_date__c, Financial_Clearance__c, Financial_Clearance_Date__c,
                Signed_Sales_Order__c, Contract_Date__c, approval_status__c,
                Quote_Submitted_Date__c from Opportunity where id =:std.getId() limit 1];
-        
+
+        currentStage = opp.StageName;
         oldStage = opp.StageName;
         
         if(Opp.recordtypeId != null){
@@ -145,6 +160,7 @@ public class OpportunitySalesProcessPathExtension {
                     Opp.Closed_Date__c = null;
                 }
                 Opp.StageName = stageNameIs;
+                Opp.Sub_Stage__c = '';
                 update Opp;
                 
                 shouldRedirect = true;
@@ -163,6 +179,18 @@ public class OpportunitySalesProcessPathExtension {
             }
         }
         
+        return null;
+    }
+
+    
+    public PageReference updateSubStage(){
+        string newSubStage = ApexPages.currentPage().getParameters().get('newStage'); 
+
+        Opportunity opp = [SELECT Id, Sub_Stage__c FROM Opportunity WHERE Id=:Opp.Id];
+        opp.Sub_Stage__c = newSubStage;
+        update opp;
+        redirectUrl = communityUrl + '/' + Opp.id;
+        system.debug(redirectUrl);
         return null;
     }
     public PageReference ReAssign(){

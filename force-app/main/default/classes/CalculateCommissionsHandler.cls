@@ -94,8 +94,14 @@ public class CalculateCommissionsHandler {
 
                     if(!commissions.isEmpty()){
                         try{
+                            system.debug('commissionscommissions: '+commissions.size());
+
                             insert commissions;
-                        } catch(DmlException e){
+                            for(Sales_Order_Commissions__c c:commissions){
+                                system.debug('ID:::::: '+c.Id);
+                            }
+                        } catch(Exception e){
+                            system.debug('error: '+e.getMessage());
                             ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.ERROR, 'Error during inserting new commissions: '+e));
                         }
                     } 
@@ -381,7 +387,6 @@ public class CalculateCommissionsHandler {
                     
                 }
             }
-            
             if(!Insertibles.isEmpty()){
                 insert Insertibles;
             }else{
@@ -648,6 +653,9 @@ public class CalculateCommissionsHandler {
                 }
             }
 
+            system.debug('HasSpecified; '+HasSpecified);
+            system.debug('SpecifiedId; '+SpecifiedId);
+            system.debug('SpecifiedPercent; '+SpecifiedPercent);
             if(HasSpecified && SpecifiedId != null){
                
                 if(SpecifiedPercent != null && SpecifiedPercent > 0){

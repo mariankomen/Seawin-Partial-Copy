@@ -455,7 +455,6 @@
                 "Select Product2Id FROM OpportunityLineItem WHERE opportunityid = " + "'" + oppId + "')";
             var result = sforce.connection.query(query);
             var records = result.getArray("records");
-            debugger;
             //Note: No need to understand the code given below. Thank you
             //Regards: Ajmal Shah
             for(var i = 0; i < records.length; i++){
@@ -464,7 +463,6 @@
                 var startIndex = 0, endIndex = 0;
                 for (const a of document.querySelectorAll("a")) {
                     if (a.textContent.includes(prodName)) {
-                        debugger;
                         var prodNameControl = a;
                         var dummy1 = "", dummy2 = "";
                         var desiredNoOfRows = Math.ceil(prodName.length/20);

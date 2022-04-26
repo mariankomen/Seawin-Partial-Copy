@@ -1,7 +1,7 @@
 <apex:page controller="SalesOrderPDFController" applyBodyTag="false" renderAs="pdf">
     <head>
         <style type="text/css" media="print">
-            @page:first {
+            @page {
             @top-right {
             content: element(headerFirst);
             }
