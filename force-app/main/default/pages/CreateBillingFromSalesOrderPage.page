@@ -42,7 +42,15 @@
             </apex:pageBlockSection>
             
             <apex:pageBlockTable id="thePageBlockTable" value="{!solWrapper}" var="sow" cellpadding="6" rendered="{!isLines}">
-                <apex:column value="{!sow.soLine.AcctSeedERP__Product__r.Name}" />
+                <!-- <apex:column value="{!sow.soLine.AcctSeedERP__Product__r.Name}" /> -->
+                <!-- <apex:column value="{!sow.soLine.AcctSeedERP__Product__r.Name}" rendered="{!!sow.soLine.Kit_Children__c}"/>
+                <apex:column style='padding-left: 50px;' value="{!sow.soLine.AcctSeedERP__Product__r.Name}" rendered="{!sow.soLine.Kit_Children__c}"/> -->
+
+                <apex:column headerValue="Product Name">
+                    <apex:outputText value="{!sow.soLine.AcctSeedERP__Product__r.Name}" rendered="{!!sow.soLine.Kit_Children__c}"/>
+                    <apex:outputText style='padding-left: 50px; -webkit-box-decoration-break: clone;' value="{!sow.soLine.AcctSeedERP__Product__r.Name}" rendered="{!sow.soLine.Kit_Children__c}"/>
+                </apex:column>
+
                 <apex:column styleClass="align-right" headerClass="align-right" headerValue="Quantity Ordered">
                     <apex:outputText id="quantityOrdered" value="{0, number, 0.00000}">
                         <apex:param value="{!sow.soLine.AcctSeedERP__Quantity_Ordered__c}" />
@@ -84,7 +92,7 @@
                     <apex:actionRegion >
                         <apex:inputText id="billtype" title="myTitle" styleClass="align-right clearText billtypefilled" value="{!sow.billTypeVal}" style="width:80px" 
                                         required="false" onkeyup="recalculateBill(this.id, this.title,this.value, {!sow.UnbilledAmount}, {!sow.soLine.AcctSeedERP__Unit_Price__c}, {!sow.soLine.AcctSeedERP__Quantity_Ordered__c}, {!sow.quantityBilled}, {!sow.soLine.AcctSeedERP__Total__c}, {!sow.billedAmount})"
-                                        ><!-- disabled="{!sow.quantityBilled == sow.soLine.AcctSeedERP__Quantity_Ordered__c}" -->
+                                        disabled="{!sow.quantityBilled == sow.soLine.AcctSeedERP__Quantity_Ordered__c}">
                         </apex:inputText>
                     </apex:actionRegion>
                 </apex:column>
@@ -363,7 +371,7 @@
             amount = actual * (entered/100);
             
             //amount = RectifyAmount(parseFloat(actual), parseFloat(billedAmount), parseFloat(amount));
-			
+            
             if(entered != '' && (entered > 100 || entered < 1)){
                 alert('Incorrect percentage.');
                 document.getElementById(id).value = '';
@@ -375,11 +383,11 @@
             }
         }else if(selected == 'amount'){
             if(actual.toString().indexOf('-') != -1 && entered > 0){ // if its negative amount
-            	alert('The amount cannot be more than 0.');
+                alert('The amount cannot be more than 0.');
                 document.getElementById(id).value = '';
             
             }else if(actual.toString().indexOf('-') != -1 && entered < actual){
-            	alert('The amount cannot be less than ' + actual.toFixed(2));
+                alert('The amount cannot be less than ' + actual.toFixed(2));
                 document.getElementById(id).value = '';
             
             }else if(actual.toString().indexOf('-') < 0 && entered > actual){
@@ -392,10 +400,10 @@
                 amount = (entered == undefined || entered == '' || entered == null) ? 0 : parseFloat(entered);
             }
         }else if(selected == 'quantity'){
-        	if(entered != '' && entered < 0){    
-        		alert('The quantity cannot be negative.');
+            if(entered != '' && entered < 0){    
+                alert('The quantity cannot be negative.');
                 document.getElementById(id).value = '';
-        	}else if(entered > (quantityOrdered - quantityUnbilled)){
+            }else if(entered > (quantityOrdered - quantityUnbilled)){
                 alert('The quantity cannot be more than ' + (quantityOrdered - quantityUnbilled).toFixed(4));
                 document.getElementById(id).value = '';
             }else{

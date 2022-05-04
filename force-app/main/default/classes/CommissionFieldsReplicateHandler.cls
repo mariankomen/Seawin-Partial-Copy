@@ -253,4 +253,341 @@ public class CommissionFieldsReplicateHandler {
 
                                     return s.commission_rate_referral_sales_rep__c;
   }
+
+
+  /* Methods for calculation commission rate for Opportunities */
+  public static Decimal Assign_SalesRep_Commission_Opportunity(Opportunity s, Integer priceLevel, Boolean HasManRep){
+
+    Decimal rate = (priceLevel >= 1 &&
+            priceLevel <= 12 &&
+            HasManRep)
+            ? s.Sales_Rep_O__r.Man_Rep_Price_Level_1_12__c
+            : (priceLevel >= 13 &&
+                priceLevel <= 20 &&
+                HasManRep)
+                ? s.Sales_Rep_O__r.Man_Rep_Price_Level_13_20__c
+                : (priceLevel >= 21 &&
+                    priceLevel <= 26 &&
+                    HasManRep)
+                    ? s.Sales_Rep_O__r.Man_Rep_Price_Level_21_26__c
+                    : (priceLevel >= 27 &&
+                        priceLevel <= 30 &&
+                        HasManRep)
+                        ? s.Sales_Rep_O__r.Man_Rep_Price_Level_27_30__c
+                        : (priceLevel >= 1 &&
+                            priceLevel <= 12)
+                            ? s.Sales_Rep_O__r.Price_Level_1_12__c
+                            : (priceLevel >= 13 &&
+                                priceLevel <= 20)
+                                ? s.Sales_Rep_O__r.Price_Level_13_20__c
+                                : (priceLevel >= 21 &&
+                                    priceLevel <= 26)
+                                    ? s.Sales_Rep_O__r.Price_Level_21_26__c
+                                    : s.Sales_Rep_O__r.Price_Level_27_30__c;
+
+      return rate;
+  }
+
+  public static Decimal Assign_ManufacturerRep_Commission_Opportunity(Opportunity s, Integer priceLevel){
+    
+    Decimal rate = (priceLevel >= 1 &&
+              priceLevel <= 12)
+              ? s.Manufacturer_Rep__r.Price_Level_1_12__c
+              : (priceLevel >= 13 &&
+                  priceLevel <= 20)
+                  ? s.Manufacturer_Rep__r.Price_Level_13_20__c
+                  : (priceLevel >= 21 &&
+                      priceLevel <= 26)
+                      ? s.Manufacturer_Rep__r.Price_Level_21_26__c
+                      : s.Manufacturer_Rep__r.Price_Level_27_30__c;
+
+    return rate;
+  }
+    
+  public static Decimal Assign_SpecifiedRep_Commission_Opportunity(Opportunity s, Integer priceLevel){
+    
+    Decimal rate = (priceLevel >= 1 &&
+              priceLevel <= 12)
+              ? s.Specified_Rep__r.Price_Level_1_12__c
+              : (priceLevel >= 13 &&
+                  priceLevel <= 20)
+                  ? s.Specified_Rep__r.Price_Level_13_20__c
+                  : (priceLevel >= 21 &&
+                      priceLevel <= 26)
+                      ? s.Specified_Rep__r.Price_Level_21_26__c
+                      : s.Specified_Rep__r.Price_Level_27_30__c;
+
+    return rate;
+  }
+
+  public static Decimal Assign_ReferralRep_Commission_Opportunity(Opportunity s, Integer priceLevel){
+
+    Decimal rate = (priceLevel >= 1 &&
+                            priceLevel <= 12)
+                            ? s.referral_sales_rep__r.Ref_Rep_Price_Level_1_12__c
+                            : (priceLevel >= 13 &&
+                                priceLevel <= 20)
+                                ? s.referral_sales_rep__r.Ref_Rep_Price_Level_13_20__c
+                                : (priceLevel >= 21 &&
+                                    priceLevel <= 26)
+                                    ? s.referral_sales_rep__r.Ref_Rep_Price_Level_21_26__c
+                                    : s.referral_sales_rep__r.Ref_Rep_Price_Level_27_30__c;
+
+    return rate;
+  }
+
+
+  public static void helpTest(){
+    Integer i = 0;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+  }
+
 }

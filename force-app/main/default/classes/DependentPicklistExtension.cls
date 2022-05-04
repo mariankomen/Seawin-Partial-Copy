@@ -54,8 +54,8 @@ public with sharing class DependentPicklistExtension {
 
     /*****************************************************************************************************
     *   @method       : getOpportunityStages
-    *   @description  : Current method returns list of picklist values
-    *   @return       : void
+    *   @description  : Current method returns list of picklist values of Oppportunity Stages
+    *   @return       : List<String>
     *   @author       : Marian Lyzhychka ©Peeklogic
     *****************************************************************************************************/
     public static List<String> getOpportunityStages()
@@ -65,8 +65,24 @@ public with sharing class DependentPicklistExtension {
         List<String> picklist_values = new List<String>();
         for(Schema.PicklistEntry s:ple){
             picklist_values.add(s.getLabel());
-            // System.debug('value: '+s.getLabel());
         } 
         return picklist_values;
+    }
+
+    /*****************************************************************************************************
+    *   @method       : getObjectPicklistMap
+    *   @description  : Current method returns map of picklist label and value
+    *   @return       : Map<String, String>
+    *   @author       : Marian Lyzhychka ©Peeklogic
+    *****************************************************************************************************/
+    public static Map<String, String> getObjectPicklistMap(Schema.sObjectField objectApiName)
+    {
+        Map<String, String> product_categories_map = new Map<String, String>();
+        Schema.DescribeFieldResult fieldResult = objectApiName.getDescribe();
+        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
+        for(Schema.PicklistEntry s:ple){
+            product_categories_map.put(s.getLabel(), s.getValue());
+        } 
+        return product_categories_map;
     }
 }

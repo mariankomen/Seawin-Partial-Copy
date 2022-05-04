@@ -96,10 +96,16 @@
                                                     <apex:outputPanel rendered="{!IF(currentStage == key && myMap.size > 0, true, false)}">
                                                         <span class='context-menu-one' >
                                                             <select id="example3" class='triangle' onclick='substageClick(event)' onchange="substageHandler(event)">
-                                                                <option value=""></option>
+                                                                <option value="">--None--</option>
                                                                 <apex:repeat value="{!dependendPicklistValues[key]}" var="stage">
                                                                     
+                                                                <apex:outputPanel rendered="{!currentSubStage != null && stage == currentSubStage }">
+                                                                    <option value="{!stage}" selected='selected'>{!stage}</option>
+                                                                </apex:outputPanel>
+                                                                <apex:outputPanel rendered="{!currentSubStage != stage}">
                                                                     <option value="{!stage}">{!stage}</option>
+                                                                </apex:outputPanel>
+
                                                                 </apex:repeat>
                                                             </select>
                                                         </span>
@@ -135,7 +141,7 @@
                                                                     onchange="CheckboxChanged();" 
                                                                     disabled="{!!$User.Check_Approval_Package__c}"/>
                                                    <span class="slds-checkbox--faux"></span>
-                                                   <span class="slds-form-element__label">Approval Package</span>
+                                                   <span class="slds-form-element__label">Submittal Package</span>
                                           </label>
                                        </div>
                                     </div>
@@ -236,10 +242,10 @@
                     }
                     
                     function substageHandler(e){
-                            e.stopPropagation();
-                            let newSubStage = e.target.value
-                            updateSS(newSubStage);
-                            
+                        e.stopPropagation();
+                        let noneValue = '--None--'
+                        let newSubStage = e.target.value == noneValue ? '' : e.target.value
+                        updateSS(newSubStage);
                     }
                     
                     </script>

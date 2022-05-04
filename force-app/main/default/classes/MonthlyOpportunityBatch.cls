@@ -19,7 +19,7 @@ public class MonthlyOpportunityBatch implements Database.Batchable<sObject>, Dat
 
         String fieldsApiNames = getOpportunityFields();
         
-        String query = 'SELECT ' + fieldsApiNames + ' FROM Opportunity WHERE CreatedDate < LAST_N_MONTHS:11';
+        String query = 'SELECT ' + fieldsApiNames + ' FROM Opportunity';
 
         return Database.getQueryLocator(query);
 

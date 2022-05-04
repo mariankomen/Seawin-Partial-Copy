@@ -1,9 +1,9 @@
 @isTest
-public class AfterSalesOrderTriggerHandlerTest {
+public with sharing class AfterBillingCashReceiptExtensionTest {
     
     @TestSetup
-    static void MakeData() {
-      AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
+    static void makeData(){
+        AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
       accVar.Name = 'Seawin USA';
       accVar.AcctSeed__Type__c = 'GL Account Variable 1';
       insert accVar;
@@ -171,7 +171,7 @@ public class AfterSalesOrderTriggerHandlerTest {
       acct2.Price_Level_27_30__c = 1;
   
       insert acct2;
-  
+      Test.startTest();
       // create contact
       Contact cont = new Contact();
       cont.LastName = 'myLastName';
@@ -201,7 +201,7 @@ public class AfterSalesOrderTriggerHandlerTest {
       prod.AcctSeed__Revenue_GL_Account__c = aegl.id;
   
       insert prod;
-      Test.startTest();
+  
       // create opportunity
       Opportunity opp = new Opportunity();
   
@@ -400,44 +400,27 @@ public class AfterSalesOrderTriggerHandlerTest {
   
       insert memo;
 
-      Id RecordTypeIdSO = Schema.SObjectType.AcctSeedERP__Sales_Order__c.getRecordTypeInfosByName()
-        .get('Seawin USA Hospitality')
-        .getRecordTypeId();
-  
-      // create a sales order
-      AcctSeedERP__Sales_Order__c salesorder = new AcctSeedERP__Sales_Order__c();
-  
-      //salesorder.name = 'testSalesOrder';
-      salesorder.RecordTypeId = RecordTypeIdSO;
-      salesorder.AcctSeedERP__Customer__c = acct.Id;
-      salesorder.AcctSeedERP__Opportunity__c = opp.Id;
-      salesorder.Manufacturer_Rep__c = acct2.id;
-      salesorder.Referral_Sales_Rep__c = UserInfo.getUserId();
-      salesorder.Sales_Rep_O__c = sr.id;
-      salesorder.Contact__c = cont.Id;
-      salesorder.Price_Level__c = 'Level 3';
-      salesorder.AcctSeedERP__Status__c = 'Open';
-      salesorder.AcctSeedERP__Ledger__c = ledger.id;
-      salesorder.GL_Account_Variable_1__c = accVar.Id;
-      salesorder.Commission_Rate_Sales_Rep__c = 1;
-      salesorder.Commission_Rate_Referral_Sales_Rep__c = 1;
-      salesorder.Commission_Rate_Manufacturer_Rep__c = 1;
-      insert salesorder;
-  
-      // create a sales order
-      AcctSeedERP__Sales_Order_Line__c soline = new AcctSeedERP__Sales_Order_Line__c();
-  
-      soline.AcctSeedERP__Sales_Order__c = salesorder.id;
-      soline.AcctSeedERP__Unit_Price__c = 100;
-      soline.AcctSeedERP_Description__c = 'This is salesorder line item';
-      soline.AcctSeedERP__Product__c = prod.id;
-      soline.AcctSeedERP__Quantity_Ordered__c = 1;
-  
-      insert soline;
       Test.stopTest();
     }
-    
-    @isTest static void runTests(){
+
+    @IsTest
+    public static void unpostRelatedCashReceiptsTest(){
+        AcctSeed__Billing_Cash_Receipt__c aca = [SELECT Id, AcctSeed__Applied_Amount__c FROM AcctSeed__Billing_Cash_Receipt__c LIMIT 1];
+        aca.AcctSeed__Applied_Amount__c = 222;
         
+        List<AcctSeed__Cash_Receipt__c> data = [SELECT Id FROM AcctSeed__Cash_Receipt__c LIMIT 1];
+        Set<Id> set_ids = new Set<Id>();
+        for(AcctSeed__Cash_Receipt__c k:data){
+            set_ids.add(k.Id);
+        }
+
+        Test.startTest();
+        // update aca;
+        delete aca;
+        AfterBillingCashReceiptExtension.unpostRelatedCashReceipts(set_ids);
+        Test.stopTest();
     }
+
+
+
 }

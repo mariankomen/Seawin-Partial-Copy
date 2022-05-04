@@ -29,7 +29,11 @@ public class ProductPageExtension {
     public boolean SizeSortDown { get; set; }
     public map<id, product2> CurrentProductsMap {get; set;}
     public map<id, product2> CategoryUpdateProductsMap {get; set;}
-    
+
+    public map<String, String> categories_map {get; set;}
+    public map<String, String> family_map {get; set;}
+    public map<String, String> sub_category_map {get; set;}
+
     public string communityUrl {
 
         get{
@@ -85,6 +89,7 @@ public class ProductPageExtension {
             for (string key : ValuesMap.get(selectedCategory)) {
                 SubCategoryPicklist.add(new SelectOption(key, key));
             }
+
         }
     }
     
@@ -123,12 +128,9 @@ public class ProductPageExtension {
     public void alternateImages() {
         String prodID = Apexpages.currentPage().getParameters().get('prodID');
         String docId = Apexpages.currentPage().getParameters().get('docId');
-        system.debug('prodID: '+prodID);
-        system.debug('docId: '+docId);
         docURL = communityUrl + '/servlet/servlet.FileDownload?file=' + docId;
         
         OliAlternateImgURL.put(prodID, docURL);
-        system.debug('OliAlternateImgURL: '+OliAlternateImgURL);
     }
 
     public String getStrTabName() {
@@ -296,7 +298,12 @@ public class ProductPageExtension {
         preventAddLines = false;
         
         CategoryPicklist = new List<SelectOption>();
-        
+
+        categories_map = DependentPicklistExtension.getObjectPicklistMap(Product2.Sub_Category__c);
+        family_map = DependentPicklistExtension.getObjectPicklistMap(Product2.Category__c);
+        sub_category_map = DependentPicklistExtension.getObjectPicklistMap(Product2.Complementary_Category__c);
+
+
         fields = AllFields.Fields('Product2', new List<String>());
         
         objectId = ApexPages.currentPage().getParameters().get('id');
@@ -489,12 +496,11 @@ public class ProductPageExtension {
     }
     
     public PageReference searchByName() {
-        // String category = prod2.Category__c;
-        String category = selectedFamily;
-        // String subCategory = prod2.Sub_Category__c;
-        String subCategory = selectedCategory;
-        // String complementaryCategory = prod2.Complementary_Category__c;
-        String complementaryCategory = selectedSubCategory;
+
+        String category = family_map.containsKey(selectedFamily) ? family_map.get(selectedFamily) : selectedFamily;
+        String subCategory = categories_map.containsKey(selectedCategory) ? categories_map.get(selectedCategory) : selectedCategory;
+        String complementaryCategory = sub_category_map.containsKey(selectedSubCategory) ? sub_category_map.get(selectedSubCategory) : selectedSubCategory;
+
         Boolean isActive = ShowActiveProductsOnly;
         
         String fieldname = '';
@@ -1127,8 +1133,6 @@ queryStr +
         List<SObject> ObjectList = new List<SObject>();
         List<SObject> UpdateObjectList = new List<SObject>();
         
-        system.debug('Custom Image Map: ' + OliAlternateImgURL);
-        
         Boolean ShowKitError = false;
         
         if (section == 'oli') {
@@ -1170,8 +1174,6 @@ queryStr +
                                 (Decimal)obj.get('AcctSeedERP__Quantity__c') : 0.00;
             
 
-             system.debug('1172 productId: '+productId);
-             system.debug('1173 OliAlternateImgURL: '+JSON.serialize(OliAlternateImgURL));
                                 
             if(productId != null){
                 

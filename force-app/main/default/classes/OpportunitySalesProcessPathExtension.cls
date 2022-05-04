@@ -12,6 +12,7 @@ public class OpportunitySalesProcessPathExtension {
     public boolean shouldRedirect {public get; private set;}
     public Map<String, List<String>> dependendPicklistValues {get;set;}
     public String currentStage {get; set;}
+    public String currentSubStage {get; set;}
     public string communityUrl {
         
         get{
@@ -57,12 +58,12 @@ public class OpportunitySalesProcessPathExtension {
         
         Opp = [select id, StageName, recordtypeId, recordtype.name, Loss_Reason__c,
                Approval_Package__c, submittal_approval_date__c, Financial_Clearance__c, Financial_Clearance_Date__c,
-               Signed_Sales_Order__c, Contract_Date__c, approval_status__c,
+               Signed_Sales_Order__c, Contract_Date__c, approval_status__c,Sub_Stage__c,
                Quote_Submitted_Date__c from Opportunity where id =:std.getId() limit 1];
 
         currentStage = opp.StageName;
         oldStage = opp.StageName;
-        
+        currentSubStage = opp.Sub_Stage__c;
         if(Opp.recordtypeId != null){
             
             StagePositionMap = SalesProcessPathHelper.Process('Opportunity', 'StageName', Opp.recordtypeId);

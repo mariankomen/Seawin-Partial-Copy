@@ -20,10 +20,53 @@ public with sharing class CommissionsPDFControllerTest {
                             TimeZoneSidKey = 'America/Los_Angeles', 
                             LocaleSidKey = 'en_US', 
                             LanguageLocaleKey = 'en_US', 
-                            ProfileId = pf.Id
+                            ProfileId = pf.Id,
+                            Receive_Commission__c = 'After each payment',
+                            Ref_Rep_Price_Level_1_12__c = 4
                            ); 
         
         insert uu1;
+
+        AcctSeed__GL_Account__c gl = new AcctSeed__GL_Account__c();
+        
+        gl.name = 'GL Account First';
+        gl.AcctSeed__type__c = 'Expense';
+        gl.AcctSeed__Sub_Type_1__c = 'Facilities';
+        gl.AcctSeed__Sub_Type_1__c = 'Rent';
+        
+        insert gl;
+
+        AcctSeed__Billing_Format__c abf = new AcctSeed__Billing_Format__c();
+        
+        abf.Name = 'newPDF Format';
+        abf.AcctSeed__Type__c = 'Purchase Order';
+        abf.AcctSeed__Visualforce_PDF_Page__c = 'BillingActivityStatementPDF';
+        abf.AcctSeed__Default_Email_Template__c = 'Activity_Statement_Email_Template';
+        
+        insert abf;
+
+        List<Product2> prodList = new List<Product2>();
+        for(integer i=0; i<5; i++){
+            Product2 prod = new Product2();
+        
+            prod.Name = 'myProduct';
+            prod.ProductCode = 'ABC123';
+            prod.Description = 'myDescription';
+            prod.AcctSeed__Unit_Cost__c = 100;
+            prod.IsActive = true;
+            prod.Category__c = 'Shower Door';
+            prod.Sub_Category__c = 'Single Sliding';
+            prod.AcctSeed__Inventory_Type__c = 'Purchased';
+            prod.AcctSeed__Expense_GL_Account__c = gl.id;
+            prod.AcctSeed__Inventory_GL_Account__c = gl.id;
+            prod.AcctSeed__Revenue_GL_Account__c = gl.id;
+            prod.AcctSeed__Inventory_Product__c = true;
+            prod.Commissionable_Product__c = true;
+            prod.Type__c = 'Other';
+
+            prodList.add(prod);
+        }
+        insert prodList;
 
         AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
         accVar.Name = 'Seawin USA';
@@ -133,6 +176,7 @@ public with sharing class CommissionsPDFControllerTest {
         prod.AcctSeed__Expense_GL_Account__c = ga.id;
         prod.AcctSeed__Inventory_GL_Account__c = ga.id;
         prod.AcctSeed__Revenue_GL_Account__c = ga.id;
+        prod.Commissionable_Product__c = true;
         
         insert prod;
         
@@ -140,15 +184,19 @@ public with sharing class CommissionsPDFControllerTest {
         Opportunity opp = new Opportunity();
         
         opp.Name = 'myOpportunity';
-        opp.Sales_Rep_O__c = sr.id;
+        opp.Referral_Sales_Rep__c = uu1.id;
         opp.AccountId = acct.Id;
         opp.Type = 'Actual Order';
         opp.StageName = 'Closed Won';
         opp.CloseDate = system.today();
         opp.ContactPerson__c = cont.Id;
         opp.GL_Account_Variable_1__c = accVar.Id;
+        opp.Price_Level__c = 'Level 1';
         insert opp;
+
         
+
+
         // create quote
         Quote qt = new Quote();
         
@@ -205,14 +253,7 @@ public with sharing class CommissionsPDFControllerTest {
         
         insert oli;
         
-        AcctSeed__Billing_Format__c abf = new AcctSeed__Billing_Format__c();
         
-        abf.Name = 'newPDF Format';
-        abf.AcctSeed__Type__c = 'Purchase Order';
-        abf.AcctSeed__Visualforce_PDF_Page__c = 'BillingActivityStatementPDF';
-        abf.AcctSeed__Default_Email_Template__c = 'Activity_Statement_Email_Template';
-        
-        insert abf;
         
         AcctSeed__Ledger__c ledger = new AcctSeed__Ledger__c();
         
@@ -227,12 +268,40 @@ public with sharing class CommissionsPDFControllerTest {
         
         insert ledger;
         
+        Date d = Date.today();
+        AcctSeed__Accounting_Period__c ap = new AcctSeed__Accounting_Period__c();
+        
+        Integer year = d.year();
+        String month = d.month() > 9 ? '' + d.month() : '0' + d.month();
+
+        ap.Name = year + '-' + month;
+        ap.AcctSeed__Start_Date__c = Date.NewInstance(year, d.month(), 1);
+        ap.AcctSeed__End_Date__c = Date.NewInstance(year, d.month(), Date.DaysInMonth(year, d.month()));
+        ap.AcctSeed__Status__c = 'Open';
+            
+        insert ap;
+
+        AcctSeed__Billing__c bill = new AcctSeed__Billing__c();
+        
+        bill.AcctSeed__Status__c = 'Approved';
+        bill.AcctSeed__PDF_Email_Status__c = 'Unsent';
+        bill.AcctSeed__Billing_Format__c = abf.id;
+        // bill.AcctSeedERP__Sales_Order__c = salesorder.id; 
+        bill.AcctSeed__Date__c = Date.Today();
+        bill.AcctSeed__Due_Date2__c = Date.Today();
+        bill.AcctSeed__Ledger__c = ledger.Id;
+        bill.AcctSeed__Opportunity__c = opp.Id;
+        bill.AcctSeed__Customer__c = acct.Id;
+        bill.AcctSeed__Accounting_Period__c = ap.id;
+
+        insert bill;
+
         // create a sales order
         AcctSeedERP__Sales_Order__c salesorder = new AcctSeedERP__Sales_Order__c(); 
         
-        //salesorder.name = 'testSalesOrder';
+
         salesorder.AcctSeedERP__Customer__c = acct.Id;
-        salesorder.AcctSeedERP__Opportunity__c = opp.Id;
+        // salesorder.AcctSeedERP__Opportunity__c = opp.Id;
         salesorder.Contact__c = cont.Id;
         salesorder.AcctSeedERP__Status__c = 'Open';
         salesorder.AcctSeedERP__Ledger__c = ledger.id;
@@ -247,9 +316,20 @@ public with sharing class CommissionsPDFControllerTest {
         salesorder.AcctSeedERP__Billing_Street__c='Lake view';
         salesorder.AcctSeedERP__Billing_City__c='Kabul';
         salesorder.GL_Account_Variable_1__c = accVar.Id;
+        salesorder.Referral_Sales_Rep__c = uu1.Id;
         
         insert salesorder;
+
+        AcctSeedERP__Sales_Order_Line__c solines = new AcctSeedERP__Sales_Order_Line__c(); 
         
+        solines.AcctSeedERP__Sales_Order__c = salesorder.id;
+        solines.AcctSeedERP__Unit_Price__c = 1.1;
+        solines.AcctSeedERP_Description__c = 'This is salesorder line item';
+        solines.AcctSeedERP__Product__c = prodList[0].id;
+        solines.AcctSeedERP__Quantity_Ordered__c = 2;
+        
+        insert solines;
+
         Sales_Order_Commissions__c commissions = new Sales_Order_Commissions__c();
       
         commissions.Owner__c = UserInfo.getuserId();
@@ -290,7 +370,7 @@ public with sharing class CommissionsPDFControllerTest {
 
         Sales_Order_Commissions__c commissions4 = new Sales_Order_Commissions__c();
       
-        commissions4.Owner__c = UserInfo.getuserId();
+        commissions4.Owner__c = uu1.Id;
         commissions4.Sales_Order__c = salesorder.id;
         commissions4.Commission_Amount__c = 50;
         commissions4.Referral_Sales_Rep__c = uu1.Id;
@@ -298,17 +378,30 @@ public with sharing class CommissionsPDFControllerTest {
         
         
         insert commissions4;
+
     }
 
     @isTest
     public static void commissionPDFCtrlTest(){
-
+        User u = [SELECT Id FROM User WHERE FirstName = 'ABC'];
+        // AcctSeedERP__Sales_Order__c so = [SELECT Id, 
+        //                                         Commission_Rate_Sales_Rep__c, 
+        //                                         commission_rate_manufacturer_rep__c, 
+        //                                         commission_rate_referral_sales_rep__c, 
+        //                                         commission_rate_specified_rep__c 
+        //                                 FROM AcctSeedERP__Sales_Order__c 
+        //                                 WHERE AcctSeedERP__Billing_Country__c='Afghanistan' LIMIT 1];
+        // so.Commission_Rate_Sales_Rep__c = null;                                
+        // so.commission_rate_manufacturer_rep__c = null;                                
+        // so.commission_rate_referral_sales_rep__c = null;                                
+        // so.commission_rate_specified_rep__c = null;   
+        // update so;                            
+        Test.startTest();
+        ApexPages.currentPage().getParameters().put('id', u.Id);
         CommissionsPDFController ctrl = new CommissionsPDFController();
-        Decimal dec1 = ctrl.total_man;
-        Decimal dec2 = ctrl.total_spec;
-        Decimal dec3 = ctrl.total_sal_rep;
-        Decimal dec4 = ctrl.total_ref;
-        Decimal dec5 = ctrl.total_owner;
+
+
         String dec6 = ctrl.pdf_date;
+        Test.stopTest();
     }
 }

@@ -25,9 +25,9 @@ public class PicklistValuesController {
     List<Schema.PicklistEntry> dependentValues = dependentFieldInfo.getPicklistValues();
 
     for (Schema.PicklistEntry currControllingValue : controllingValues) {
-      System.debug(
-        'ControllingField: Label:' + currControllingValue.getLabel()
-      );
+      // System.debug(
+      //   'ControllingField: Label:' + currControllingValue.getLabel()
+      // );
       controllingInfo.put(currControllingValue.getLabel(), new List<String>());
     }
 
@@ -44,14 +44,14 @@ public class PicklistValuesController {
         )
         .toUpperCase();
 
-      System.debug(
-        'DependentField: Label:' +
-        currDependentValue.getLabel() +
-        ' ValidForInHex:' +
-        hexString +
-        ' JsonString:' +
-        jsonString
-      );
+      // System.debug(
+      //   'DependentField: Label:' +
+      //   currDependentValue.getLabel() +
+      //   ' ValidForInHex:' +
+      //   hexString +
+      //   ' JsonString:' +
+      //   jsonString
+      // );
 
       Integer baseCount = 0;
 
@@ -65,42 +65,42 @@ public class PicklistValuesController {
         }
 
         if ((val & 8) == 8) {
-          System.debug(
-            'Dependent Field: ' +
-            currDependentValue.getLabel() +
-            ' Partof ControllingField:' +
-            controllingValues[baseCount + 0].getLabel()
-          );
+          // System.debug(
+          //   'Dependent Field: ' +
+          //   currDependentValue.getLabel() +
+          //   ' Partof ControllingField:' +
+          //   controllingValues[baseCount + 0].getLabel()
+          // );
           controllingInfo.get(controllingValues[baseCount + 0].getLabel())
             .add(currDependentValue.getLabel());
         }
         if ((val & 4) == 4) {
-          System.debug(
-            'Dependent Field: ' +
-            currDependentValue.getLabel() +
-            ' Partof ControllingField:' +
-            controllingValues[baseCount + 1].getLabel()
-          );
+          // System.debug(
+          //   'Dependent Field: ' +
+          //   currDependentValue.getLabel() +
+          //   ' Partof ControllingField:' +
+          //   controllingValues[baseCount + 1].getLabel()
+          // );
           controllingInfo.get(controllingValues[baseCount + 1].getLabel())
             .add(currDependentValue.getLabel());
         }
         if ((val & 2) == 2) {
-          System.debug(
-            'Dependent Field: ' +
-            currDependentValue.getLabel() +
-            ' Partof ControllingField:' +
-            controllingValues[baseCount + 2].getLabel()
-          );
+          // System.debug(
+          //   'Dependent Field: ' +
+          //   currDependentValue.getLabel() +
+          //   ' Partof ControllingField:' +
+          //   controllingValues[baseCount + 2].getLabel()
+          // );
           controllingInfo.get(controllingValues[baseCount + 2].getLabel())
             .add(currDependentValue.getLabel());
         }
         if ((val & 1) == 1) {
-          System.debug(
-            'Dependent Field: ' +
-            currDependentValue.getLabel() +
-            ' Partof ControllingField:' +
-            controllingValues[baseCount + 3].getLabel()
-          );
+          // System.debug(
+          //   'Dependent Field: ' +
+          //   currDependentValue.getLabel() +
+          //   ' Partof ControllingField:' +
+          //   controllingValues[baseCount + 3].getLabel()
+          // );
           controllingInfo.get(controllingValues[baseCount + 3].getLabel())
             .add(currDependentValue.getLabel());
         }
@@ -109,7 +109,7 @@ public class PicklistValuesController {
       }
     }
 
-    System.debug('ControllingInfo: ' + controllingInfo);
+    // System.debug('ControllingInfo: ' + controllingInfo);
 
     return controllingInfo;
   }

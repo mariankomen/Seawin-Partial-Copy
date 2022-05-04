@@ -41,7 +41,11 @@ public class CommissionFieldsReplicateHandlerTest {
     sr2.Man_Rep_Price_Level_27_30__c = 1;
 
     insert sr2;
-
+    AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
+    accVar.Name = 'Seawin USA';
+    accVar.AcctSeed__Type__c = 'GL Account Variable 1';
+    insert accVar;
+    
     // create account
     Account acct = new Account();
     acct.Name = 'myAccount';
@@ -50,11 +54,23 @@ public class CommissionFieldsReplicateHandlerTest {
     acct.AcctSeed__GL_Account_Variable_1__c = av.Id;
     insert acct;
       
+    AcctSeed__GL_Account__c expenceAcc = new AcctSeed__GL_Account__c();
+    expenceAcc.name = 'glaccount';
+    expenceAcc.AcctSeed__Type__c = 'Expense';
+    expenceAcc.AcctSeed__Sub_Type_1__c = 'Facilities';
+    expenceAcc.AcctSeed__Sub_Type_2__c = 'Rent';
+    expenceAcc.AcctSeed__Bank__c = true;
+    expenceAcc.GL_Account_Variable_1__c = accVar.id;
+    
+
+    insert expenceAcc;
+
     Account acct2 = new Account();
     acct2.Name = 'myAccount2';
     acct2.Type = 'Designer';
-    acct2.AcctSeed__Accounting_Type__c = 'Customer';
+    acct2.AcctSeed__Accounting_Type__c = 'Manufacture Representative';
     acct2.AcctSeed__GL_Account_Variable_1__c = av.Id;
+    acct2.AcctSeed__Default_Expense_GL_Account__c = expenceAcc.Id;
     insert acct2;
 
     AcctSeed__GL_Account__c gl = new AcctSeed__GL_Account__c();
@@ -159,6 +175,6 @@ public class CommissionFieldsReplicateHandlerTest {
 
   @isTest
   static void StartTest() {
-
+    CommissionFieldsReplicateHandler.helpTest();
   }
 }

@@ -94,6 +94,8 @@ public class CreateBillingFromSalesOrderExtension {
         list<AcctSeedERP__Sales_Order_Line__c> lines = [SELECT Id, Name, AcctSeedERP__Sales_Order__c,
                                                         AcctSeedERP__Product__r.Name,
                                                         Item_Description__c,
+                                                        Kit__c,
+                                                        Kit_Children__c,
                                                         AcctSeedERP__Comment__c, AcctSeedERP__GL_Account_Variable_1__c, 
                                                         AcctSeedERP__GL_Account_Variable_2__c, 
                                                         AcctSeedERP__GL_Account_Variable_3__c, 
@@ -207,8 +209,9 @@ public class CreateBillingFromSalesOrderExtension {
                 }
                 solWrapper.add(new Wrapper(line, line.AcctSeedERP__Quantity_Allocated__c, QuantityBilled, 
                                            BilledAmount, UnBilledAmount, BillAmount));
+
             }
-            
+            system.debug('china: '+JSON.serialize(solWrapper));
             if(billedItems == lines.size()){
                 
                 AlreadyBilled = true;
