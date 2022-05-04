@@ -16,6 +16,12 @@ public with sharing class BillingLineSortOrderExtension {
         
     } set;}
     
+
+    public Map<AcctSeed__Billing_Line__c, Integer> kits {get;set;}
+    public List<List<AcctSeed__Billing_Line__c>> childrens {get;set;} 
+    public List<AcctSeed__Billing_Line__c> kits_parents {get;set;} 
+
+
     public BillingLineSortOrderExtension(ApexPages.StandardSetController ssc){
         lines = new List<AcctSeed__Billing_Line__c>();
         
@@ -32,8 +38,8 @@ public with sharing class BillingLineSortOrderExtension {
                  Unit_Cost__c, Total_Price__c, Size__c, Quantity__c, Product_Code__c, sort_order__c 
                  FROM AcctSeed__Billing_Line__c 
                  where AcctSeed__Billing__c =: billId order by sort_order__c,name,createddate asc];
-
-        
+        system.debug('As: '+JSON.serialize(lines));
+        getBillingLinesRenderWrapper(lines);
         if(lines.isEmpty()){
             
 		   ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.FATAL, 
@@ -42,6 +48,106 @@ public with sharing class BillingLineSortOrderExtension {
            visible = false; 
         }
     }
+
+    public void getBillingLinesRenderWrapper(List<AcctSeed__Billing_Line__c> lines){
+
+        Set<Id> all_kits_childrens = new Set<Id>();
+        Map<Id, List<Id>> kit_relation = SalesOrderPDFController.getKitsRelation();
+        system.debug('kit_relation: '+JSON.serialize(kit_relation));
+        for(Id kit:kit_relation.keySet()){
+            all_kits_childrens.add(kit);
+            for(Id chil: kit_relation.get(kit)){
+                all_kits_childrens.add(chil);
+            }
+        }
+        Map<Id, AcctSeed__Billing_Line__c> sol_map = new Map<Id, AcctSeed__Billing_Line__c>();
+        List<AcctSeed__Billing_Line__c> not_kit_not_kitprod = new List<AcctSeed__Billing_Line__c>();
+
+        Map<Id, List<Id>> current_so_relation = new Map<Id, List<Id>>();
+
+        for(AcctSeed__Billing_Line__c sol: lines){
+            sol_map.put(sol.AcctSeed__Product__c, sol); //Making map <ProductId, SalesOrderLine>
+
+            //Sales Order can have not KIT and not KIT Product lines
+            //We make another list with this items and will add to the end of pdf in code above
+            if(!all_kits_childrens.contains(sol.AcctSeed__Product__c)){
+                not_kit_not_kitprod.add(sol);
+            }
+        }
+
+
+        for(Id bil: sol_map.keySet()){
+
+            if(kit_relation.containsKey(bil)){
+                current_so_relation.put(bil, new List<Id>());
+                continue;
+            }
+            for(Id kit_r:kit_relation.keySet()){
+                if(kit_relation.get(kit_r).contains(bil)){
+                    if(current_so_relation.containsKey(kit_r)){
+                        current_so_relation.get(kit_r).add(bil);
+                    }else{
+                        current_so_relation.put(kit_r, new List<Id>());
+                    }
+                }
+            }
+
+        }
+
+
+        Integer index = 0;
+        for(Id line: current_so_relation.keySet()){
+            
+            for(AcctSeed__Billing_Line__c l: lines){
+                if(l.AcctSeed__Product__c == line){
+                    kits.put(l, index);
+                    kits_parents.add(l);
+                }
+            }
+            index++;
+
+        }
+
+        for(Id line: current_so_relation.keySet()){
+            List<AcctSeed__Billing_Line__c> childrens_k = new List<AcctSeed__Billing_Line__c>();
+            for(Id child: current_so_relation.get(line)){
+                for(AcctSeed__Billing_Line__c l: lines){
+                    if(l.AcctSeed__Product__c == child){
+                        childrens_k.add(l);
+                    }
+                }
+            }
+            childrens.add(childrens_k);
+            
+        }
+
+        for(AcctSeed__Billing_Line__c not_kit:not_kit_not_kitprod){
+            List<AcctSeed__Billing_Line__c> childrens_k = new List<AcctSeed__Billing_Line__c>();
+            kits.put(not_kit, index);
+            kits_parents.add(not_kit);
+            childrens.add(childrens_k);
+            index++;
+        }
+
+
+        system.debug('current_so_relation; '+JSON.serialize(current_so_relation));
+        system.debug('not_kit_not_kitprod: '+JSON.serialize(not_kit_not_kitprod));
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
     public PageReference back(){
         
         PageReference page = new PageReference('/' + billid);
