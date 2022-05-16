@@ -1,0 +1,81 @@
+<apex:page controller="OpportunityEditAllController" tabStyle="Opportunity">
+
+    <style type="text/css">
+    textarea {
+        width: 175px;
+        height: 75px;
+    }
+    .descriptionBlock {
+        width: 175px;
+        height: 75px;
+    }
+    </style>
+    <apex:form id="theForm">
+        <apex:outputPanel rendered="{!isOpportunityProduct}">
+            <apex:sectionHeader title="Opportunity" subtitle="Edit Products" />
+            <apex:outputText value="Edit products for this opportunity." />
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!isOptionalProduct}">
+            <apex:sectionHeader title="Opportunity" subtitle="Edit Optional Products" />
+            <apex:outputText value="Edit optional products for this opportunity." />
+        </apex:outputPanel>
+        <br/>
+        <br/>
+        <br/>
+        <apex:pageMessages></apex:pageMessages>
+
+            <apex:pageBlock>
+                <apex:pageBlockButtons >
+                    
+                    <apex:commandButton value="Save" action="{!saveEdit}" reRender="theForm" oncomplete="onSuccessfullSave()"/>
+
+                    <apex:commandButton value="Back" action="{!back}" immediate="true" />
+                </apex:pageBlockButtons>
+
+
+                <apex:pageBlockTable id="thePageBlockTable" value="{!wrapper_lines}" var="line" cellpadding="6" >
+                    <apex:column value="{!line.productName}" headerValue="Product Name"/>
+
+                    <apex:column headerValue="Quantity">
+                        <apex:inputText value="{!line.quantity}"/>
+                    </apex:column>
+                    <apex:column headerValue="Sales Price">
+                        <apex:inputText value="{!line.sales_price}"/>
+                    </apex:column>
+
+                    <apex:column headerValue="Size">
+
+                        <apex:outputPanel rendered="{!line.allow_changes}">
+                            <apex:inputText value="{!line.size}"/>
+                        </apex:outputPanel>
+
+                        <apex:outputPanel rendered="{!!line.allow_changes}">
+                            <apex:outputText value="{!line.size}"/>
+                        </apex:outputPanel>
+                    </apex:column>
+
+                    <apex:column headerValue="Item Description">
+
+                        <apex:outputPanel rendered="{!line.allow_changes}">
+                            <apex:inputTextarea value="{!line.description}"/>
+                        </apex:outputPanel>
+
+                        <apex:outputPanel rendered="{!!line.allow_changes}">
+                            <div class='descriptionBlock'>
+                                <apex:outputText value="{!line.description}" styleClass="descriptionBlock"/>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:column>
+
+
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+            <script type="text/javascript">
+                function onSuccessfullSave(){
+                    setTimeout(() => {
+                        window.parent.location = '/{!opportunityId}'
+                    },2000)
+                }
+            </script>
+    </apex:form>
+</apex:page>

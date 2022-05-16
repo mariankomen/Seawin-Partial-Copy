@@ -321,8 +321,8 @@ rendered="{!!ISBLANK(so.Bill_To_Name__c)}"/>
                         <td style="width: 12%;">
                             <!-- <apex:outputText value="*{!item.ProductCode__c}" style="width: 100%;"/> -->
 
-                            <apex:outputField value="{!item.ProductCode__c}" style="width: 100%;" rendered="{!!item.Kit_Children__c}"/>
-                            <apex:outputText value="*{!item.ProductCode__c}" style="width: 100%;" rendered="{!item.Kit_Children__c}"/>
+                            <apex:outputField value="{!item.ProductCode__c}" style="width: 100%;"/>
+                            <!-- <apex:outputText value="*{!item.ProductCode__c}" style="width: 100%;" rendered="{!item.Kit_Children__c}"/> -->
                         </td>
                         <td style="width: 34%;">
                             <apex:outputField value="{!item.AcctSeedERP_Description__c}" style="width: 100%;" />
@@ -330,20 +330,20 @@ rendered="{!!ISBLANK(so.Bill_To_Name__c)}"/>
                             <!-- <apex:outputText value="" style="width: 100%;" rendered="{!item.Kit_Children__c}"/> -->
                         </td>
                         <td style="width: 9%;" >
-                            <apex:outputField value="{!item.Size__c}" style="width: 100%;" rendered="{!!item.Kit_Children__c}"/>
-                            <apex:outputText value="" style="width: 100%;" rendered="{!item.Kit_Children__c}"/>
+                            <apex:outputField value="{!item.Size__c}" style="width: 100%;"/>
+                            <!-- <apex:outputText value="" style="width: 100%;" rendered="{!item.Kit_Children__c}"/> -->
                         </td>
                         <td style="width: 4%;">
-                            <apex:outputField value="{!item.QuantityFormula__c}" style="width: 100%;" rendered="{!!item.Kit_Children__c}"/>
-                            <apex:outputText value="" style="width: 100%;" rendered="{!item.Kit_Children__c}"/>
+                            <apex:outputField value="{!item.QuantityFormula__c}" style="width: 100%;"/>
+                            <!-- <apex:outputText value="" style="width: 100%;" rendered="{!item.Kit_Children__c}"/> -->
                         </td>
                         <td style="width: 8%;">
-                            <apex:outputField value="{!item.Sales_Price__c}" style="width: 100%;" rendered="{!!item.Kit_Children__c}"/>
-                            <apex:outputText value="" style="width: 100%;" rendered="{!item.Kit_Children__c}"/>
+                            <apex:outputField value="{!item.Sales_Price__c}" style="width: 100%;" />
+                            <!-- <apex:outputText value="" style="width: 100%;" rendered="{!item.Kit_Children__c}"/> -->
                         </td>
                         <td class="last-col" style="width: 9%;">
-                            <apex:outputField value="{!item.Total_Price__c}" style="width: 100%;" rendered="{!!item.Kit_Children__c}"/>
-                            <apex:outputText value="" style="width: 100%;" rendered="{!item.Kit_Children__c}"/>
+                            <apex:outputField value="{!item.Total_Price__c}" style="width: 100%;" />
+                            <!-- <apex:outputText value="" style="width: 100%;" rendered="{!item.Kit_Children__c}"/> -->
                         </td>
                         <apex:variable var="trcolor" value="{!IF(trcolor == '', '#dddddd', '')}"/>
                     </tr>

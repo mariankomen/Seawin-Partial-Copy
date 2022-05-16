@@ -84,14 +84,14 @@
                     </apex:column>
                     <apex:column headervalue="Quantity">
                         <apex:outputPanel id="quantity_field">
-                            <apex:inputField value="{!line.AcctSeedERP__Quantity_Ordered__c}" html-min="1" rendered="{!!line.Kit_Children__c}">
+                            <apex:inputField value="{!line.AcctSeedERP__Quantity_Ordered__c}" html-min="1" rendered="{!!line.Kit_Children__c && !hasBillings}">
                                 <apex:actionSupport event="onchange" reRender="msg,quantity_field,pbs" action="{!handleQuantity}">
                                     <apex:param name="quan" value="{!line.Id}" assignTo="{!newQuantity}"/>
                                 </apex:actionSupport>
                                 <apex:actionSupport event="onclick" reRender="msg"/>
                             </apex:inputField>
                             <!-- Quantity KIT  -->
-                            <apex:outputText value="{!line.AcctSeedERP__Quantity_Ordered__c}" rendered="{!line.Kit_Children__c}"></apex:outputText> 
+                            <apex:outputText value="{!line.AcctSeedERP__Quantity_Ordered__c}" rendered="{!line.Kit_Children__c || !!hasBillings}"></apex:outputText> 
                         </apex:outputPanel>
                         
                         <script>
@@ -103,12 +103,12 @@
                     <apex:column headervalue="Quantity Allocated" value="{!line.Quantity_Allocated_Formula__c}" />
                     <apex:column headervalue="Quantity Shipped" value="{!line.Quantity_Shipped_Formula__c}" />
                     <apex:column headervalue="Sales Price"> 
-                        <apex:inputField id="salesprice" value="{!line.AcctSeedERP__Unit_Price__c}" html-min="1" required="true" rendered="{!!line.Kit_Children__c}">
+                        <apex:inputField id="salesprice" value="{!line.AcctSeedERP__Unit_Price__c}" html-min="1" required="true" rendered="{!!line.Kit_Children__c && !hasBillings}">
                             <apex:actionSupport event="onchange" reRender="msg"/>
                             <apex:actionSupport event="onclick" reRender="msg"/>
                         </apex:inputField>
 
-                        <apex:outputText value="{!line.AcctSeedERP__Unit_Price__c}" rendered="{!line.Kit_Children__c}"></apex:outputText> 
+                        <apex:outputText value="{!line.AcctSeedERP__Unit_Price__c}" rendered="{!line.Kit_Children__c || !!hasBillings}"></apex:outputText> 
 
                         <script>
                         // $("[id$=main_table]").colResizable({

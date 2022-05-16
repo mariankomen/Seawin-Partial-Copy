@@ -473,7 +473,7 @@ public class CalculateCommissionsHandler {
                 BillingLineMap = FindBillingLineTotal(billingIds);
                 
                 for(string key : Update_Cash_Receipt.keyset()){
-                    
+                    system.debug('key 476 ====> '+key);
                     List<string> strings = key.split('-');
                     
                     AcctSeed__Billing_Cash_Receipt__c data = Update_Cash_Receipt.get(key);
@@ -513,9 +513,11 @@ public class CalculateCommissionsHandler {
                             data.AcctSeed__Applied_Amount__c, billingTotal, billingLineTotal, 
                             SalesPercent, ReferralPercent, ManRepPercent, SpecifiedPercent,
                             HasRefferal, HasManRep, HasSpecified, IsTeam, salesOrderId, data.AcctSeed__Billing__c,data.createddate);
-                        
+                        system.debug('strings 516: ======> '+JSON.serialize(strings));
+                        system.debug('strings[3]: =====> '+strings[3]);
+                        system.debug('commission 518: =====> '+JSON.serialize(commission));
+
                         commission[0].id = strings[3];
-                        
                         Updatibles.add(commission[0]);
                     }
                     
@@ -618,7 +620,8 @@ public class CalculateCommissionsHandler {
                 SalesPercentAmount = SalesPercentAmount.setScale(2, RoundingMode.HALF_EVEN);
             }
             
-            if(HasReferral && ReferralPercent != null && ReferralPercent > 0 && (ReferralId != null || OwnerId != null)){
+            if(HasReferral && ReferralPercent != null && (ReferralId != null || OwnerId != null)){
+            // if(HasReferral && ReferralPercent != null && ReferralPercent > 0 && (ReferralId != null || OwnerId != null)){
                 ReferralPercentAmount = SalesPercentAmount != 0 ? SalesPercentAmount * (ReferralPercent / 100) : 
                 BillingTotalDivide * billingLineTotal * (ReferralPercent / 100);
                 ReferralPercentAmount = ReferralPercentAmount.setScale(2, RoundingMode.HALF_EVEN);
@@ -633,16 +636,17 @@ public class CalculateCommissionsHandler {
             SalesPercentAmount = SalesPercentAmount > ReferralPercentAmount ? 
                 SalesPercentAmount - ReferralPercentAmount : 0;
             system.debug('630 SalesPercentAmount: '+SalesPercentAmount);
-            if(SalesPercentAmount > 0){
+            // if(SalesPercentAmount > 0){
                 if((IsTeam && OwnerId != null) || (!IsTeam && SalesRepCompanyId != null))
                     commissions.add(MakeCommissions(IsCash, ReceiptId, OwnerId, ReferralId, ManufacturerId,
                                                     SpecifiedId, 
                                                     SalesRepCompanyId, SalesPercentAmount, 
                                                     'Owner', IsTeam, salesOrderId, billingNumber, dt));
-            }
+            // }
             
             if(HasManRep && ManufacturerId != null){
-                if(ManRepPercent != null && ManRepPercent > 0){
+                if(ManRepPercent != null ){
+                // if(ManRepPercent != null && ManRepPercent > 0){
                     Decimal ManufacturerAmount = BillingTotalDivide * billingLineTotal * (ManRepPercent / 100);
                     ManufacturerAmount = ManufacturerAmount.setScale(2, RoundingMode.HALF_EVEN);
                     commissions.add(MakeCommissions(IsCash, ReceiptId, OwnerId, ReferralId, 
@@ -658,7 +662,8 @@ public class CalculateCommissionsHandler {
             system.debug('SpecifiedPercent; '+SpecifiedPercent);
             if(HasSpecified && SpecifiedId != null){
                
-                if(SpecifiedPercent != null && SpecifiedPercent > 0){
+                if(SpecifiedPercent != null ){
+                // if(SpecifiedPercent != null && SpecifiedPercent > 0){
                     Decimal SpecifiedAmount = BillingTotalDivide * billingLineTotal * (SpecifiedPercent / 100);
                     
                     SpecifiedAmount = SpecifiedAmount.setScale(2, RoundingMode.HALF_EVEN);

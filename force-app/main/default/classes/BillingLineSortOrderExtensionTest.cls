@@ -3,8 +3,8 @@ public class BillingLineSortOrderExtensionTest {
     
     @testSetup static void createBillingData(){
         
-        // Profile pf = [Select Id from profile where Name = 'System Administrator']; 
-        Profile pf = [Select Id from profile where Name = 'Sales Rep'];
+        Profile pf = [Select Id from profile where Name = 'System Administrator']; 
+        // Profile pf = [Select Id from profile where Name = 'Sales Rep'];
         
         String orgId = UserInfo.getOrganizationId(); 
         String dateString = String.valueof(Datetime.now()).replace(' ','').replace(':','').replace('-','') ;
@@ -52,14 +52,19 @@ public class BillingLineSortOrderExtensionTest {
         cont.AccountId = acct.Id;
         
         insert cont;
-        
+
+        AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
+        accVar.Name = 'GL acc var1';
+        accVar.AcctSeed__Type__c = 'GL Account Variable 1';
+        insert accVar;
+
         AcctSeed__GL_Account__c aegl = new AcctSeed__GL_Account__c();
         aegl.name = 'glaccount';
         aegl.AcctSeed__Type__c = 'Expense';
         aegl.AcctSeed__Sub_Type_1__c = 'Facilities';
         aegl.AcctSeed__Sub_Type_2__c = 'Rent';
         aegl.AcctSeed__Bank__c = true;
-        
+        aegl.GL_Account_Variable_1__c = accVar.Id;
         insert aegl;
         
         // Gl account with bank unchecked
@@ -97,7 +102,8 @@ public class BillingLineSortOrderExtensionTest {
         opp.StageName = 'Closed Won';
         opp.CloseDate = system.today();
         opp.ContactPerson__c = cont.Id;
-        
+        opp.GL_Account_Variable_1__c = accVar.Id;
+
         insert opp;
         
         // create pricebook2
@@ -188,7 +194,7 @@ public class BillingLineSortOrderExtensionTest {
         salesorder.AcctSeedERP__Billing_State__c='Kabul';
         salesorder.AcctSeedERP__Billing_Street__c='Lake view';
         salesorder.AcctSeedERP__Billing_City__c='Kabul';
-        
+        salesorder.GL_Account_Variable_1__c = accVar.Id;
         
         insert salesorder;
         
@@ -355,7 +361,10 @@ public class BillingLineSortOrderExtensionTest {
         
         bso.createsort();
         bso.back();
-        
+        bso.visible = true;
+        bso.jsonstr = 'test';
+        BillingLineSortOrderExtension.saveSorting('[{"solId": "'+billinglist[0].Id+'","sortNumber": 1}]',String.valueOf(billing.Id));
+        BillingLineSortOrderExtension.SortingWrapper sortWrapper = new BillingLineSortOrderExtension.SortingWrapper(billinglist[0].id, 1);
         Test.stopTest();
     }
 }

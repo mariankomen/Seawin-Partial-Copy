@@ -18,7 +18,7 @@ public with sharing class MassEditSalesOrderScreenExtension {
     
     public Id newQuantity {get; set;}
 
-
+    public Boolean hasBillings {get; set;}
 
 
     public MassEditSalesOrderScreenExtension(ApexPages.StandardSetController std){
@@ -28,6 +28,15 @@ public with sharing class MassEditSalesOrderScreenExtension {
         showBack = false;
         kits_parent_childs = new Map<Id, List<childrenWrapper>>();
 
+        AggregateResult relatedBillings = [SELECT COUNT(Id) total 
+                                                FROM AcctSeed__Billing__c
+                                                WHERE AcctSeedERP__Sales_Order__c=:soId];
+        if((Integer)relatedBillings.get('total') > 0){
+            hasBillings = true;
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.WARNING, 'Quantity and Sales Price fields cannot be edited because Sales Order already has a Billing(s).'));
+        }else{
+            hasBillings = false;
+        }
 
         LIST<ObjectPermissions> ObjPermissionList = new LIST<ObjectPermissions>();
 

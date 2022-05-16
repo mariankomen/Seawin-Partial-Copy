@@ -228,7 +228,7 @@ public class MassEditSalesOrderScreenTest
         kit.AcctSeed__Expense_GL_Account__c = gla.id;
         kit.AcctSeed__Inventory_GL_Account__c = gla.id;
         kit.AcctSeed__Revenue_GL_Account__c = gla.id;
-        kit.AcctSeed__Inventory_Product__c = true;
+        kit.AcctSeed__Inventory_Product__c = false;
         
         insert kit;
 

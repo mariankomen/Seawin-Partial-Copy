@@ -146,8 +146,12 @@
             document.getElementById("{!$Component.thepage:theform:theblock:thesection:thesectionitem:leftselectedbox}");
         
         var selectedValue = getSelectValues(element);
-        
-        leftselectionAction(selectedValue);
+        console.log(selectedValue);
+        if(selectedValue == '' || selectedValue == null || selectedValue == undefined){
+            alert('Please select at least 1 record for moving.')
+        }else{
+            leftselectionAction(selectedValue);
+        }
     }
     
     function rightselection(){
@@ -157,7 +161,11 @@
         
         var selectedValue = getSelectValues(element);
         
-        rightselectionAction(selectedValue);
+        if(selectedValue == '' || selectedValue == null || selectedValue == undefined){
+            alert('Please select at least 1 record for moving.')
+        }else{
+            rightselectionAction(selectedValue);
+        }
     }
     
     $(function () {

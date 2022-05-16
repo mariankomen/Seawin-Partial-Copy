@@ -30,7 +30,9 @@ public class BillingPDFExtension {
         //billingId = (Id)std.getId();
         bill = new AcctSeed__Billing__c();
         TotalMap = new map<id, opportunityLineitem>();
-        
+
+        Map<Id, List<Id>> kit_relation = SalesOrderPDFController.getKitsRelation();
+
         bill = [select AcctSeedERP__Sales_Order__c,Acctseed__Opportunity__c, AcctSeed__Customer__c, Sub_Total__c,Total_Amount_Due__c,
                 AcctSeed__Opportunity__r.Amount,
                 AcctSeedERP__Sales_Order__r.AcctSeedERP__Total__c,
@@ -70,22 +72,25 @@ public class BillingPDFExtension {
                         AcctSeedERP__Sales_Order_Line__r.AcctSeedERP__Total__c, Image__c,
                         AcctSeedERP__Sales_Order_Line__r.AcctSeedERP__Quantity_Ordered__c,
                         AcctSeedERP__Sales_Order_Line__r.AcctSeedERP__Unit_Price__c,
-                        AcctSeed__Hours_Units__c, AcctSeed__Product__r.ProductImageURL__c,
+                        AcctSeed__Hours_Units__c, AcctSeed__Product__r.ProductImageURL__c,AcctSeed__Product__c,
                         AcctSeed__Product__r.Product_Image_Short_URL__c,
                         AcctSeed__Product__r.name,Total_Price__c, Quantity__c, Unit_Cost__c,
                         AcctSeed__Rate__c, AcctSeed__Total__c, Size__c, size_custom__c, acctSeed__Product__r.ProductCode,
                         Item_Description__c FROM AcctSeed__Billing_Line__c where AcctSeed__Billing__c =: billingId
                         and AcctSeed__Tax_Line__c = false and Credit_Card_Fee__c = false
                         order by createddate,name asc];
-        
+
         if(bill.AcctSeedERP__Sales_Order__c == null && !BillingLInes.isEmpty()){
             
             map<id, AcctSeed__Billing_line__c> billingLineMap = new map<id, Acctseed__billing_line__c>();
+
             for(AcctSeed__Billing_Line__c l : billingLInes){
                 
                 billingLineMap.put(l.acctseed__opportunity_product_id__c, l);
             }
             
+            
+
             if(billingLineMap.size() > 0){
                 
                 List<OpportunityLineItem> oLines = [select id, UnitPrice, TotalPrice, Quantity from
@@ -118,13 +123,38 @@ public class BillingPDFExtension {
             }
             
         }else if(bill.AcctSeedERP__Sales_Order__c != null && !BillingLInes.isEmpty()){
-            
+            List<Id> list_product_ids = new List<Id>();
             map<id, AcctSeed__Billing_line__c> billingLineSOLMap = new map<id, Acctseed__billing_line__c>();
+
             for(AcctSeed__Billing_Line__c bl : billingLInes){
-                
+                list_product_ids.add(bl.AcctSeed__Product__c);
                 billingLineSOLMap.put(bl.AcctSeedERP__Sales_Order_Line__c, bl);
             }
-            
+
+            Set<Id> kit_childrens_ids = new Set<Id>();
+            for(Id kit_id:kit_relation.keySet()){
+                kit_childrens_ids.addAll(kit_relation.get(kit_id));
+            }
+
+            List<AcctSeed__Billing_Line__c> filtered_list = new List<AcctSeed__Billing_Line__c>();
+        
+            for(AcctSeed__Billing_Line__c l:billingLines){
+                if(kit_relation.keySet().contains(l.AcctSeed__Product__c)){ //its kit
+                    filtered_list.add(l);
+                    continue;
+                } else if(kit_childrens_ids.contains(l.AcctSeed__Product__c)){
+                    for(Id kit_prod:kit_relation.keySet()){
+                        if(kit_relation.get(kit_prod).contains(l.AcctSeed__Product__c) && !list_product_ids.contains(kit_prod)){
+                            filtered_list.add(l);
+                        }
+                    }
+                } else {
+                    filtered_list.add(l);
+                }
+            }
+            billingLines.clear();
+            billingLines.addAll(filtered_list);
+
             if(billingLineSOLMap.size() > 0){
                 
                 List<AcctSeedERP__Sales_Order_Line__c> sols = [select id, AcctSeedERP__Unit_Price__c, AcctSeedERP__Total__c, 

@@ -20,11 +20,14 @@ public with sharing class BillingLineSortOrderExtension {
     public Map<AcctSeed__Billing_Line__c, Integer> kits {get;set;}
     public List<List<AcctSeed__Billing_Line__c>> childrens {get;set;} 
     public List<AcctSeed__Billing_Line__c> kits_parents {get;set;} 
-
+    public Boolean render_childs {get; set;}
 
     public BillingLineSortOrderExtension(ApexPages.StandardSetController ssc){
         lines = new List<AcctSeed__Billing_Line__c>();
-        
+        kits = new Map<AcctSeed__Billing_Line__c, Integer>();
+        childrens = new List<List<AcctSeed__Billing_Line__c>>();
+        kits_parents = new List<AcctSeed__Billing_Line__c>();
+
         billId = ApexPages.currentPage().getParameters().get('id');
         
         billing = [select name from acctseed__Billing__c where id=:billId];
@@ -34,17 +37,16 @@ public with sharing class BillingLineSortOrderExtension {
                  AcctSeed__Inventory_GL_Account__c, AcctSeed__Hours_Units__c, 
                  AcctSeed__List_Price__c, AcctSeed__Opportunity_Product_Id__c, 
                  AcctSeed__Product__c, AcctSeed__Product__r.name, AcctSeed__Project__c, AcctSeed__Rate__c, 
-                 AcctSeed__Revenue_GL_Account__c, AcctSeed__Total__c, Item_Description__c, 
+                 AcctSeed__Revenue_GL_Account__c,AcctSeed__Revenue_GL_Account__r.Name, AcctSeed__Total__c, Item_Description__c, 
                  Unit_Cost__c, Total_Price__c, Size__c, Quantity__c, Product_Code__c, sort_order__c 
                  FROM AcctSeed__Billing_Line__c 
                  where AcctSeed__Billing__c =: billId order by sort_order__c,name,createddate asc];
-        system.debug('As: '+JSON.serialize(lines));
         getBillingLinesRenderWrapper(lines);
+        render_childs = childrens.size() > 0 ? true : false;
+
         if(lines.isEmpty()){
             
-		   ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.FATAL, 
-                                                     'No Products found.'
-                                                     ));            
+		   ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.FATAL, 'No Products found.'));            
            visible = false; 
         }
     }
@@ -53,7 +55,6 @@ public with sharing class BillingLineSortOrderExtension {
 
         Set<Id> all_kits_childrens = new Set<Id>();
         Map<Id, List<Id>> kit_relation = SalesOrderPDFController.getKitsRelation();
-        system.debug('kit_relation: '+JSON.serialize(kit_relation));
         for(Id kit:kit_relation.keySet()){
             all_kits_childrens.add(kit);
             for(Id chil: kit_relation.get(kit)){
@@ -94,10 +95,8 @@ public with sharing class BillingLineSortOrderExtension {
 
         }
 
-
         Integer index = 0;
         for(Id line: current_so_relation.keySet()){
-            
             for(AcctSeed__Billing_Line__c l: lines){
                 if(l.AcctSeed__Product__c == line){
                     kits.put(l, index);
@@ -128,25 +127,30 @@ public with sharing class BillingLineSortOrderExtension {
             childrens.add(childrens_k);
             index++;
         }
-
-
-        system.debug('current_so_relation; '+JSON.serialize(current_so_relation));
-        system.debug('not_kit_not_kitprod: '+JSON.serialize(not_kit_not_kitprod));
-
-
     }
 
+    @RemoteAction
+    public static void saveSorting(String json_sort, String billId){
+        List<SortingWrapper> sortlist = (List<SortingWrapper>)JSON.deserialize(json_sort, List<SortingWrapper>.class);
+        List<AcctSeed__Billing_Line__c> lines = [SELECT Id, Name, AcctSeed__Billing__c, AcctSeed__Comment__c, AcctSeed__Date__c, 
+                                                AcctSeed__Expense_GL_Account__c, AcctSeed__GL_Account_Variable_1__c, 
+                                                AcctSeed__Inventory_GL_Account__c, AcctSeed__Hours_Units__c, 
+                                                AcctSeed__List_Price__c, AcctSeed__Opportunity_Product_Id__c, 
+                                                AcctSeed__Product__c, AcctSeed__Product__r.name, AcctSeed__Project__c, AcctSeed__Rate__c, 
+                                                AcctSeed__Revenue_GL_Account__c,AcctSeed__Revenue_GL_Account__r.Name, AcctSeed__Total__c, Item_Description__c, 
+                                                Unit_Cost__c, Total_Price__c, Size__c, Quantity__c, Product_Code__c, sort_order__c 
+                                                FROM AcctSeed__Billing_Line__c 
+                                                where AcctSeed__Billing__c =: billId order by sort_order__c,name,createddate asc];
+        List<AcctSeed__Billing_Line__c> for_update = new List<AcctSeed__Billing_Line__c>();
+        Map<Id, AcctSeed__Billing_Line__c> bil_map = new Map<Id, AcctSeed__Billing_Line__c>(lines);
+        for(SortingWrapper sw: sortlist){
+            AcctSeed__Billing_Line__c line = bil_map.get(sw.solId);
+            line.Sort_Order__c = sw.sortNumber;
+            for_update.add(line);
+        }
+        update for_update;
 
-
-
-
-
-
-
-
-
-
-
+    }
 
     public PageReference back(){
         
@@ -195,5 +199,14 @@ public with sharing class BillingLineSortOrderExtension {
         
         public string id,sorts;
         
+    }
+    public class SortingWrapper{
+        public Id solId {get;set;}
+        public Integer sortNumber {get;set;}
+
+        public SortingWrapper(Id sId, Integer n){
+            solId = sId;
+            sortNumber = n;
+        }
     }
 }

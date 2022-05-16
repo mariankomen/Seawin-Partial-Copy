@@ -224,8 +224,8 @@
                         </apex:facet>
                         {!p.prod.ProductCode}
                     </apex:column>
-                    <apex:column headerValue="Product Description" value="{!p.prod.Description}" style="min-width:230px"/>
-                    <!--<apex:column headerValue="Size" value="{!p.prod.Size__c}" style="min-width:40px"/>-->
+                    <apex:column headerValue="Product Description" value="{!p.prod.Id}" style="min-width:230px"/>
+                    <!-- <apex:column headerValue="Product Description" value="{!p.prod.Description}" style="min-width:230px"/> -->
                     <apex:column headerValue="Size" width="40">
                         <apex:facet name="header">                                
                             <apex:commandLink action="{!checkSort}" value="Size" 

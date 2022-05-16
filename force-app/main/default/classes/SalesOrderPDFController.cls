@@ -47,57 +47,92 @@ public without sharing class SalesOrderPDFController {
                  FROM AcctSeedERP__Sales_Order_Line__c where AcctSeedERP__Sales_Order__c =:soId 
                  order by sortorder__c,name,createddate asc];
         
+        system.debug('linessssssss: '+JSON.serialize(lines));
+
         List<AcctSeedERP__Sales_Order_line__c> not_kit_not_kitprod = new List<AcctSeedERP__Sales_Order_line__c>();
+        List<Id> list_product_ids = new List<Id>();
 
         for(AcctSeedERP__Sales_Order_Line__c sol: lines){
             sol_map.put(sol.AcctSeedERP__Product__c, sol); //Making map <ProductId, SalesOrderLine>
-
+            list_product_ids.add(sol.AcctSeedERP__Product__c);
             //Sales Order can have not KIT and not KIT Product lines
             //We make another list with this items and will add to the end of pdf in code above
             if(sol.Kit__c == false && sol.Kit_Children__c == false){
                 not_kit_not_kitprod.add(sol);
             }
         }
+        // kit_relation
+        List<AcctSeedERP__Sales_Order_line__c> filtered_list = new List<AcctSeedERP__Sales_Order_line__c>();
+        
+        for(AcctSeedERP__Sales_Order_line__c l:lines){
+            if(kit_relation.keySet().contains(l.AcctSeedERP__Product__c)){ //its kit
+                filtered_list.add(l);
+                continue;
+            } else if(l.Kit_Children__c == true){
+                for(Id kit_prod:kit_relation.keySet()){
+                    if(kit_relation.get(kit_prod).contains(l.AcctSeedERP__Product__c) && !list_product_ids.contains(kit_prod)){
+                        filtered_list.add(l);
+                    }
+                }
+            } else {
+                filtered_list.add(l);
+            }
+        }
+
+        lines.clear();
+        lines.addAll(filtered_list);
+
+
+
+
+
+
 
 
         /* This part of code sort Sales Order Lines in order KIT parent and above him related Kit Products */
 
-        for(Id solId: sol_map.keySet()){
-            if(sol_map.get(solId).Kit__c == true && kit_relation.containsKey(solId)){
-                List<Id> childs = new List<Id>(); //List of related to KIT -> KIT products
+        // for(Id solId: sol_map.keySet()){
+        //     if(sol_map.get(solId).Kit__c == true && kit_relation.containsKey(solId)){
+        //         List<Id> childs = new List<Id>(); //List of related to KIT -> KIT products
 
-                //We make map with Kit and related Kit products to him 
-                for(Id kit_prod:kit_relation.get(solId)){
-                    if(sol_map.containsKey(kit_prod)){
-                        childs.add(kit_prod);
-                    }
-                }
-                current_so_relation.put(solId, childs); //Putting map with ProductId(KIT) and list of child(KIT Products)
-            }
-        }
+        //         //We make map with Kit and related Kit products to him 
+        //         for(Id kit_prod:kit_relation.get(solId)){
+        //             if(sol_map.containsKey(kit_prod)){
+        //                 childs.add(kit_prod);
+        //             }
+        //         }
+        //         current_so_relation.put(solId, childs); //Putting map with ProductId(KIT) and list of child(KIT Products)
+        //     }
+        // }
 
         //We clear the main list because above we add new sorted items.
         //This clearing is preventing for line duplication.
-        lines.clear(); 
+        // lines.clear(); 
 
-        for(Id product: current_so_relation.keySet()){
-            if(sol_map.containsKey(product)){
-                lines.add(sol_map.get(product));
-            }
-            for(Id child:current_so_relation.get(product)){
-                if(sol_map.containsKey(child)){
-                    lines.add(sol_map.get(child));
-                }
-            }
-        }
+        // for(Id product: current_so_relation.keySet()){
+        //     if(sol_map.containsKey(product)){
+        //         lines.add(sol_map.get(product));
+        //     }
+        //     for(Id child:current_so_relation.get(product)){
+        //         if(sol_map.containsKey(child)){
+        //             lines.add(sol_map.get(child));
+        //         }
+        //     }
+        // }
 
-        lines.addAll(not_kit_not_kitprod); //Adding not KIT and not KIT Product lines
+        //lines.addAll(not_kit_not_kitprod); //Adding not KIT and not KIT Product lines
         /* (END) This part of code sort Sales Order Lines in order KIT parent and above him related Kit Products */
 
 
         system.debug('current_so_relation: '+JSON.serialize(current_so_relation));
 
         system.debug('lines sol: '+JSON.serialize(lines));
+
+
+
+
+
+
 
         // checkout billing and process receipts
         CheckBillings();

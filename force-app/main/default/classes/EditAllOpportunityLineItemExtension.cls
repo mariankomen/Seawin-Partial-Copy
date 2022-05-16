@@ -5,11 +5,13 @@ public class EditAllOpportunityLineItemExtension {
     Private List<OpportunityLineItem> oli {get; set;}
     private Boolean EditProductPermission {get; set;}
     public Boolean showBack {get; set;}
+    public String typeOfProduct {get; set;}
     
     public EditAllOpportunityLineItemExtension(ApexPages.StandardController std){
         EditProductPermission = true;
         showBack = false;
         oppId = ApexPages.currentPage().getParameters().get('oppId');
+        typeOfProduct = ApexPages.currentPage().getParameters().get('recordType');
         
         String desireUserId = UserInfo.getUserId();
         User u = [select profileId, ContactId from user where id =: desireUserId limit 1];
@@ -36,7 +38,8 @@ public class EditAllOpportunityLineItemExtension {
             return null;
         }
         else{
-            PageReference page = new PageReference('/oppitm/multilineitem.jsp?oppId=' + oppId + '&retURL=' + oppId);
+            PageReference page = new PageReference('/apex/OpportunityEditAllPage?oppId=' + oppId + '&retURL=' + oppId + '&recordType=' +typeOfProduct);
+            // PageReference page = new PageReference('/oppitm/multilineitem.jsp?oppId=' + oppId + '&retURL=' + oppId);
             page.setRedirect(true);
             return page;
         }

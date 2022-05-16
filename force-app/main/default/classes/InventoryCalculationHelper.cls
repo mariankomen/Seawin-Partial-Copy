@@ -75,7 +75,7 @@ public class InventoryCalculationHelper {
                 
                 decimal allocated = 0;
                 strList.add(allocated);
-                
+                //KIT
                 decimal instock = MinAvailable.intValue();
                 strList.add(instock);
                 

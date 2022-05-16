@@ -120,8 +120,9 @@
                         <apex:param value="{!sow.billAmount}" />
                     </apex:outputText>
                     <apex:inputHidden value="{!sow.BillAmountHidden}" id="billAmountInput" />
-                    <apex:facet name="footer">  
+                    <apex:facet name="footer"> 
                         <apex:outputText id="footerAmount" value="{0, number, Currency}" styleClass="clearAmount">
+                            <!-- <apex:param value="555" /> -->
                             <apex:param value="{!Amount}" />
                         </apex:outputText>
                     </apex:facet>
@@ -285,8 +286,12 @@
                 let isFirstBill = '{!firstBilling}'
                 if(amount.toString().includes('.') && entered < 100 && isFirstBill == 'true'){
                     amount = trueRound(amount, 2);
-                    let second_num_after_dot = amount.toString().split('.')[1][1]
-                    if(+second_num_after_dot % 2 !== 0){
+                    let arr = amount.toString().split('.')
+                    if(arr.length < 2) arr.push('0')
+                    // console.log('amount.toString().split): ', arr)
+
+                    let second_num_after_dot = arr[1][1] !== undefined && arr[1][1] !== null && arr[1][1] !== '' ? arr[1][1] : 0;
+                    if(+second_num_after_dot % 2 !== 0 && second_num_after_dot){
                         while(+second_num_after_dot % 2 !== 0){
                             amount = trueRound((forPercent * (entered/100)),2)
                             second_num_after_dot = amount.toString().split('.')[1][1]
@@ -322,14 +327,16 @@
             
         }
         
+        console.log('keyvalue;'+keyvalue)
         // grand total
         var grandtotal = 0;
         for(var i = 0; i < keyvalue.length; i++){
             if(keyvalue[i] != undefined){
                 grandtotal += parseFloat(keyvalue[i]);
+                console.log('keyvalue['+i+']:' + keyvalue[i]);
             }
         }
-        
+        // grandtotal = 4444;
         var gt = trueRound(grandtotal, 5);
         document.getElementById(FooterAmountIdStr).innerHTML = 
             (grandtotal == 0) ? "$0.00" : gt.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -439,6 +446,7 @@
         // Bill amount
         document.getElementById(BillAmountIdStr).innerHTML = (amount == '') ? "$0.00" : 
         amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        // document.getElementById(BillAmountInputStr).value = (amount == '') ? "0.00" : '424242';
         document.getElementById(BillAmountInputStr).value = (amount == '') ? "0.00" : amount;
         
         // add it to the key value pair
