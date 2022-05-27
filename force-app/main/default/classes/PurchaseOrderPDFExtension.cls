@@ -5,7 +5,9 @@ public class PurchaseOrderPDFExtension {
     private Id poId {get; set;}
     public AcctSeedERP__Purchase_Order__c po {get; set;}
     public list<AcctSeedERP__Purchase_Order_line__c> lines {get; set;}
-    
+    public List<AcctSeed__Account_Payable__c> payable_lines {get; set;}
+
+
     public PurchaseOrderPDFExtension(apexpages.StandardController std){
         // soId = std.getId();
         poId = ApexPages.currentPage().getParameters().get('id');
@@ -38,6 +40,27 @@ public class PurchaseOrderPDFExtension {
                  order by Sort_Order__c,name,createddate asc];
 
         
+
+
+
+        payable_lines = [SELECT Id, 
+                                Name,
+                                AcctSeed__Type__c, 
+                                Total_Secure__c, 
+                                Paid_Date__c, 
+                                AcctSeedERP__Purchase_Order__c,
+                                AcctSeed__Total__c,
+                                AcctSeed__Payee_Reference__c,
+                                AcctSeed__Payment_Status__c,
+                                AcctSeed__Accounting_Period__r.Name, 
+                                AcctSeed__Payee__c, 
+                                AcctSeed__Date__c, 
+                                AcctSeed__Due_Date__c, 
+                                AcctSeed__Paid_Amount__c,  
+                                AcctSeed__Balance__c 
+                        FROM AcctSeed__Account_Payable__c
+                        WHERE AcctSeedERP__Purchase_Order__c=:poId];
+
         // PDF Logic
         headerUrl = getImageURL(po.Gl_Account_Variable_1__r.Purchase_Order_Header__c);
         footerUrl = getImageURL(po.Gl_Account_Variable_1__r.Purchase_Order_Footer__c);

@@ -260,10 +260,20 @@ public class BillingPDFExtension {
         
         try{
 
-            String BillingTerms = bill.AcctSeedERP__Sales_Order__c != null ? bill.AcctSeedERP__Sales_Order__r.Billing_Terms_Name__c :
-            bill.AcctSeed__Opportunity__c != null ? bill.AcctSeed__Opportunity__r.Billing_Terms_Name__c :
-            bill.AcctSeed__Customer__c != null ? bill.AcctSeed__Customer__r.AcctSeed__Billing_Terms_Name__c : null; 
-            
+            // String BillingTerms = bill.AcctSeedERP__Sales_Order__c != null ? bill.AcctSeedERP__Sales_Order__r.Billing_Terms_Name__c :
+            // bill.AcctSeed__Opportunity__c != null ? bill.AcctSeed__Opportunity__r.Billing_Terms_Name__c :
+            // bill.AcctSeed__Customer__c != null ? bill.AcctSeed__Customer__r.AcctSeed__Billing_Terms_Name__c : null; 
+            String BillingTerms;
+            if(bill.AcctSeedERP__Sales_Order__c != null && bill.AcctSeedERP__Sales_Order__r.Billing_Terms_Name__c != null){
+                BillingTerms = bill.AcctSeedERP__Sales_Order__r.Billing_Terms_Name__c;
+            }else if(bill.AcctSeed__Opportunity__c != null && bill.AcctSeed__Opportunity__r.Billing_Terms_Name__c != null){
+                BillingTerms = bill.AcctSeed__Opportunity__r.Billing_Terms_Name__c;
+            }else if(bill.AcctSeed__Customer__c != null && bill.AcctSeed__Customer__r.AcctSeed__Billing_Terms_Name__c != null){
+                BillingTerms = bill.AcctSeed__Customer__r.AcctSeed__Billing_Terms_Name__c;
+            }
+            system.debug('bill.AcctSeed__Customer__r.AcctSeed__Billing_Terms_Name__c: '+bill.AcctSeed__Customer__r.AcctSeed__Billing_Terms_Name__c);
+
+
             if(BillingTerms == null) 
                 BillingTerms = 'Not Applicable';
             

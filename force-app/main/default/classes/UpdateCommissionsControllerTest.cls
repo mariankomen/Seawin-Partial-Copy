@@ -140,7 +140,8 @@ public class UpdateCommissionsControllerTest {
         acct.AcctSeed__Accounting_Type__c = 'Customer';
         acct.AcctSeed__GL_Account_Variable_1__c = accVar.Id;
         insert acct;
-        
+
+        Test.startTest();
         Sales_Rep__c sr = new Sales_Rep__c();
         
         sr.name = 'Test Team';
@@ -435,6 +436,7 @@ public class UpdateCommissionsControllerTest {
         memo.AcctSeed__Amount__c = -25;
         
         insert memo;
+        Test.stopTest();
     }
     @isTest static void runTests(){
 

@@ -162,10 +162,33 @@ public class OpportunitySalesProcessPathExtension {
                 }
                 Opp.StageName = stageNameIs;
                 Opp.Sub_Stage__c = '';
-                update Opp;
+
+
+                List<AcctSeed__Billing__c> related_bills = [SELECT  Id, 
+                                                                    Name,
+                                                                    AcctSeed__Total__c,
+                                                                    AcctSeed__Balance__c,
+                                                                    AcctSeed__Opportunity__c
+                                                            FROM AcctSeed__Billing__c
+                                                            WHERE AcctSeed__Opportunity__c=:Opp.Id
+                                                            ];
+                for(AcctSeed__Billing__c bill:related_bills){
+                    if(bill.AcctSeed__Balance__c != 0){
+                        OmittedExceptionOccurred = true;
+                    }
+                }
+
+                if(!OmittedExceptionOccurred){
+                    update Opp;
+                    shouldRedirect = true;
+                    redirectUrl = communityUrl + '/' + Opp.id;
+                }
                 
-                shouldRedirect = true;
-                redirectUrl = communityUrl + '/' + Opp.id;
+
+
+
+
+                
             }catch(Exception ex){
                 
                 system.debug(ex.getMessage());

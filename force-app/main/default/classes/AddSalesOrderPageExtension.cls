@@ -18,7 +18,7 @@ public with sharing class AddSalesOrderPageExtension {
         acctId = ApexPages.currentPage().getParameters().get('acctId');
         ctId = ApexPages.currentPage().getParameters().get('ctId');
         RecordTypeId = ApexPages.currentPage().getParameters().get('RecordType');
-
+        system.debug('acctId; '+acctId);
         Opportunity opp = new Opportunity();
         Account acct = new Account();
         Contact ct = new Contact();
@@ -30,7 +30,7 @@ public with sharing class AddSalesOrderPageExtension {
 
             fieldstr = AllFields.Fields('Account', new List<String>());
             acct = Database.query('Select ' + fieldstr + ' from Account where id=:acctId Limit 1');
-
+            system.debug('acct.Price_Level__cacct.Price_Level__c: '+acct.Price_Level__c);
             so.AcctSeedERP__Customer__c = acct.id;
             // so.Shipping_Term__c
             so.Contact__c = acct.Contact_Person__c;

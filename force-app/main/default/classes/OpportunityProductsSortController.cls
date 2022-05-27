@@ -1,9 +1,9 @@
 /*****************************************************************************************************
-*   @class        : OpportunityEditAllController
-*   @description  : Controller of edit all page for Opportunity products and optional products
+*   @class        : OpportunityProductsSortController
+*   @description  : Controller of Sort page for Opportunity products and optional products
 *   @author       : Marian Lyzhychka ©Peeklogic
 *****************************************************************************************************/
-public with sharing class OpportunityEditAllController {
+public with sharing class OpportunityProductsSortController {
 
     public Id opportunityId {get; set;}
     public Boolean isOpportunityProduct {get; set;}
@@ -14,7 +14,9 @@ public with sharing class OpportunityEditAllController {
     public List<Optional_Products_Opportunity__c> opportunityOptionalItems {get; set;}
     public List<OpportunityLineItem> opportunityLineItems {get; set;}
 
-    public OpportunityEditAllController() {
+    public String opportunityName {get; set;}
+    public OpportunityProductsSortController() {
+
         wrapper_lines = new List<ItemWrapper>();
         opportunityOptionalItems = new List<Optional_Products_Opportunity__c>();
         opportunityLineItems = new List<OpportunityLineItem>();
@@ -22,6 +24,8 @@ public with sharing class OpportunityEditAllController {
         opportunityId = ApexPages.currentPage().getParameters().get('oppId');
         typeOfProduct = ApexPages.currentPage().getParameters().get('recordType');
         
+        opportunityName = [SELECT Id, Name FROM Opportunity WHERE Id=:opportunityId].Name;
+
         isOpportunityProduct = typeOfProduct == 'oli' ? true : false;
         isOptionalProduct = typeOfProduct == 'opo' ? true : false;
 
@@ -31,8 +35,6 @@ public with sharing class OpportunityEditAllController {
             fetchOpportunityOptionalItems();
         }
     }
-
-
 
     /*****************************************************************************************************
     *   @method       : fetchOpportunityLineItems
@@ -62,6 +64,7 @@ public with sharing class OpportunityEditAllController {
                                                 oli.Product2.Allow_Product_Description_Change__c));
         }                                                    
     }
+
     /*****************************************************************************************************
     *   @method       : fetchOpportunityOptionalItems
     *   @description  : Method fetch all Opportunity optional items
@@ -93,82 +96,72 @@ public with sharing class OpportunityEditAllController {
         
     }
 
-    /*****************************************************************************************************
-    *   @method       : saveEdit
-    *   @description  : method use onclick save button, depends on records(oli or opo) run different save functions
-    *   @return       : void
-    *   @author       : Marian Lyzhychka ©Peeklogic
-    *****************************************************************************************************/
-    public void saveEdit(){
-        if(isOpportunityProduct){
-            saveProductEdit();
-        }else{
-            saveOptionalProductEdit();
+    @RemoteAction
+    public static void executeSorting(String json_sort, String oppId, String recType){
+        List<SortingWrapper> sortlist = (List<SortingWrapper>)JSON.deserialize(json_sort, List<SortingWrapper>.class);
+
+        if(recType == 'oli'){
+            saveSortingOLI(json_sort, oppId, sortlist);
+        }else if(recType == 'opo'){
+            saveSortingOPO(json_sort, oppId, sortlist);
         }
     }
+    
+    public static void saveSortingOLI(String json_sort, String oppId, List<SortingWrapper> sortlist){
 
-    /*****************************************************************************************************
-    *   @method       : saveProductEdit
-    *   @description  : used for saving OpportunityLineItems
-    *   @return       : void
-    *   @author       : Marian Lyzhychka ©Peeklogic
-    *****************************************************************************************************/
-    public void saveProductEdit(){
-        Map<Id, OpportunityLineItem> opportunityLineItemsMap = new Map<Id, OpportunityLineItem>(opportunityLineItems);
-        List<OpportunityLineItem> updatableLines = new List<OpportunityLineItem>();
-
-        for(ItemWrapper iw: wrapper_lines){
-            List<String> splittedCurrency = iw.sales_price.split('');
-
-            if(opportunityLineItemsMap.containsKey(iw.recordId)){
-                OpportunityLineItem oli = opportunityLineItemsMap.get(iw.recordId);
-                oli.Quantity = iw.quantity;
-                oli.UnitPrice = splittedCurrency[0] == '$' ? Decimal.valueOf(iw.sales_price.substring(1)) : Decimal.valueOf(iw.sales_price);
-                oli.Size__c = iw.size;
-                oli.Item_Description__c = iw.description;
-                updatableLines.add(oli);
-            }
+        Map<Id, Integer> sortMap = new Map<Id, Integer>();
+        for(SortingWrapper sw:sortList){
+            sortMap.put(sw.solId, sw.sortNumber);
         }
+
+        List<OpportunityLineItem> oli = [SELECT Id, SortOrder FROM OpportunityLineItem WHERE OpportunityId=:oppId];
+
+        for(OpportunityLineItem ol: oli){
+            ol.SortOrder = sortMap.get(ol.Id);
+        }
+
         try{
-            update updatableLines;
-            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM,'Product lines were successfully saved.'));
-        } catch(Exception e){
-            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,e.getMessage()));
+            update oli;
+            system.debug('UPDATED SUCCESSFULLY');
+        }catch(Exception ex){
+            system.debug('ERROR: '+ex.getMessage());
         }
     }
+    public static void saveSortingOPO(String json_sort, String oppId, List<SortingWrapper> sortlist){
 
-    /*****************************************************************************************************
-    *   @method       : saveOptionalProductEdit
-    *   @description  : used for saving Optional_Products_Opportunity__c
-    *   @return       : void
-    *   @author       : Marian Lyzhychka ©Peeklogic
-    *****************************************************************************************************/
-    public void saveOptionalProductEdit(){
-        Map<Id, Optional_Products_Opportunity__c> opportunityOptionalItemsMap = new Map<Id, Optional_Products_Opportunity__c>(opportunityOptionalItems);
-        List<Optional_Products_Opportunity__c> updatableOptionalLines = new List<Optional_Products_Opportunity__c>();
-
-        for(ItemWrapper iw: wrapper_lines){
-            List<String> splittedCurrency = iw.sales_price.split('');
-            if(opportunityOptionalItemsMap.containsKey(iw.recordId)){
-                Optional_Products_Opportunity__c opo = opportunityOptionalItemsMap.get(iw.recordId);
-                opo.Quantity__c = iw.quantity;
-                opo.UnitPrice__c = splittedCurrency[0] == '$' ? Decimal.valueOf(iw.sales_price.substring(1)) : Decimal.valueOf(iw.sales_price);
-                opo.Size__c = iw.size;
-                opo.Item_Description__c = iw.description;
-                updatableOptionalLines.add(opo);
-            }
+        Map<Id, Integer> sortMap = new Map<Id, Integer>();
+        for(SortingWrapper sw:sortList){
+            sortMap.put(sw.solId, sw.sortNumber);
         }
+
+        List<Optional_Products_Opportunity__c> opo = [SELECT Id, SortOrder__c FROM Optional_Products_Opportunity__c WHERE Opportunity__c=:oppId];
+
+        for(Optional_Products_Opportunity__c ol: opo){
+            ol.SortOrder__c = sortMap.get(ol.Id);
+        }
+
         try{
-            update updatableOptionalLines;
-            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM,'Optional Product lines were successfully saved.'));
-        } catch(Exception e){
-            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,e.getMessage()));
+            update opo;
+            system.debug('UPDATED SUCCESSFULLY');
+        }catch(Exception ex){
+            system.debug('ERROR: '+ex.getMessage());
         }
     }
 
+
+    
     public PageReference back(){
-        PageReference pr = new PageReference('/'+opportunityId);
-        return pr;
+        PageReference ref = new PageReference('/'+opportunityId);
+        return ref;
+    }
+    public class SortingWrapper{
+        public Id solId {get;set;}
+        public Integer sortNumber {get;set;}
+
+        public SortingWrapper(Id sId, Integer n){
+            solId = sId;
+            sortNumber = n;
+        }
     }
 
     public class ItemWrapper{
@@ -190,5 +183,4 @@ public with sharing class OpportunityEditAllController {
             allow_changes = allow_cha;
         }
     }
-
 }

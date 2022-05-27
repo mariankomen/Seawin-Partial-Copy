@@ -154,16 +154,30 @@ public class CalculateCommissionsHandlerTest {
         sr.Man_Rep_Price_Level_21_26__c = 1;
         sr.Man_Rep_Price_Level_27_30__c = 1;
         sr.GL_Account_Variable_to_Sales_Rep__c = accVar.Id;
+        sr.IsTeam__c = true;
+        sr.Company_Name_Lookup__c = acct.Id;
         
         insert sr;
         
+        AcctSeed__GL_Account__c expenceAcc = new AcctSeed__GL_Account__c();
+        expenceAcc.name = 'glaccount';
+        expenceAcc.AcctSeed__Type__c = 'Expense';
+        expenceAcc.AcctSeed__Sub_Type_1__c = 'Facilities';
+        expenceAcc.AcctSeed__Sub_Type_2__c = 'Rent';
+        expenceAcc.AcctSeed__Bank__c = true;
+        expenceAcc.GL_Account_Variable_1__c = accVar.id;
+        
+
+        insert expenceAcc;
+
         // create account
         Account acct2 = new Account();
         acct2.Name = 'Manufacturer Representative';
         acct2.Sales_Rep_O__c = sr.id;
         acct2.Type = 'Designer';
-        acct2.AcctSeed__Accounting_Type__c = 'Manufacturer Representative';
+        acct2.AcctSeed__Accounting_Type__c = 'Manufacture Representative';
         acct2.AcctSeed__GL_Account_Variable_1__c = accVar.Id;
+        acct2.AcctSeed__Default_Expense_GL_Account__c = expenceAcc.Id;
         acct2.Price_Level_1_12__c = 1;
         acct2.Price_Level_13_20__c = 1;
         acct2.Price_Level_21_26__c = 1;
@@ -214,6 +228,26 @@ public class CalculateCommissionsHandlerTest {
         opp.ContactPerson__c = cont.Id;
         opp.GL_Account_Variable_1__c = accVar.Id;
         opp.Run_Validation_Rule__c = true;
+        opp.Commission_Rate_Sales_Rep__c = 1;
+        opp.Commission_Rate_Referral_Sales_Rep__c = 1;
+        opp.Commission_Rate_Manufacturer_Rep__c = 1;
+        opp.Commission_Rate_specified_rep__c = 1;
+        opp.Manufacturer_Rep__c = acct2.id;
+        opp.Referral_Sales_Rep__c = UserInfo.getUserId();
+        opp.specified_rep__c = acct2.id;
+
+        // salesorder.Manufacturer_Rep__c = acct2.id;
+        // salesorder.Referral_Sales_Rep__c = UserInfo.getUserId();
+        // salesorder.Sales_Rep_O__c = sr.id;
+        // salesorder.Contact__c = cont.Id;
+        // salesorder.Price_Level__c = 'Level 3';
+        // salesorder.AcctSeedERP__Status__c = 'Open';
+        // salesorder.AcctSeedERP__Ledger__c = ledger.id;
+        // salesorder.GL_Account_Variable_1__c = accVar.Id;
+        // salesorder.Commission_Rate_Sales_Rep__c = 1;
+        // salesorder.Commission_Rate_Referral_Sales_Rep__c = 1;
+        // salesorder.Commission_Rate_Manufacturer_Rep__c = 1;
+        // salesorder.Commission_Rate_Specified_Rep__c = 1;
         insert opp;
         
         // insert to standard price book
@@ -276,6 +310,7 @@ public class CalculateCommissionsHandlerTest {
         salesorder.AcctSeedERP__Customer__c = acct.Id;
         salesorder.AcctSeedERP__Opportunity__c = opp.Id;
         salesorder.Manufacturer_Rep__c = acct2.id;
+        salesorder.specified_rep__c = acct2.id;
         salesorder.Referral_Sales_Rep__c = UserInfo.getUserId();
         salesorder.Sales_Rep_O__c = sr.id;
         salesorder.Contact__c = cont.Id;
@@ -286,6 +321,7 @@ public class CalculateCommissionsHandlerTest {
         salesorder.Commission_Rate_Sales_Rep__c = 1;
         salesorder.Commission_Rate_Referral_Sales_Rep__c = 1;
         salesorder.Commission_Rate_Manufacturer_Rep__c = 1;
+        salesorder.Commission_Rate_Specified_Rep__c = 1;
         insert salesorder;
         
         // create a sales order
@@ -359,6 +395,22 @@ public class CalculateCommissionsHandlerTest {
         bill.AcctSeed__Accounting_Period__c = ap.id;
         
         insert bill;
+        Test.startTest();
+        AcctSeed__Billing__c bill1 = new AcctSeed__Billing__c();
+        
+        bill1.AcctSeed__Status__c = 'Approved';
+        bill1.AcctSeed__PDF_Email_Status__c = 'Unsent';
+        bill1.AcctSeed__Billing_Format__c = abf.id;
+        // bill1.AcctSeedERP__Sales_Order__c = salesorder.id;
+        bill1.AcctSeed__Date__c = Date.Today();
+        bill1.AcctSeed__Due_Date2__c = Date.Today();
+        bill1.AcctSeed__Ledger__c = salesorder.AcctSeedERP__Ledger__c;
+        bill1.AcctSeed__Opportunity__c = salesorder.AcctSeedERP__Opportunity__c;
+        bill1.AcctSeed__Customer__c = salesorder.AcctSeedERP__Customer__c;
+        bill1.AcctSeed__Accounting_Period__c = ap.id;
+        bill1.AcctSeed__Opportunity__c = opp.id;
+        
+        insert bill1;
         //system.debug(bill.type);
         AcctSeed__Billing_Line__c bline = new AcctSeed__Billing_Line__c();
         bline.AcctSeed__Billing__c = bill.id;
@@ -373,6 +425,21 @@ public class CalculateCommissionsHandlerTest {
         bline.AcctSeed__Revenue_GL_Account__c = revenue.id;
         
         insert bline;
+        AcctSeed__Billing_Line__c bline1 = new AcctSeed__Billing_Line__c();
+        bline1.AcctSeed__Billing__c = bill1.id;
+        bline1.AcctSeed__Date__c = date.today();
+        bline1.AcctSeed__Hours_Units__c = 1;
+        bline1.AcctSeed__Product__c = soline.AcctSeedERP__Product__c;
+        bline1.AcctSeedERP__Sales_Order_Line__c = soline.id;
+        bline1.AcctSeed__Rate__c = soline.AcctSeedERP__Unit_Price__c;
+        bline1.Item_Description__c = soline.Item_Description__c;
+        bline1.AcctSeed__Expense_GL_Account__c = expense.id;
+        bline1.AcctSeed__Inventory_GL_Account__c = inventory.id;
+        bline1.AcctSeed__Revenue_GL_Account__c = revenue.id;
+        
+        insert bline1;
+
+        
         
         AcctSeed__Cash_Receipt__c cr = new AcctSeed__Cash_Receipt__c();
         
@@ -386,13 +453,54 @@ public class CalculateCommissionsHandlerTest {
         
         AcctSeed__Billing_Cash_Receipt__c br = new AcctSeed__Billing_Cash_Receipt__c();
         
-        br.AcctSeed__Applied_Amount__c = 30;
+        br.AcctSeed__Applied_Amount__c = 15;
         br.AcctSeed__Billing__c = bill.id;
         br.AcctSeed__Cash_Receipt__c = cr.id;
         //br.AcctSeed__Period_Applied__c = ap.id;
         
         insert br;
+
+        AcctSeed__Billing_Cash_Receipt__c br1 = new AcctSeed__Billing_Cash_Receipt__c();
         
+        br1.AcctSeed__Applied_Amount__c = 0;
+        br1.AcctSeed__Billing__c = bill1.id;
+        br1.AcctSeed__Cash_Receipt__c = cr.id;
+        //br.AcctSeed__Period_Applied__c = ap.id;
+        
+        insert br1;
+
+
+
+        AcctSeed__Billing__c bill3 = new AcctSeed__Billing__c();
+        
+        bill3.AcctSeed__Status__c = 'Approved';
+        bill3.AcctSeed__PDF_Email_Status__c = 'Unsent';
+        bill3.AcctSeed__Billing_Format__c = abf.id;
+        bill3.AcctSeedERP__Sales_Order__c = salesorder.id;
+        bill3.AcctSeed__Date__c = Date.Today();
+        bill3.AcctSeed__Due_Date2__c = Date.Today();
+        bill3.AcctSeed__Ledger__c = salesorder.AcctSeedERP__Ledger__c;
+        bill3.AcctSeed__Opportunity__c = opp.Id;
+        bill3.AcctSeed__Customer__c = salesorder.AcctSeedERP__Customer__c;
+        bill3.AcctSeed__Accounting_Period__c = ap.id;
+        bill3.Bill_Type__c = 'test';
+        
+        insert bill3;
+        
+        AcctSeed__Billing_Line__c bline3 = new AcctSeed__Billing_Line__c();
+        bline3.AcctSeed__Billing__c = bill3.id;
+        bline3.AcctSeed__Date__c = date.today();
+        bline3.AcctSeed__Hours_Units__c = 6;
+        bline3.AcctSeed__Product__c = soline.AcctSeedERP__Product__c;
+        bline3.AcctSeedERP__Sales_Order_Line__c = soline.id;
+        bline3.AcctSeed__Rate__c = -25;
+        bline3.Item_Description__c = soline.Item_Description__c;
+        bline3.AcctSeed__Expense_GL_Account__c = expense.id;
+        bline3.AcctSeed__Inventory_GL_Account__c = inventory.id;
+        bline3.AcctSeed__Revenue_GL_Account__c = revenue.id;
+        
+        insert bline3;
+        Test.stopTest();
         // credit memo
         
         AcctSeed__Billing__c bill2 = new AcctSeed__Billing__c();
@@ -400,13 +508,13 @@ public class CalculateCommissionsHandlerTest {
         bill2.AcctSeed__Status__c = 'Approved';
         bill2.AcctSeed__PDF_Email_Status__c = 'Unsent';
         bill2.AcctSeed__Billing_Format__c = abf.id;
-        bill2.AcctSeedERP__Sales_Order__c = salesorder.id;
+        //bill2.AcctSeedERP__Sales_Order__c = salesorder.id;
         bill2.AcctSeed__Date__c = Date.Today();
         bill2.AcctSeed__Due_Date2__c = Date.Today();
         bill2.AcctSeed__Ledger__c = salesorder.AcctSeedERP__Ledger__c;
-        bill2.AcctSeed__Opportunity__c = salesorder.AcctSeedERP__Opportunity__c;
         bill2.AcctSeed__Customer__c = salesorder.AcctSeedERP__Customer__c;
         bill2.AcctSeed__Accounting_Period__c = ap.id;
+        bill2.AcctSeed__Opportunity__c = opp.id;
         
         insert bill2;
         
@@ -423,14 +531,34 @@ public class CalculateCommissionsHandlerTest {
         bline2.AcctSeed__Revenue_GL_Account__c = revenue.id;
         
         insert bline2;
+
         
         
         
-        china(bill.id, bill2.id, ap.id);
+        
+        Sales_Order_Commissions__c commissions = new Sales_Order_Commissions__c();
+      
+        commissions.Owner__c = UserInfo.getuserId();
+        commissions.Sales_Order__c = salesorder.id;
+        commissions.Commission_Amount__c = 50;
+        
+        
+        insert commissions;
+
+        Sales_Order_Commissions__c commissions1 = new Sales_Order_Commissions__c();
+        commissions1.Owner__c = UserInfo.getuserId();
+        commissions1.Opportunity__c = opp.id;
+        commissions1.Commission_Amount__c = 50;
+        
+        insert commissions1;
+
+        china(bill.id, bill2.id, ap.id, -5);
+        china(bill1.id, bill2.id, ap.id, -7);
+        china(bill1.id, bill3.id, ap.id, -8);
         //insert memo;
     }
     
-    public static void china(Id id_1, Id id_2, Id id_3){
+    public static void china(Id id_1, Id id_2, Id id_3, Decimal amount){
         AcctSeed__Billing_Credit_Memo__c memo = new AcctSeed__Billing_Credit_Memo__c();
         
         memo.AcctSeed__Applied_Date__c = Date.today();
@@ -438,70 +566,138 @@ public class CalculateCommissionsHandlerTest {
         memo.AcctSeed__Billing_Credit_Memo__c = id_2;
         //memo.AcctSeed__Applied_Date__c = ap.id;
         memo.AcctSeed__Accounting_Period__c = id_3;
-        memo.AcctSeed__Amount__c = -25;
+        memo.AcctSeed__Amount__c = amount;
 
         
-            //insert memo;
-        
+        insert memo;
+        // system.debug('test record: '+JSON.serialize(memo));
     }
     
-    @isTest
-    static void helpTestTest(){
-        CalculateCommissionsHandler.helpTest();
+    @IsTest
+    public static void StartBillCashReceiptTest(){
+        List<AcctSeed__Billing_Cash_Receipt__c> receipts = [SELECT Id, AcctSeed__Billing__c FROM AcctSeed__Billing_Cash_Receipt__c];
+        CalculateCommissionsHandler.Start(receipts);
     }
-    @isTest 
-    static void PartialCommissions(){
-        
-        Account acct = [select id from account where name='Manufacturer Representative' Limit 1];
-        AcctSeedERP__Sales_Order__c so = [select id, Manufacturer_Rep__c from AcctSeedERP__Sales_Order__c Limit 1];
-        
-        so.Manufacturer_Rep__c = acct.id;
-        
-        update so;
-        
+    @IsTest
+    public static void StartBillMemoReceiptTest(){
+        List<AcctSeed__Billing_Credit_Memo__c> receipts = [SELECT Id, AcctSeed__Billing_Invoice__c FROM AcctSeed__Billing_Credit_Memo__c WHERE AcctSeed__Amount__c = -7];
+        CalculateCommissionsHandler.Start(receipts);
+    }
+    @IsTest
+    public static void PartialCommissionsSOTest(){
+        AcctSeedERP__Sales_Order__c so = [SELECT Id FROM AcctSeedERP__Sales_Order__c LIMIT 1];
         Test.startTest();
-        	CalculateCommissionsHandler.PartialCommissions(so.id);
+        CalculateCommissionsHandler.PartialCommissions(so.Id);
+        Test.stopTest();
+    }
+    @IsTest
+    public static void PartialCommissionsSOMemoTest(){
+        AcctSeed__Billing_Credit_Memo__c memo = [SELECT Id, AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c FROM AcctSeed__Billing_Credit_Memo__c WHERE AcctSeed__Amount__c = -5 LIMIT 1];
+        AcctSeedERP__Sales_Order__c so = [SELECT Id FROM AcctSeedERP__Sales_Order__c WHERE Id=:memo.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c];
+        // AcctSeedERP__Sales_Order__c so = [SELECT Id FROM AcctSeedERP__Sales_Order__c LIMIT 1];
+        Test.startTest();
+        CalculateCommissionsHandler.PartialCommissions(memo.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c);
+        Test.stopTest();
+    }
+    @IsTest
+    public static void UpdateCommissionsSOTest(){
+        Test.startTest();
+        AcctSeed__Billing_Credit_Memo__c memo = [SELECT Id, AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c FROM AcctSeed__Billing_Credit_Memo__c ORDER BY CreatedDate DESC LIMIT 1];
+        AcctSeedERP__Sales_Order__c so = [SELECT Id FROM AcctSeedERP__Sales_Order__c LIMIT 1];
+        CalculateCommissionsHandler.UpdateCommissions(so, true, true, true, true);
+        Test.stopTest();
+    }
+    @IsTest
+    public static void UpdateCommissionsOPPTest(){
+        Test.startTest();
+        AcctSeed__Billing_Credit_Memo__c memo = [SELECT Id, AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c FROM AcctSeed__Billing_Credit_Memo__c ORDER BY CreatedDate DESC LIMIT 1];
+        Opportunity so = [SELECT Id FROM Opportunity LIMIT 1];
+        CalculateCommissionsHandler.UpdateCommissionsOpportunity(so, true, true, true, true);
+        Test.stopTest();
+    }
+    @IsTest
+    public static void PartialCommissionsOPPTest(){
+        Test.startTest();
+        Opportunity so = [SELECT Id FROM Opportunity LIMIT 1];
+        CalculateCommissionsHandler.PartialCommissionsOpportunity(so.Id);
+        Test.stopTest();
+    }
+    @IsTest
+    public static void DeleteCommissionsOPPTest(){
+        Test.startTest();
+
+        List<AcctSeed__Billing_Credit_Memo__c> commissions = [SELECT Id FROM AcctSeed__Billing_Credit_Memo__c];
+        List<AcctSeed__Billing_Cash_Receipt__c> commissions_rep = [SELECT Id FROM AcctSeed__Billing_Cash_Receipt__c];
+        Set<id> keys = new Set<Id>();
+        Set<id> keys_rep = new Set<Id>();
+
+        for(AcctSeed__Billing_Credit_Memo__c com:commissions){
+            keys.add(com.Id);
+        }
+        for(AcctSeed__Billing_Cash_Receipt__c com:commissions_rep){
+            keys_rep.add(com.Id);
+        }
+        CalculateCommissionsHandler.DeleteCommissions(keys, true);
+        CalculateCommissionsHandler.DeleteCommissions(keys_rep, false);
         Test.stopTest();
     }
     
-    @isTest 
-    static void UpdateCommissions(){
+
+
+
+    // @isTest 
+    // static void PartialCommissions(){
         
-        Account acct = [select id from account where name='Manufacturer Representative' Limit 1];
-        AcctSeedERP__Sales_Order__c so = [select id, Manufacturer_Rep__c,
-                                          Commission_Rate_Sales_Rep__c,
-                                          Commission_Rate_Manufacturer_Rep__c,
-                                          Commission_Rate_Referral_Sales_Rep__c,
-                                          Commission_Rate_Specified_Rep__c from AcctSeedERP__Sales_Order__c Limit 1];
+    //     Account acct = [select id from account where name='Manufacturer Representative' Limit 1];
+    //     AcctSeedERP__Sales_Order__c so = [select id, Manufacturer_Rep__c from AcctSeedERP__Sales_Order__c Limit 1];
         
-        so.Commission_Rate_Sales_Rep__c = 3;
-        so.Commission_Rate_Manufacturer_Rep__c = 4;
-        so.Commission_Rate_Referral_Sales_Rep__c = 5;
-        so.Commission_Rate_Specified_Rep__c = 5;
+    //     so.Manufacturer_Rep__c = acct.id;
         
-        //update so;
+    //     update so;
         
-        Test.startTest();
-        	CalculateCommissionsHandler.UpdateCommissions(so, true, true, true, true);
-        Test.stopTest();
-    }
+    //     Test.startTest();
+    //     	CalculateCommissionsHandler.PartialCommissions(so.id);
+    //     Test.stopTest();
+    // }
     
-    @isTest
-    static void DeleteCashReceiptsTest() {
+    // @isTest 
+    // static void UpdateCommissions(){
         
-        AcctSeed__Billing_Cash_Receipt__c receipt = [select id from AcctSeed__Billing_Cash_Receipt__c limit 1];
+    //     Account acct = [select id from account where name='Manufacturer Representative' Limit 1];
+    //     AcctSeedERP__Sales_Order__c so = [select id, Manufacturer_Rep__c,
+    //                                       Commission_Rate_Sales_Rep__c,
+    //                                       Commission_Rate_Manufacturer_Rep__c,
+    //                                       Commission_Rate_Referral_Sales_Rep__c,
+    //                                       Commission_Rate_Specified_Rep__c from AcctSeedERP__Sales_Order__c Limit 1];
         
-        Test.startTest();
-        	Delete receipt;
-        Test.stopTest();
-    }
-    @isTest
-    static void DeleteCashMemosTest() {
+    //     so.Commission_Rate_Sales_Rep__c = 3;
+    //     so.Commission_Rate_Manufacturer_Rep__c = 4;
+    //     so.Commission_Rate_Referral_Sales_Rep__c = 5;
+    //     so.Commission_Rate_Specified_Rep__c = 5;
         
-        //AcctSeed__Billing_Credit_Memo__c receipt = [select id from AcctSeed__Billing_Credit_Memo__c limit 1];
+    //     //update so;
         
-        Test.startTest();
-        	//Delete receipt;
-        Test.stopTest();
-    }
+    //     Test.startTest();
+    //     	CalculateCommissionsHandler.UpdateCommissions(so, true, true, true, true);
+    //     Test.stopTest();
+    // }
+    
+    // @isTest
+    // static void DeleteCashReceiptsTest() {
+        
+    //     AcctSeed__Billing_Cash_Receipt__c receipt = [select id from AcctSeed__Billing_Cash_Receipt__c limit 1];
+        
+    //     Test.startTest();
+    //     	Delete receipt;
+    //     Test.stopTest();
+    // }
+    // @isTest
+    // static void DeleteCashMemosTest() {
+        
+    //     //AcctSeed__Billing_Credit_Memo__c receipt = [select id from AcctSeed__Billing_Credit_Memo__c limit 1];
+        
+    //     Test.startTest();
+    //     	//Delete receipt;
+    //     Test.stopTest();
+    // }
 }

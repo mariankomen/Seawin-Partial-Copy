@@ -27,6 +27,10 @@
                         <apex:outputLabel>Sales Order</apex:outputLabel>
                         <apex:inputField id="soId" value="{!commission.Sales_Order__c}"/>
                     </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem>
+                        <apex:outputLabel>Opportunity</apex:outputLabel>
+                        <apex:inputField id="oppId" value="{!commission.Opportunity__c}"/>
+                    </apex:pageBlockSectionItem>
 
                     <apex:pageBlockSectionItem></apex:pageBlockSectionItem>
                     <apex:pageBlockSectionItem></apex:pageBlockSectionItem>

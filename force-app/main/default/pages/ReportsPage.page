@@ -6,8 +6,8 @@
   </style>
   <apex:pageblock title="Reports">
       <apex:outputLink rendered="{!$Profile.Name == 'System Administrator'}" 
-      value="{!IF(IsSandbox, communityUrl + '/00O59000000O9dk?pv4='&$User.Chosen_GL__c, communityUrl + '/00O1I000006aFOc?pv4='&$User.Chosen_GL__c)}" 
-                       target="_blank">МЩДЩВШФ Unpaid Sales Order Commissions with Fully Paid Sales Orders
+      value="{!IF(IsSandbox, communityUrl + '/00O59000000O9dk?pv4='&$User.Chosen_GL__c, communityUrl + '/00O8W000006allWUAQ?pv4='&$User.Chosen_GL__c)}" 
+                       target="_blank">Unpaid Sales Order Commissions with Fully Paid Sales Orders
           <span><img src="/s.gif" alt="Help" class="helpIcon" 
                                      title="A report showing all sales order commissions which are not paid with a fully paid sales order."/></span>
     </apex:outputLink>

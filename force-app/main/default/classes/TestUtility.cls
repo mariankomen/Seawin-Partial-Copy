@@ -68,7 +68,7 @@ public class TestUtility {
         gl.AcctSeed__Sub_Type_1__c = 'Liabilities';
         gl.AcctSeed__Sub_Type_2__c = 'Current Liabilities';
         gl.AcctSeed__Active__c = true;
-        
+        gl.GL_Account_Variable_1__c = avList[1].Id;
         glList.add(gl);
         
         		
@@ -79,7 +79,7 @@ public class TestUtility {
         aegl.AcctSeed__Sub_Type_1__c = 'Facilities';
         aegl.AcctSeed__Sub_Type_2__c = 'Rent';
         aegl.AcctSeed__Bank__c = true;
-        
+        aegl.GL_Account_Variable_1__c = avList[1].Id;
         glList.add(aegl);
         
         AcctSeed__GL_Account__c vch = new AcctSeed__GL_Account__c();
@@ -88,7 +88,7 @@ public class TestUtility {
         vch.AcctSeed__Sub_Type_1__c = 'Liabilities';
         vch.AcctSeed__Sub_Type_2__c = 'Current Liabilities';
         vch.AcctSeed__Active__c = true;
-        
+        vch.GL_Account_Variable_1__c = avList[1].Id;
         glList.add(vch);
         
         AcctSeed__GL_Account__c vch1 = new AcctSeed__GL_Account__c();
@@ -97,7 +97,7 @@ public class TestUtility {
         vch1.AcctSeed__Sub_Type_1__c = 'Liabilities';
         vch1.AcctSeed__Sub_Type_2__c = 'Current Liabilities';
         vch1.AcctSeed__Active__c = true;
-        
+        vch1.GL_Account_Variable_1__c = avList[1].Id;
         glList.add(vch1);
         
         AcctSeed__GL_Account__c vch2 = new AcctSeed__GL_Account__c();
@@ -106,7 +106,7 @@ public class TestUtility {
         vch2.AcctSeed__Sub_Type_1__c = 'Liabilities';
         vch2.AcctSeed__Sub_Type_2__c = 'Current Liabilities';
         vch2.AcctSeed__Active__c = true;
-        
+        vch2.GL_Account_Variable_1__c = avList[1].Id;
         glList.add(vch2);
         
         AcctSeed__GL_Account__c vch3 = new AcctSeed__GL_Account__c();
@@ -115,7 +115,7 @@ public class TestUtility {
         vch3.AcctSeed__Sub_Type_1__c = 'Liabilities';
         vch3.AcctSeed__Sub_Type_2__c = 'Current Liabilities';
         vch3.AcctSeed__Active__c = true;
-        
+        vch3.GL_Account_Variable_1__c = avList[1].Id;
         glList.add(vch3);
         
         AcctSeed__GL_Account__c gl1 = new AcctSeed__GL_Account__c();
@@ -124,7 +124,7 @@ public class TestUtility {
         gl1.AcctSeed__Sub_Type_1__c = 'Liabilities';
         gl1.AcctSeed__Sub_Type_2__c = 'Current Liabilities';
         gl1.AcctSeed__Active__c = true;
-        
+        gl1.GL_Account_Variable_1__c = avList[1].Id;
         glList.add(gl1);
         
         AcctSeed__GL_Account__c gl2 = new AcctSeed__GL_Account__c();
@@ -133,7 +133,7 @@ public class TestUtility {
         gl2.AcctSeed__Sub_Type_1__c = 'Liabilities';
         gl2.AcctSeed__Sub_Type_2__c = 'Current Liabilities';
         gl2.AcctSeed__Active__c = true;
-        
+        gl2.GL_Account_Variable_1__c = avList[1].Id;
         glList.add(gl2);
         
         AcctSeed__GL_Account__c gl3 = new AcctSeed__GL_Account__c();
@@ -142,6 +142,7 @@ public class TestUtility {
         gl3.AcctSeed__Sub_Type_1__c = 'Liabilities';
         gl3.AcctSeed__Sub_Type_2__c = 'Current Liabilities';
         gl3.AcctSeed__Active__c = true;
+        gl3.GL_Account_Variable_1__c = avList[1].Id;
         
         glList.add(gl3);
         
@@ -151,6 +152,7 @@ public class TestUtility {
         gl4.AcctSeed__Sub_Type_1__c = 'Liabilities';
         gl4.AcctSeed__Sub_Type_2__c = 'Current Liabilities';
         gl4.AcctSeed__Active__c = true;
+        gl4.GL_Account_Variable_1__c = avList[1].Id;
         
         glList.add(gl4);
         
@@ -226,12 +228,12 @@ public class TestUtility {
         opp.StageName = 'Closed Won';
         opp.CloseDate = system.today();
         opp.ContactPerson__c = cont.Id;
-        opp.GL_Account_Variable_1__c = avList[0].id;
+        opp.GL_Account_Variable_1__c = avList[1].id;
         opp.RecordTypeId = RecordTypeIdOpportunity;
         opp.Pricebook2Id = pricebookId;
         //opp.IsApproved__c= false;
         opp.Sales_Rep_O__c = salesrepList[0].id;
-        
+        opp.GL_Account_Variable_1__c = avList[1].Id;
         insert opp;
         
         Opportunity ClonedOpp = opp.clone(false, false, false, false);
@@ -253,7 +255,7 @@ public class TestUtility {
         opp2.GL_Account_Variable_1__c = avList[0].id;
         opp2.Pricebook2Id = pricebookId;
         opp2.Sales_Rep_O__c = salesrepList[0].id;
-        
+        opp2.GL_Account_Variable_1__c = avList[1].Id;
         oppList.add(opp2);
         
         insert oppList;
@@ -380,7 +382,7 @@ public class TestUtility {
         salesorder.Stage__c = 'Production';
         salesorder.RecordTypeId = RecordTypeIdSO;
         salesorder.Sales_Rep_O__c = salesrepList[0].id;
-
+        salesorder.GL_Account_Variable_1__c = avList[1].Id;
         salesorderList.add(salesorder);
         
         // -----------------------
@@ -396,7 +398,7 @@ public class TestUtility {
         salesorder2.Stage__c = 'Production';
         salesorder2.RecordTypeId = RecordTypeIdSO;
         salesorder.Sales_Rep_O__c = salesrepList[0].id;
-
+        salesorder2.GL_Account_Variable_1__c = avList[1].Id;
         salesorderList.add(salesorder2);
         
         insert salesorderList;
@@ -544,10 +546,10 @@ public class TestUtility {
         po.AcctSeedERP__Order_Date__c = date.today();
         po.AcctSeedERP__Status__c = 'Open';
         po.AcctSeedERP__Type__c = 'Drop Shipment';
-        po.Stage__c = 'In Production';
+        po.Stage__c = 'Production';
         po.AcctSeedERP__Purchase_Order_Format__c = abfList[0].Id;
         po.AcctSeedERP__Ledger__c = ledger.Id;
-        po.GL_Account_Variable_1__c = avList[0].id;
+        po.GL_Account_Variable_1__c = avList[1].id;
         po.Sales_Order__c = salesorderList[0].id;
         po.AcctSeedERP__Vendor_Contact__c = cont.id;
         po.AcctSeedERP__Vendor__c = acctList[0].id;
@@ -559,209 +561,209 @@ public class TestUtility {
         po2.AcctSeedERP__Order_Date__c = date.today();
         po2.AcctSeedERP__Status__c = 'Open';
         po2.AcctSeedERP__Type__c = 'Standard';
-        po2.Stage__c = 'In Production';
-        po2.AcctSeedERP__Purchase_Order_Format__c = abfList[0].Id;
+        po2.Stage__c = 'Production';
+        po2.AcctSeedERP__Purchase_Order_Format__c = abfList[1].Id;
         po2.AcctSeedERP__Ledger__c = ledger.Id;
-        po2.GL_Account_Variable_1__c = avList[0].id;
+        po2.GL_Account_Variable_1__c = avList[1].id;
         po2.Sales_Order__c = salesorderList[1].id;
         
         poList.add(po2);
         
         insert poList;
         
-        list<acctseederp__purchase_order_line__c> polList = new list<acctseederp__purchase_order_line__c>();
+        // list<acctseederp__purchase_order_line__c> polList = new list<acctseederp__purchase_order_line__c>();
         
-        acctseederp__purchase_order_line__c pol = new acctseederp__purchase_order_line__c();
+        // acctseederp__purchase_order_line__c pol = new acctseederp__purchase_order_line__c();
         
-        pol.AcctSeedERP__Product__c = prod.id;
-        pol.AcctSeedERP__Quantity__c = 4;
-        pol.AcctSeedERP__Purchase_Order__c = poList[0].id;
-        pol.AcctSeedERP__Unit_Price__c = 1;
+        // pol.AcctSeedERP__Product__c = prod.id;
+        // pol.AcctSeedERP__Quantity__c = 4;
+        // pol.AcctSeedERP__Purchase_Order__c = poList[0].id;
+        // pol.AcctSeedERP__Unit_Price__c = 1;
         
-        polList.add(pol);
+        // polList.add(pol);
         
-        //-------------------------
+        // //-------------------------
         
         
-        acctseederp__purchase_order_line__c pol2 = new acctseederp__purchase_order_line__c();
+        // acctseederp__purchase_order_line__c pol2 = new acctseederp__purchase_order_line__c();
         
-        pol2.AcctSeedERP__Product__c = prod.id;
-        pol2.AcctSeedERP__Quantity__c = 2;
-        pol2.AcctSeedERP__Purchase_Order__c = poList[1].id;
-        pol2.AcctSeedERP__Unit_Price__c = 1;
+        // pol2.AcctSeedERP__Product__c = prod.id;
+        // pol2.AcctSeedERP__Quantity__c = 2;
+        // pol2.AcctSeedERP__Purchase_Order__c = poList[1].id;
+        // pol2.AcctSeedERP__Unit_Price__c = 1;
         
-        polList.add(pol2);
+        // polList.add(pol2);
         
-        insert polList;
+        // insert polList;
         
-        solinesList[0].AcctSeedERP__Purchase_Order_Line__c = polList[0].id;
+        // solinesList[0].AcctSeedERP__Purchase_Order_Line__c = polList[0].id;
         
-        update solinesList[0];
+        // update solinesList[0];
         
-        AcctSeed__Account_Payable__c payable = new AcctSeed__Account_Payable__c();
+        // AcctSeed__Account_Payable__c payable = new AcctSeed__Account_Payable__c();
         
-        payable.AcctSeed__Accounting_Period__c = ap.id;  
-        payable.AcctSeed__Date__c  = date.today();
-        payable.AcctSeed__Due_Date__c = date.today() + 7;
-        payable.AcctSeed__Status__c = 'Approved';
-        payable.AcctSeed__Vendor__c = poList[0].AcctSeedERP__Vendor__c;
-        payable.AcctSeed__Ledger__c = poList[0].AcctSeedERP__Ledger__c;
-        payable.AcctSeedERP__Purchase_Order__c = poList[0].id;
-        payable.AcctSeed__Payee_Reference__c = poList[0].Name + ' - ' + System.Now().formatLong(); 
+        // payable.AcctSeed__Accounting_Period__c = ap.id;  
+        // payable.AcctSeed__Date__c  = date.today();
+        // payable.AcctSeed__Due_Date__c = date.today() + 7;
+        // payable.AcctSeed__Status__c = 'Approved';
+        // payable.AcctSeed__Vendor__c = poList[0].AcctSeedERP__Vendor__c;
+        // payable.AcctSeed__Ledger__c = poList[0].AcctSeedERP__Ledger__c;
+        // payable.AcctSeedERP__Purchase_Order__c = poList[0].id;
+        // payable.AcctSeed__Payee_Reference__c = poList[0].Name + ' - ' + System.Now().formatLong(); 
             
-        insert payable;
+        // insert payable;
 
-        AcctSeed__Account_Payable_Line__c payline = new AcctSeed__Account_Payable_Line__c();
+        // AcctSeed__Account_Payable_Line__c payline = new AcctSeed__Account_Payable_Line__c();
                 
-        payline.AcctSeed__Account_Payable__c = payable.id;
-        payline.AcctSeed__Amount__c = 1;
-        payline.AcctSeed__Date__c = date.today();
-        payline.AcctSeed__Expense_GL_Account__c = glList[0].id;
-        payline.AcctSeed__GL_Account_Variable_1__c = avList[0].id;
-        payline.AcctSeed__Quantity__c = 1;
-        payline.AcctSeedERP__Purchase_Order_Line__c = polList[0].id;
-        payline.Item_description__c = 'Test Description.';
+        // payline.AcctSeed__Account_Payable__c = payable.id;
+        // payline.AcctSeed__Amount__c = 1;
+        // payline.AcctSeed__Date__c = date.today();
+        // payline.AcctSeed__Expense_GL_Account__c = glList[0].id;
+        // payline.AcctSeed__GL_Account_Variable_1__c = avList[0].id;
+        // payline.AcctSeed__Quantity__c = 1;
+        // payline.AcctSeedERP__Purchase_Order_Line__c = polList[0].id;
+        // payline.Item_description__c = 'Test Description.';
         
-        insert payline;
+        // insert payline;
         
-        //-------------------------
-		list<AcctSeederp__warehouse__c> warehouseList = new list<AcctSeederp__warehouse__c>();
-        // create inventory balances 1
-        AcctSeederp__warehouse__c warehouse = new AcctSeederp__warehouse__c();
-        warehouse.Name = 'myWarehouse';
+        // //-------------------------
+		// list<AcctSeederp__warehouse__c> warehouseList = new list<AcctSeederp__warehouse__c>();
+        // // create inventory balances 1
+        // AcctSeederp__warehouse__c warehouse = new AcctSeederp__warehouse__c();
+        // warehouse.Name = 'myWarehouse';
 
-        warehouseList.add(warehouse);
+        // warehouseList.add(warehouse);
         
-        // create inventory balances 2
-        AcctSeederp__warehouse__c warehouse2 = new AcctSeederp__warehouse__c();
-        warehouse2.Name = 'myWarehouse2';
-        warehouseList.add(warehouse2);
+        // // create inventory balances 2
+        // AcctSeederp__warehouse__c warehouse2 = new AcctSeederp__warehouse__c();
+        // warehouse2.Name = 'myWarehouse2';
+        // warehouseList.add(warehouse2);
         
-        insert warehouseList;
+        // insert warehouseList;
         
-        list<AcctSeedErp__location__c> locationList = new list<AcctSeedErp__location__c>();
+        // list<AcctSeedErp__location__c> locationList = new list<AcctSeedErp__location__c>();
         
-        AcctSeedErp__location__c location = new AcctSeedErp__location__c();
-        location.Name = 'myLocation';
-        location.AcctSeedERP__Warehouse__c = warehouseList[0].id;
+        // AcctSeedErp__location__c location = new AcctSeedErp__location__c();
+        // location.Name = 'myLocation';
+        // location.AcctSeedERP__Warehouse__c = warehouseList[0].id;
 
-        locationList.add(location);
+        // locationList.add(location);
         
-        AcctSeedErp__location__c location2 = new AcctSeedErp__location__c();
-        location2.Name = 'myLocation2';
-        location2.AcctSeedERP__Warehouse__c = warehouseList[1].id;
+        // AcctSeedErp__location__c location2 = new AcctSeedErp__location__c();
+        // location2.Name = 'myLocation2';
+        // location2.AcctSeedERP__Warehouse__c = warehouseList[1].id;
 
-        locationList.add(location2);
+        // locationList.add(location2);
         
-        insert locationList;
+        // insert locationList;
         
-        acctseederp__inventory_balance__c ib = new acctseederp__inventory_balance__c();
+        // acctseederp__inventory_balance__c ib = new acctseederp__inventory_balance__c();
         
-        ib.AcctSeedERP__Warehouse__c = warehouseList[0].id;
-        ib.AcctSeedERP__Location__c = locationList[0].id;
-        ib.AcctSeedERP__Product__c = prod.id;
-        ib.AcctSeedERP__Ledger__c = ledger.id;
-        insert ib;
+        // ib.AcctSeedERP__Warehouse__c = warehouseList[0].id;
+        // ib.AcctSeedERP__Location__c = locationList[0].id;
+        // ib.AcctSeedERP__Product__c = prod.id;
+        // ib.AcctSeedERP__Ledger__c = ledger.id;
+        // insert ib;
 
-        AcctSeed__Accounting_Settings__c custm = new AcctSeed__Accounting_Settings__c();
+        // AcctSeed__Accounting_Settings__c custm = new AcctSeed__Accounting_Settings__c();
         
-        custm.AcctSeed__Vouchers_Payable_GL_Account__c = glList[3].id;
-        custm.AcctSeed__AP_Control_GL_Account__c= glList[6].id; 
-            custm.AcctSeed__AR_Control_GL_Account__c = glList[4].id;
-            custm.AcctSeed__Current_Year_Earnings_GL_Account__c = glList[7].id; 
-            custm.AcctSeed__Default_Ledger__c = ledger.id; 
-            custm.AcctSeed__Retained_Earnings_GL_Account__c = glList[8].id;
-            custm.AcctSeed__Revenue_GL_Account__c = glList[5].id; 
-            custm.AcctSeed__Unapplied_Cash_GL_Account__c = glList[9].id;
+        // custm.AcctSeed__Vouchers_Payable_GL_Account__c = glList[3].id;
+        // custm.AcctSeed__AP_Control_GL_Account__c= glList[6].id; 
+        //     custm.AcctSeed__AR_Control_GL_Account__c = glList[4].id;
+        //     custm.AcctSeed__Current_Year_Earnings_GL_Account__c = glList[7].id; 
+        //     custm.AcctSeed__Default_Ledger__c = ledger.id; 
+        //     custm.AcctSeed__Retained_Earnings_GL_Account__c = glList[8].id;
+        //     custm.AcctSeed__Revenue_GL_Account__c = glList[5].id; 
+        //     custm.AcctSeed__Unapplied_Cash_GL_Account__c = glList[9].id;
             
             
-        insert custm;
+        // insert custm;
         
-        list<AcctSeedERP__Purchase_Order_Inventory_Movement__c> poimList = 
-            new list<AcctSeedERP__Purchase_Order_Inventory_Movement__c>();
+        // list<AcctSeedERP__Purchase_Order_Inventory_Movement__c> poimList = 
+        //     new list<AcctSeedERP__Purchase_Order_Inventory_Movement__c>();
 
-        AcctSeedERP__Purchase_Order_Inventory_Movement__c poim = 
-            new AcctSeedERP__Purchase_Order_Inventory_Movement__c();
-        poim.AcctSeedERP__GL_Account_Variable_1__c = avList[0].id;
-        poim.AcctSeedERP__Inventory_Balance__c = ib.id;
-        poim.AcctSeedERP__Quantity__c = 2;
-        poim.AcctSeedERP__Purchase_Order_Line__c = polList[0].id;
-        poim.AcctSeedERP__Movement_Date__c = date.today();
-        poim.AcctSeedERP__Unit_Cost__c = 1;
+        // AcctSeedERP__Purchase_Order_Inventory_Movement__c poim = 
+        //     new AcctSeedERP__Purchase_Order_Inventory_Movement__c();
+        // poim.AcctSeedERP__GL_Account_Variable_1__c = avList[0].id;
+        // poim.AcctSeedERP__Inventory_Balance__c = ib.id;
+        // poim.AcctSeedERP__Quantity__c = 2;
+        // poim.AcctSeedERP__Purchase_Order_Line__c = polList[0].id;
+        // poim.AcctSeedERP__Movement_Date__c = date.today();
+        // poim.AcctSeedERP__Unit_Cost__c = 1;
         
-        poimList.add(poim);
+        // poimList.add(poim);
         
-        list<AcctSeedERP__Sales_Order_Inventory_Movement__c> soimList = 
-            new list<AcctSeedERP__Sales_Order_Inventory_Movement__c>();
+        // list<AcctSeedERP__Sales_Order_Inventory_Movement__c> soimList = 
+        //     new list<AcctSeedERP__Sales_Order_Inventory_Movement__c>();
         
         
-        AcctSeedERP__Sales_Order_Inventory_Movement__c soim = new AcctSeedERP__Sales_Order_Inventory_Movement__c();
-        soim.AcctSeedERP__GL_Account_Variable_1__c = avList[0].id;
-        soim.AcctSeedERP__Inventory_Balance__c = ib.id;
-        soim.AcctSeedERP__Quantity__c = 1;
-        soim.AcctSeedERP__Movement_Date__c = date.today();
-        soim.AcctSeedERP__Sales_Order_Line__c = solinesList[0].id;
-        soim.AcctSeedERP__Unit_Cost__c = 1;
+        // AcctSeedERP__Sales_Order_Inventory_Movement__c soim = new AcctSeedERP__Sales_Order_Inventory_Movement__c();
+        // soim.AcctSeedERP__GL_Account_Variable_1__c = avList[0].id;
+        // soim.AcctSeedERP__Inventory_Balance__c = ib.id;
+        // soim.AcctSeedERP__Quantity__c = 1;
+        // soim.AcctSeedERP__Movement_Date__c = date.today();
+        // soim.AcctSeedERP__Sales_Order_Line__c = solinesList[0].id;
+        // soim.AcctSeedERP__Unit_Cost__c = 1;
         
-        soimList.add(soim);
+        // soimList.add(soim);
 
-        acctseederp__inventory_balance__c ib2 = new acctseederp__inventory_balance__c();
+        // acctseederp__inventory_balance__c ib2 = new acctseederp__inventory_balance__c();
         
-        ib2.AcctSeedERP__Warehouse__c = warehouseList[1].id;
-        ib2.AcctSeedERP__Location__c = locationList[1].id;
-        ib2.AcctSeedERP__Product__c = prod.id;
-        ib2.AcctSeedERP__Ledger__c = ledger.id;
-        insert ib2;
+        // ib2.AcctSeedERP__Warehouse__c = warehouseList[1].id;
+        // ib2.AcctSeedERP__Location__c = locationList[1].id;
+        // ib2.AcctSeedERP__Product__c = prod.id;
+        // ib2.AcctSeedERP__Ledger__c = ledger.id;
+        // insert ib2;
         
-        AcctSeedERP__Purchase_Order_Inventory_Movement__c poim2 = new AcctSeedERP__Purchase_Order_Inventory_Movement__c();
-        poim2.AcctSeedERP__GL_Account_Variable_1__c = avList[0].id;
-        poim2.AcctSeedERP__Inventory_Balance__c = ib2.id;
-        poim2.AcctSeedERP__Quantity__c = 2;
-        poim2.AcctSeedERP__Purchase_Order_Line__c = polList[0].id;
-        poim2.AcctSeedERP__Movement_Date__c = date.today();
-        poim2.AcctSeedERP__Unit_Cost__c = 1;
+        // AcctSeedERP__Purchase_Order_Inventory_Movement__c poim2 = new AcctSeedERP__Purchase_Order_Inventory_Movement__c();
+        // poim2.AcctSeedERP__GL_Account_Variable_1__c = avList[0].id;
+        // poim2.AcctSeedERP__Inventory_Balance__c = ib2.id;
+        // poim2.AcctSeedERP__Quantity__c = 2;
+        // poim2.AcctSeedERP__Purchase_Order_Line__c = polList[0].id;
+        // poim2.AcctSeedERP__Movement_Date__c = date.today();
+        // poim2.AcctSeedERP__Unit_Cost__c = 1;
         
-        poimList.add(poim2);
+        // poimList.add(poim2);
         
-        insert poimList;
+        // insert poimList;
         
-        AcctSeedERP__Sales_Order_Inventory_Movement__c soim2 = new AcctSeedERP__Sales_Order_Inventory_Movement__c();
-        soim2.AcctSeedERP__GL_Account_Variable_1__c = avlist[0].id;
-        soim2.AcctSeedERP__Inventory_Balance__c = ib2.id;
-        soim2.AcctSeedERP__Quantity__c = 1;
-        soim2.AcctSeedERP__Movement_Date__c = date.today();
-        soim2.AcctSeedERP__Sales_Order_Line__c = solinesList[0].id;
-        soim2.AcctSeedERP__Unit_Cost__c = 1;
+        // AcctSeedERP__Sales_Order_Inventory_Movement__c soim2 = new AcctSeedERP__Sales_Order_Inventory_Movement__c();
+        // soim2.AcctSeedERP__GL_Account_Variable_1__c = avlist[0].id;
+        // soim2.AcctSeedERP__Inventory_Balance__c = ib2.id;
+        // soim2.AcctSeedERP__Quantity__c = 1;
+        // soim2.AcctSeedERP__Movement_Date__c = date.today();
+        // soim2.AcctSeedERP__Sales_Order_Line__c = solinesList[0].id;
+        // soim2.AcctSeedERP__Unit_Cost__c = 1;
         
-        soimList.add(soim2);
+        // soimList.add(soim2);
         
-        insert soimList;
+        // insert soimList;
         
-        AcctSeed__Billing_Format__c PackingSlipFormat = new AcctSeed__Billing_Format__c();
+        // AcctSeed__Billing_Format__c PackingSlipFormat = new AcctSeed__Billing_Format__c();
         
-        PackingSlipFormat.Name = 'Packing Slip Default';
-        PackingSlipFormat.AcctSeed__Type__c = 'Packing Slip';
-        PackingSlipFormat.AcctSeed__Visualforce_PDF_Page__c = 'BillingActivityStatementPDF';
-        PackingSlipFormat.AcctSeed__Default_Email_Template__c = 'Activity_Statement_Email_Template';
+        // PackingSlipFormat.Name = 'Packing Slip Default';
+        // PackingSlipFormat.AcctSeed__Type__c = 'Packing Slip';
+        // PackingSlipFormat.AcctSeed__Visualforce_PDF_Page__c = 'BillingActivityStatementPDF';
+        // PackingSlipFormat.AcctSeed__Default_Email_Template__c = 'Activity_Statement_Email_Template';
         
-        insert PackingSlipFormat; 
+        // insert PackingSlipFormat; 
         
-        AcctSeedERP__Shipment__c shipment = new AcctSeedERP__Shipment__c();
+        // AcctSeedERP__Shipment__c shipment = new AcctSeedERP__Shipment__c();
         
-        shipment.AcctSeedERP__Sales_Order__c = salesorderList[0].id;
-        shipment.AcctSeedERP__Shipment_Date__c = Date.today();
-        shipment.AcctSeedERP__Status__c = 'Scheduled';
-        shipment.AcctSeedERP__Packing_Slip_Format__c = PackingSlipFormat.id;
+        // shipment.AcctSeedERP__Sales_Order__c = salesorderList[0].id;
+        // shipment.AcctSeedERP__Shipment_Date__c = Date.today();
+        // shipment.AcctSeedERP__Status__c = 'Scheduled';
+        // shipment.AcctSeedERP__Packing_Slip_Format__c = PackingSlipFormat.id;
         
-        insert shipment;
+        // insert shipment;
         
-        AcctSeedERP__Shipment_Line__c Lines = new AcctSeedERP__Shipment_Line__c();
+        // AcctSeedERP__Shipment_Line__c Lines = new AcctSeedERP__Shipment_Line__c();
         
-        Lines.AcctSeedERP__Sales_Order_Line__c = solinesList[0].id;
-        Lines.AcctSeedERP__Shipment__c = shipment.id;
-        Lines.AcctSeedERP__Quantity_Shipped__c = 1;
+        // Lines.AcctSeedERP__Sales_Order_Line__c = solinesList[0].id;
+        // Lines.AcctSeedERP__Shipment__c = shipment.id;
+        // Lines.AcctSeedERP__Quantity_Shipped__c = 1;
         
-        insert Lines;
+        // insert Lines;
         
 
     }

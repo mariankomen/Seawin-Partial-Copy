@@ -1,0 +1,123 @@
+<apex:page controller="CreateCreditOrderController" tabStyle="Credit_Order__c" docType="html-5.0">
+
+    <apex:stylesheet value="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css" />
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"/>
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js"/>
+
+    <style>
+    textarea{
+        width: 100%;
+        height: 45px;
+        
+    }
+    </style>
+    <apex:form id="theForm">
+        <apex:sectionHeader title="New Credit Order" subtitle="Test"/>
+        <apex:pageBlock id="thePageBlock" title="Credit Order">
+            <apex:pageBlockButtons >
+                <apex:commandButton status="saveStatus" value="Create Credit Order" action="{!saveCreating}"/>
+                <apex:commandButton value="Back" action="/{!soId}" immediate="true" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="2" title="Credit Order">
+                <apex:inputField value="{!sales_order.Name}"></apex:inputField>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Opportunity" />
+                    <apex:InputField value="{!sales_order.AcctSeedERP__Opportunity__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Customer" />
+                    <apex:InputField value="{!sales_order.AcctSeedERP__Customer__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="GL Account Variable 1" />
+                    <apex:InputField value="{!sales_order.GL_Account_Variable_1__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Sales Rep/Team" />
+                    <apex:InputField value="{!sales_order.Sales_Rep_O__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Referral Sales Rep" />
+                    <apex:InputField value="{!sales_order.Referral_Sales_Rep__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Manufacturer Rep" />
+                    <apex:InputField value="{!sales_order.Manufacturer_Rep__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Specified Rep" />
+                    <apex:InputField value="{!sales_order.Specified_Rep__c}" />
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="1" title="Credit Order Lines">
+
+
+            <apex:actionFunction action='{!rerenderAction}' name='rerenderTable' rerender="thePageBlockTable"/>
+
+                <apex:pageBlockTable id="thePageBlockTable" value="{!wrapper_lines}" var="line" cellpadding="6">
+                    <apex:column>
+                        <apex:facet name="header">
+                            <apex:inputCheckbox value="{!checkAllValues}" >
+                                <apex:actionSupport event="onchange" rerender="thePageBlockTable" action="{!processCheckChange}"/>
+                            </apex:inputCheckbox>
+                        </apex:facet>
+                        <apex:inputCheckbox value="{!line.selected}"/>
+                    </apex:column>
+                    <apex:column value="{!line.sol.AcctSeedERP__Product__r.Name}" />
+
+                    <apex:column styleClass="align-right" headerClass="align-right" headerValue="Product Code">
+                        <apex:outputText value="{!line.sol.ProductCode__c}" />
+                    </apex:column>
+                    <apex:column styleClass="align-right" style="width: 30%; height: 45px;" headerClass="align-right" headerValue="Item Description">
+
+                        <apex:outputText value="{!line.sol.Item_Description__c}" rendered="{!!line.sol.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"/>
+                        <apex:inputTextarea value="{!line.sol.Item_Description__c}" rendered="{!line.sol.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"/>
+                    </apex:column>
+                    <apex:column styleClass="align-right" headerClass="align-right" headerValue="Size" >
+                        <apex:outputText value="{!line.sol.Size__c}" rendered="{!!line.sol.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"/>
+                        <apex:inputText value="{!line.sol.Size__c}" rendered="{!line.sol.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"/>
+
+                    </apex:column>
+
+                    <apex:column styleClass="align-right" headerClass="align-right" headerValue="Quantity Ordered">
+                        <apex:inputField type='number' id="quantityOrdered" value="{!line.sol.AcctSeedERP__Quantity_Ordered__c}" onchange="handleCheckQuantity(this, event)">
+                        </apex:inputField>
+                    </apex:column>
+
+                    <apex:column styleClass="align-right" headerClass="align-right" headerValue="Sales Price">
+                        <apex:outputText id="sales_price" value="{0, number,$#, ##0.00}">
+                            <apex:param value="{!line.sol.Sales_Price__c}" />
+                        </apex:outputText>
+                    </apex:column>
+                    
+                    <apex:column styleClass="align-right" headerClass="align-right" headerValue="Total Price">
+                        <apex:outputText id="quantityShipped" value="{0, number,$#, ##0.00}">
+                            <apex:param value="{!line.sol.AcctSeedERP__Quantity_Ordered__c * line.sol.Sales_Price__c}" />
+                        </apex:outputText>
+                    </apex:column>
+
+                </apex:pageBlockTable>
+
+
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+        <script type="text/javascript">
+            function handleCheckQuantity(element, event){
+                if(event.target.value > -1){
+                    $.alert({
+                            title: 'Error',
+                            content: 'Quantity of Credit Order Line can must be negative.',
+                            boxWidth: '25%',
+                            useBootstrap: false
+
+                        });
+                    element.value = -1
+                }
+                rerenderTable();
+            }
+        </script>
+    </apex:form>
+
+</apex:page>

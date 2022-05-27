@@ -224,7 +224,8 @@ public class CalculateCommissionsPageCtrlTest {
         pricebentry.IsActive = true;
     
         insert pricebentry;
-    
+
+        Test.startTest();
         // create opportunity line item
     
         OpportunityLineItem oli = new OpportunityLineItem();
@@ -448,6 +449,8 @@ public class CalculateCommissionsPageCtrlTest {
         memo.AcctSeed__Amount__c = -25;
     
         insert memo;
+
+        Test.stopTest();
       }
     @isTest static void WithReceipts(){
 

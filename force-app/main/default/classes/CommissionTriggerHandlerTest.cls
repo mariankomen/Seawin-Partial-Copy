@@ -1,5 +1,5 @@
 @isTest
-public with sharing class CommissionManuallyControllerTest {
+public with sharing class CommissionTriggerHandlerTest {
     
     @TestSetup
     static void makeData(){
@@ -26,7 +26,7 @@ public with sharing class CommissionManuallyControllerTest {
         insert uu1;
 
         AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
-        accVar.Name = 'GL acc var1';
+        accVar.Name = 'Seawin USA';
         accVar.AcctSeed__Type__c = 'GL Account Variable 1';
         insert accVar;
 
@@ -98,8 +98,10 @@ public with sharing class CommissionManuallyControllerTest {
         insert prod;
         
         // create opportunity
+        RecordType recTypeId = [SELECT Id, Name, SobjectType FROM RecordType where SobjectType='Opportunity' and name='Seawin USA Hospitality'];
         Opportunity opp = new Opportunity();
         
+        opp.RecordTypeId = recTypeId.Id;
         opp.Name = 'myOpportunity';
         opp.Sales_Rep_O__c = sr.id;
         opp.AccountId = acct.Id;
@@ -108,7 +110,23 @@ public with sharing class CommissionManuallyControllerTest {
         opp.CloseDate = system.today();
         opp.ContactPerson__c = cont.Id;
         opp.GL_Account_Variable_1__c = accVar.Id;
+        opp.OwnerId = uu1.Id;
+
         insert opp;
+        Opportunity opp1 = new Opportunity();
+        
+        opp1.RecordTypeId = recTypeId.Id;
+        opp1.Name = 'testetset';
+        opp1.Sales_Rep_O__c = sr.id;
+        opp1.AccountId = acct.Id;
+        opp1.Type = 'Actual Order';
+        opp1.StageName = 'Closed Won';
+        opp1.CloseDate = system.today();
+        opp1.ContactPerson__c = cont.Id;
+        opp1.GL_Account_Variable_1__c = accVar.Id;
+        opp1.OwnerId = uu1.Id;
+
+        insert opp1;
         
         // create quote
         Quote qt = new Quote();
@@ -210,56 +228,31 @@ public with sharing class CommissionManuallyControllerTest {
         salesorder.GL_Account_Variable_1__c = accVar.Id;
         
         insert salesorder;
+        
         Sales_Order_Commissions__c commissions = new Sales_Order_Commissions__c();
       
         commissions.Owner__c = UserInfo.getuserId();
         commissions.Sales_Order__c = salesorder.id;
+        commissions.Opportunity__c = opp.id;
         commissions.Commission_Amount__c = 50;
         
         
         insert commissions;
+
+        Sales_Order_Commissions__c commissions_1 = new Sales_Order_Commissions__c();
+      
+        commissions_1.Owner__c = UserInfo.getuserId();
+        commissions_1.Sales_Order__c = salesorder.id;
+        commissions_1.Opportunity__c = opp1.id;
+        commissions_1.Commission_Amount__c = 50;
+        
+        
+        insert commissions_1;
     }
 
     @isTest
-    public static void CommissionManuallyControllerTest(){
-        Sales_Order_Commissions__c soc = [SELECT Id FROM Sales_Order_Commissions__c LIMIT 1];
-        AcctSeedERP__Sales_Order__c so = [SELECT Id FROM AcctSeedERP__Sales_Order__c LIMIT 1];
-        ApexPages.StandardController sc = new ApexPages.StandardController(soc);
-        CommissionManuallyController con = new CommissionManuallyController(sc);
-        PageReference pageRef = Page.CreateManualCommissionPage;
-        pageRef.getParameters().put('salesOrderId', String.valueOf(so.Id));
-        con.saveCustom();
-        con.cancel();
-        con.saveAndNew();
+    public static void testCommission(){
+        Sales_Order_Commissions__c comm = [SELECT Id FROM Sales_Order_Commissions__c LIMIT 1];
+        delete comm;
     }
-    @isTest
-    public static void CommissionManuallyControllerCovTest(){
-        Sales_Order_Commissions__c soc = [SELECT Id FROM Sales_Order_Commissions__c LIMIT 1];
-        AcctSeedERP__Sales_Order__c so = [SELECT Id FROM AcctSeedERP__Sales_Order__c LIMIT 1];
-        so.Manufacturer_Rep__c = [SELECT Id FROM Account WHERE Name='myAccount' LIMIT 1].Id;
-        update so;
-        ApexPages.StandardController sc = new ApexPages.StandardController(soc);
-        CommissionManuallyController con = new CommissionManuallyController(sc);
-        PageReference pageRef = Page.CreateManualCommissionPage;
-        pageRef.getParameters().put('salesOrderId', String.valueOf(so.Id));
-        con.saveCustom();
-        con.cancel();
-        con.saveAndNew();
-    }
-    @isTest
-    public static void CommissionManuallyControllerCovNewTest(){
-        Sales_Order_Commissions__c soc = [SELECT Id FROM Sales_Order_Commissions__c LIMIT 1];
-        AcctSeedERP__Sales_Order__c so = [SELECT Id FROM AcctSeedERP__Sales_Order__c LIMIT 1];
-        so.Manufacturer_Rep__c = [SELECT Id FROM Account WHERE Name='myAccount' LIMIT 1].Id;
-        update so;
-        ApexPages.StandardController sc = new ApexPages.StandardController(soc);
-        CommissionManuallyController con = new CommissionManuallyController(sc);
-        con.commission.Commission_Amount__c = 1;
-        PageReference pageRef = Page.CreateManualCommissionPage;
-        pageRef.getParameters().put('salesOrderId', String.valueOf(so.Id));
-        con.saveCustom();
-        con.cancel();
-        con.saveAndNew();
-    }
-
 }

@@ -16,7 +16,7 @@ public class BillingBatchTrigger implements Database.Batchable<sObject>{
             bill_ids_list.add(i);
         }
         String query = 'SELECT Id, AcctSeed__Balance__c, AcctSeedERP__Sales_Order__c, AcctSeed__Opportunity__c FROM AcctSeed__Billing__c WHERE AcctSeed__Type__c=:invoice AND Id IN:bill_ids_list' + (Test.isRunningTest() ? + ' LIMIT 200' : '');
-        system.debug(query);
+        //system.debug(query);
         return Database.getQueryLocator(query);
     }
 

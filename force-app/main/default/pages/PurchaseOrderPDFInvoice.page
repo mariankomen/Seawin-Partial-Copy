@@ -348,7 +348,7 @@
             </table>
             <br/>
             <div style="width: 100%;">
-                <table style="width:300px;border-collapse:collapse;float:right">
+                <table style="width:300px;border-collapse:collapse;float:right" >
                     <tr class="tableRowAmount">
                         <td style="padding:3px">
                                 <apex:outputText value="Grand Total:"/>
@@ -375,6 +375,67 @@
                     </tr>-->
                 </table>
             </div>
+            <br/>
+            <br/>
+            <h3>Payments</h3>
+            <apex:outputPanel rendered="{!payable_lines.size > 0}">
+                <table id='itemstable'>
+                    <tr>
+                        <th class="header-font table-header no-border" style="width: 15%;">Payable Name	</th>
+                        <th class="header-font table-header no-border" style="width: 10%;">Accounting Period</th>
+                        <th class="header-font table-header no-border" style="width: 13%;">Payee</th>
+                        <th class="header-font table-header no-border" style="width: 10%;">Issue Date</th>
+                        <th class="header-font table-header no-border" style="width: 10%;">Due Date</th>
+                        <th class="header-font table-header no-border" style="width: 14%;">Payment Status</th>
+                        <th class="header-font table-header no-border" style="width: 10%;">Total</th>
+                        <th class="header-font table-header no-border" style="width: 12%;">Paid Amount</th>
+                        <th class="last-col header-font table-header no-border" style="width: 18% !important;">Balance</th>
+                    </tr>
+                    <apex:variable var="trcolor" value=""/>
+                    <apex:repeat value="{!payable_lines}" var="item">
+                        <tr style="background-color: {!trcolor}">
+                            <td style="width: 15%;">
+                                <apex:outputField value="{!item.Name}" />
+                            </td>
+                            <td style="width: 10%;">
+                                <apex:outputField value="{!item.AcctSeed__Accounting_Period__r.Name}" />
+                            </td>
+                            <td style="width: 13%;">
+                                <apex:outputField value="{!item.AcctSeed__Payee__c}" />
+                            </td>
+                            <td style="width: 10%;">
+                                <apex:outputField value="{!item.AcctSeed__Date__c}" />
+                            </td>
+                            <td style="width: 10%;">
+                                <apex:outputField value="{!item.AcctSeed__Due_Date__c}" />
+                            </td>
+                            <td style="width: 14%;">
+                                <apex:outputField value="{!item.AcctSeed__Payment_Status__c}" />
+                            </td>
+                            <td style="width: 10%;">
+                                <apex:outputField value="{!item.AcctSeed__Total__c}" />
+                            </td>
+                            <td style="width: 12%;">
+                                <apex:outputField value="{!item.AcctSeed__Paid_Amount__c}" />
+                            </td>
+                            <td class="last-col" style="width: 18% !important;">
+                                <apex:outputField value="{!item.AcctSeed__Balance__c}" />
+                            </td>
+    
+    
+                            <apex:variable var="trcolor" value="{!IF(trcolor == '', '#dddddd', '')}"/>
+                        </tr>
+                    </apex:repeat>
+    
+                </table>
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!payable_lines.size <= 0}">
+                <apex:outputText value="There are no associated payments."/>
+            </apex:outputPanel>
+
+
+
         </div>
     </body>
 </apex:page>

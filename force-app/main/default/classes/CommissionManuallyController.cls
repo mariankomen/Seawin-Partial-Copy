@@ -17,18 +17,38 @@ public with sharing class CommissionManuallyController {
         } else {
             sales_order_id = [SELECT Id FROM AcctSeedERP__Sales_Order__c LIMIT 1].Id;
         }
-        so = [SELECT Id, Name, Manufacturer_Rep__c, Referral_Sales_Rep__c, Specified_Rep__c, OwnerId, Sales_Rep_O__r.Company_Name_Lookup__c FROM AcctSeedERP__Sales_Order__c WHERE Id=:sales_order_id];
+        String objectType = String.valueOf(sales_order_id.getSObjectType());
 
-        commission = new Sales_Order_Commissions__c();
+        if(objectType == 'Opportunity'){
+            Opportunity opp = [SELECT Id, Name, Manufacturer_Rep__c, Referral_Sales_Rep__c, Specified_Rep__c, OwnerId, Sales_Rep_O__r.Company_Name_Lookup__c FROM Opportunity WHERE Id=:sales_order_id];
+            commission = new Sales_Order_Commissions__c();
+    
+            // commission.Sales_Order__c = so.Id;
+            commission.Opportunity__c = opp.Id;
+            //commission.Sales_Rep_Company_Name__c = so.Sales_Rep_O__r.Company_Name_Lookup__c;
+            commission.Owner__c = null;
+            commission.Manufacturer_Rep__c = opp.Manufacturer_Rep__c;
+            commission.Referral_Sales_Rep__c = opp.Referral_Sales_Rep__c;
+            commission.Specified_Rep__c = opp.Specified_Rep__c;
+            commission.Commission_Amount__c = 0.00;
+            commission.Commission_Paid_Date__c = DateTime.now();
 
-        commission.Sales_Order__c = so.Id;
-        //commission.Sales_Rep_Company_Name__c = so.Sales_Rep_O__r.Company_Name_Lookup__c;
-        commission.Owner__c = null;
-        commission.Manufacturer_Rep__c = so.Manufacturer_Rep__c;
-        commission.Referral_Sales_Rep__c = so.Referral_Sales_Rep__c;
-        commission.Specified_Rep__c = so.Specified_Rep__c;
-        commission.Commission_Amount__c = 0.00;
-        commission.Commission_Paid_Date__c = DateTime.now();
+        }else if(objectType == 'AcctSeedERP__Sales_Order__c'){
+            so = [SELECT Id, Name, AcctSeedERP__Opportunity__c, Manufacturer_Rep__c, Referral_Sales_Rep__c, Specified_Rep__c, OwnerId, Sales_Rep_O__r.Company_Name_Lookup__c FROM AcctSeedERP__Sales_Order__c WHERE Id=:sales_order_id];
+
+            commission = new Sales_Order_Commissions__c();
+            commission.Opportunity__c = so.AcctSeedERP__Opportunity__c;
+            commission.Sales_Order__c = so.Id;
+            //commission.Sales_Rep_Company_Name__c = so.Sales_Rep_O__r.Company_Name_Lookup__c;
+            commission.Owner__c = null;
+            commission.Manufacturer_Rep__c = so.Manufacturer_Rep__c;
+            commission.Referral_Sales_Rep__c = so.Referral_Sales_Rep__c;
+            commission.Specified_Rep__c = so.Specified_Rep__c;
+            commission.Commission_Amount__c = 0.00;
+            commission.Commission_Paid_Date__c = DateTime.now();
+        }
+
+        
     }
 
     public void handleChange(){

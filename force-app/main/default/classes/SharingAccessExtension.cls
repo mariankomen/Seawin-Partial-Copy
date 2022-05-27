@@ -129,6 +129,7 @@ public with sharing class SharingAccessExtension {
                 share_to_list.add(os);
             }
         }
+        system.debug('share_to_list size so: '+share_to_list);
         ShareOpportunityAccessBatch batch = new ShareOpportunityAccessBatch(share_to_list);
         Database.executeBatch(batch, 500);
     }
@@ -144,6 +145,24 @@ public with sharing class SharingAccessExtension {
         List<AcctSeedERP__Sales_Order__Share> deletable = [SELECT  Id
                                                         FROM AcctSeedERP__Sales_Order__Share 
                                                         WHERE Parent.Sales_Rep_O__c =: salRepId 
+                                                        AND UserOrGroupId IN:membersIds 
+                                                        AND RowCause = 'Manual' 
+                                                        LIMIT 50000];
+        RemoveShareOpportunityAccessBatch batch = new RemoveShareOpportunityAccessBatch(deletable);
+        Database.executeBatch(batch, 500);
+    }
+
+    /*****************************************************************************************************
+    *   @method       : removeSingleSharingSalesOrder
+    *   @description  : Query sharing record by rer team for selected users and execute batch for deleting
+    *   @return       : void
+    *   @author       : Marian Lyzhychka ©Peeklogic
+    *****************************************************************************************************/
+    public static void removeSingleSharingSalesOrder(Set<Id> membersIds, Id soId){
+
+        List<AcctSeedERP__Sales_Order__Share> deletable = [SELECT  Id
+                                                        FROM AcctSeedERP__Sales_Order__Share 
+                                                        WHERE ParentId =: soId 
                                                         AND UserOrGroupId IN:membersIds 
                                                         AND RowCause = 'Manual' 
                                                         LIMIT 50000];

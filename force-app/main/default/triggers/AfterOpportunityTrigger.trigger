@@ -5,7 +5,8 @@ trigger AfterOpportunityTrigger on Opportunity (after update, before delete) {
         ProcessApprovalOpportunityHandler.Check_Email(Trigger.old, Trigger.new);
         SyncOptionalProductsToQuoteHandler.SyncToQuote(Trigger.old, Trigger.new);
 
-        OpportunityDashboardHandler.updateExistingRecords(Trigger.new);
+        //!FIX HERE
+        //OpportunityDashboardHandler.updateExistingRecords(Trigger.new);
 
         Integer i = 0;
         i++;
