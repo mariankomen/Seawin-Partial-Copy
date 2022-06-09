@@ -3,7 +3,7 @@ public with sharing class OpportunityEditAllControllerTest {
     @testSetup static void CreateData(){
         
         AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
-        accVar.Name = 'GL acc var1';
+        accVar.Name = 'Seawin USA';
         accVar.AcctSeed__Type__c = 'GL Account Variable 1';
         insert accVar;
         

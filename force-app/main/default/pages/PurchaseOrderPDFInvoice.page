@@ -382,10 +382,8 @@
                 <table id='itemstable'>
                     <tr>
                         <th class="header-font table-header no-border" style="width: 15%;">Payable Name	</th>
-                        <th class="header-font table-header no-border" style="width: 10%;">Accounting Period</th>
                         <th class="header-font table-header no-border" style="width: 13%;">Payee</th>
                         <th class="header-font table-header no-border" style="width: 10%;">Issue Date</th>
-                        <th class="header-font table-header no-border" style="width: 10%;">Due Date</th>
                         <th class="header-font table-header no-border" style="width: 14%;">Payment Status</th>
                         <th class="header-font table-header no-border" style="width: 10%;">Total</th>
                         <th class="header-font table-header no-border" style="width: 12%;">Paid Amount</th>
@@ -397,18 +395,14 @@
                             <td style="width: 15%;">
                                 <apex:outputField value="{!item.Name}" />
                             </td>
-                            <td style="width: 10%;">
-                                <apex:outputField value="{!item.AcctSeed__Accounting_Period__r.Name}" />
-                            </td>
+                            
                             <td style="width: 13%;">
                                 <apex:outputField value="{!item.AcctSeed__Payee__c}" />
                             </td>
                             <td style="width: 10%;">
                                 <apex:outputField value="{!item.AcctSeed__Date__c}" />
                             </td>
-                            <td style="width: 10%;">
-                                <apex:outputField value="{!item.AcctSeed__Due_Date__c}" />
-                            </td>
+                            
                             <td style="width: 14%;">
                                 <apex:outputField value="{!item.AcctSeed__Payment_Status__c}" />
                             </td>

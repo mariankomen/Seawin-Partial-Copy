@@ -38,6 +38,8 @@ public class CalculateCommissionsHandler {
                                                                     AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Referral_Sales_Rep__c,
                                                                     AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Specified_Rep__c,
 
+                                                                    AcctSeed__Billing__r.Credit_Order__c,
+
                                                                     AcctSeed__Billing__r.AcctSeed__Opportunity__c,
                                                                     AcctSeed__Billing__r.AcctSeed__Opportunity__r.Sales_Rep_O__r.IsTeam__c,
                                                                     AcctSeed__Billing__r.AcctSeed__Opportunity__r.Sales_Rep_O__r.Company_Name_Lookup__c,
@@ -107,7 +109,8 @@ public class CalculateCommissionsHandler {
                                         data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c,
                                         data.AcctSeed__Billing__c,
                                         data.createddate,
-                                        data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.AcctSeedERP__Opportunity__c));
+                                        data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.AcctSeedERP__Opportunity__c, 
+                                        data.AcctSeed__Billing__r.Credit_Order__c));
 
                             //If billing has only Opportunity
                             }else if(data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c == null && data.AcctSeed__Billing__r.AcctSeed__Opportunity__c != null){
@@ -156,7 +159,8 @@ public class CalculateCommissionsHandler {
                                         data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c,
                                         data.AcctSeed__Billing__c,
                                         data.createddate,
-                                        data.AcctSeed__Billing__r.AcctSeed__Opportunity__c));
+                                        data.AcctSeed__Billing__r.AcctSeed__Opportunity__c,
+                                        data.AcctSeed__Billing__r.Credit_Order__c));
                             }         
                         }
                     }
@@ -203,6 +207,7 @@ public class CalculateCommissionsHandler {
                                                                     CreatedDate,
                                                                     AcctSeed__Amount__c,
                                                                     AcctSeed__Billing_Invoice__c,
+                                                                    AcctSeed__Billing_Invoice__r.AcctSeed__Total__c,
                                                                     AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c, 
                                                                     AcctSeed__Billing_Invoice__r.Total_Amount_Due__c,
                                                                     AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.IsTeam__c,
@@ -216,6 +221,8 @@ public class CalculateCommissionsHandler {
                                                                     AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Manufacturer_Rep__c,
                                                                     AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Referral_Sales_Rep__c,
                                                                     AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Commission_Rate_Specified_Rep__c,
+
+                                                                    AcctSeed__Billing_Credit_Memo__r.Credit_Order__c,
 
                                                                     AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c,
                                                                     AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__r.Sales_Rep_O__r.IsTeam__c,
@@ -264,7 +271,8 @@ public class CalculateCommissionsHandler {
                                         data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Specified_Rep__c,
                                         data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.Company_Name_Lookup__c,
                                         Math.abs(data.AcctSeed__Amount__c), 
-                                        data.AcctSeed__Billing_Invoice__r.Total_Amount_Due__c, 
+                                        data.AcctSeed__Billing_Invoice__r.AcctSeed__Total__c, 
+                                        // data.AcctSeed__Billing_Invoice__r.Total_Amount_Due__c, 
                                         BillingLineTotal, 
                                         SalesPercent, 
                                         ReferralPercent, 
@@ -277,7 +285,8 @@ public class CalculateCommissionsHandler {
                                         data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c,
                                         data.AcctSeed__Billing_Invoice__c,
                                         data.createddate,
-                                        data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.AcctSeedERP__Opportunity__c));
+                                        data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__r.AcctSeedERP__Opportunity__c,
+                                        data.AcctSeed__Billing_Credit_Memo__r.Credit_Order__c));
                                 }
                                 //If credit memo has only opportunity
                             } else if(data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c == null && data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c != null){
@@ -318,7 +327,8 @@ public class CalculateCommissionsHandler {
                                         data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c,
                                         data.AcctSeed__Billing_Invoice__c,
                                         data.createddate,
-                                        data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c));
+                                        data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c,
+                                        data.AcctSeed__Billing_Credit_Memo__r.Credit_Order__c));
                                 }
 
                             }
@@ -326,7 +336,17 @@ public class CalculateCommissionsHandler {
                         }
                     }
                     
-                    if(!commissions.isEmpty() && !Test.isRunningTest()) insert commissions;
+                    system.debug('14');
+                    system.debug('commissions:  '+commissions.size());
+                    if(!commissions.isEmpty() && !Test.isRunningTest()){
+                        try{
+
+                            insert commissions;
+                        }catch(Exception e){
+                            system.debug('test: '+e.getMessage());
+                        }
+                    } 
+                    system.debug('15');
                 }
             }
             return true;
@@ -457,7 +477,8 @@ public class CalculateCommissionsHandler {
                             data.AcctSeed__Applied_Amount__c, billingTotal, billingLineTotal, 
                             SalesPercent, ReferralPercent, ManRepPercent, SpecifiedPercent,
                             HasRefferal, HasManRep, HasSpecified, IsTeam, salesOrderId,data.AcctSeed__Billing__c,
-                            data.createddate,data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.AcctSeedERP__Opportunity__c));
+                            data.createddate,data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.AcctSeedERP__Opportunity__c,
+                            data.AcctSeed__Billing__r.Credit_Order__c));
                     
                 }
             }
@@ -514,7 +535,9 @@ public class CalculateCommissionsHandler {
                             HasSpecified,
                             IsTeam, 
                             data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c,
-                            data.AcctSeed__Billing_Invoice__c,data.createddate, data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c));
+                            data.AcctSeed__Billing_Invoice__c,data.createddate,
+                            data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c,
+                            data.AcctSeed__Billing_Credit_Memo__r.Credit_Order__c));
                     
                 }
             }
@@ -642,7 +665,8 @@ public class CalculateCommissionsHandler {
                             data.AcctSeed__Applied_Amount__c, billingTotal, billingLineTotal, 
                             SalesPercent, ReferralPercent, ManRepPercent, SpecifiedPercent,
                             HasRefferal, HasManRep, HasSpecified, IsTeam, salesOrderId, data.AcctSeed__Billing__c,data.createddate,
-                            data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.AcctSeedERP__Opportunity__c);
+                            data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.AcctSeedERP__Opportunity__c,
+                            data.AcctSeed__Billing__r.Credit_Order__c);
 
                         commission[0].id = strings[3];
                         Updatibles.add(commission[0]);
@@ -709,7 +733,8 @@ public class CalculateCommissionsHandler {
                             data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c,
                             data.AcctSeed__Billing_Invoice__c,
                             data.createddate,
-                            data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c);
+                            data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c,
+                            data.AcctSeed__Billing_Credit_Memo__r.Credit_Order__c);
                         
                         commission[0].id = strings[3];
                         
@@ -852,7 +877,8 @@ public class CalculateCommissionsHandler {
                             SalesPercent, ReferralPercent, ManRepPercent, SpecifiedPercent,
                             HasRefferal, HasManRep, HasSpecified, IsTeam, data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c, 
                             data.AcctSeed__Billing__c,data.createddate,
-                            data.AcctSeed__Billing__r.AcctSeed__Opportunity__c);
+                            data.AcctSeed__Billing__r.AcctSeed__Opportunity__c,
+                            data.AcctSeed__Billing__r.Credit_Order__c);
 
                         commission[0].id = strings[3];
                         Updatibles.add(commission[0]);
@@ -917,7 +943,8 @@ public class CalculateCommissionsHandler {
                             data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c,
                             data.AcctSeed__Billing_Invoice__c,
                             data.createddate,
-                            data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c);
+                            data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c,
+                            data.AcctSeed__Billing_Invoice__r.Credit_Order__c);
                         
                         commission[0].id = strings[3];
                         
@@ -1055,8 +1082,10 @@ public class CalculateCommissionsHandler {
                                 strings[2] == 'Company' ? strings[1] : null, 
                                 data.AcctSeed__Applied_Amount__c, billingTotal, billingLineTotal, 
                                 SalesPercent, ReferralPercent, ManRepPercent, SpecifiedPercent,
-                                HasRefferal, HasManRep, HasSpecified, IsTeam, data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c,data.AcctSeed__Billing__c,
-                                data.createddate,data.AcctSeed__Billing__r.AcctSeed__Opportunity__c));
+                                HasRefferal, HasManRep, HasSpecified, IsTeam, data.AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c,
+                                data.AcctSeed__Billing__c,
+                                data.createddate,data.AcctSeed__Billing__r.AcctSeed__Opportunity__c,
+                                data.AcctSeed__Billing__r.Credit_Order__c));
                         
                     }
                 }
@@ -1091,6 +1120,7 @@ public class CalculateCommissionsHandler {
                         Decimal SpecifiedPercent = data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__r.Commission_Rate_Specified_Rep__c;
                         Decimal ManRepPercent = data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__r.Commission_Rate_Manufacturer_Rep__c;
                         
+                        // if(data.AcctSeed__Billing_Invoice__r.Total_Amount_Due__c > 0 && BillingLineTotal > 0)
                         if(data.AcctSeed__Billing_Invoice__r.Total_Amount_Due__c > 0 && BillingLineTotal > 0)
                             Insertibles.addAll(CompileCommissions(
                                 false,
@@ -1112,7 +1142,9 @@ public class CalculateCommissionsHandler {
                                 HasSpecified,
                                 IsTeam, 
                                 data.AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c,
-                                data.AcctSeed__Billing_Invoice__c,data.createddate, data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c));
+                                data.AcctSeed__Billing_Invoice__c,data.createddate, 
+                                data.AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c,
+                                data.AcctSeed__Billing_Invoice__r.Credit_Order__c));
                         
                     }
                 }
@@ -1152,23 +1184,42 @@ public class CalculateCommissionsHandler {
 
         
 
-    public static List<Sales_Order_Commissions__c> CompileCommissions(
-        Boolean isCash,
-        Id receiptId,
-        Id OwnerId,
-        Id ReferralId,
-        Id ManufacturerId,
-        Id SpecifiedId,
-        Id SalesRepCompanyId,
-        decimal receiptTotal, decimal billingTotal, decimal billingLineTotal, 
-        decimal SalesPercent, decimal ReferralPercent, Decimal ManRepPercent, Decimal SpecifiedPercent,
-        Boolean HasReferral, Boolean HasManRep, Boolean HasSpecified, Boolean IsTeam, 
-        string salesOrderId, string billingNumber, datetime dt, Id oppId){
+    public static List<Sales_Order_Commissions__c> CompileCommissions(Boolean isCash,
+                                                                        Id receiptId,
+                                                                        Id OwnerId,
+                                                                        Id ReferralId,
+                                                                        Id ManufacturerId,
+                                                                        Id SpecifiedId,
+                                                                        Id SalesRepCompanyId,
+                                                                        decimal receiptTotal, 
+                                                                        decimal billingTotal, 
+                                                                        decimal billingLineTotal, 
+                                                                        decimal SalesPercent, 
+                                                                        decimal ReferralPercent, 
+                                                                        Decimal ManRepPercent, 
+                                                                        Decimal SpecifiedPercent,
+                                                                        Boolean HasReferral, 
+                                                                        Boolean HasManRep, 
+                                                                        Boolean HasSpecified, 
+                                                                        Boolean IsTeam, 
+                                                                        string salesOrderId, 
+                                                                        string billingNumber, 
+                                                                        datetime dt, 
+                                                                        Id oppId, 
+                                                                        Id creditOrderId){
             
+            system.debug('zayshlo v CompileCommissions');
+            system.debug('ManRepPercent: '+ManRepPercent);
+            system.debug('SpecifiedPercent: '+SpecifiedPercent);
+            system.debug('SalesPercent: '+SalesPercent);
             List<Sales_Order_Commissions__c> commissions = new List<Sales_Order_Commissions__c>();
             Decimal SalesPercentAmount = 0;
             Decimal ReferralPercentAmount = 0;
             
+            system.debug('receiptTotal: '+receiptTotal);
+            system.debug('billingTotal: '+billingTotal);
+
+            // Decimal BillingTotalDivide = billingTotal;
             Decimal BillingTotalDivide = receiptTotal / billingTotal;
             BillingTotalDivide = BillingTotalDivide.setScale(2, RoundingMode.HALF_EVEN);
            
@@ -1187,29 +1238,36 @@ public class CalculateCommissionsHandler {
                     commissions.add(MakeCommissions(IsCash, ReceiptId, OwnerId, ReferralId, ManufacturerId,
                                                     SpecifiedId, 
                                                     SalesRepCompanyId, ReferralPercentAmount, 
-                                                    'Referral', IsTeam, salesOrderId, billingNumber, dt, oppId));
+                                                    'Referral', IsTeam, salesOrderId, billingNumber, dt, oppId, creditOrderId));
             }
             
-            SalesPercentAmount = SalesPercentAmount > ReferralPercentAmount ? 
-                SalesPercentAmount - ReferralPercentAmount : 0;
+                SalesPercentAmount = SalesPercentAmount > ReferralPercentAmount ? SalesPercentAmount - ReferralPercentAmount : 0;
             // if(SalesPercentAmount > 0){
-                if((IsTeam && OwnerId != null) || (!IsTeam && SalesRepCompanyId != null))
+                if((IsTeam && OwnerId != null) || (!IsTeam && SalesRepCompanyId != null)){
+                    system.debug('SalesPercentAmount: '+SalesPercentAmount);
+
                     commissions.add(MakeCommissions(IsCash, ReceiptId, OwnerId, ReferralId, ManufacturerId,
                                                     SpecifiedId, 
-                                                    SalesRepCompanyId, SalesPercentAmount, 
-                                                    'Owner', IsTeam, salesOrderId, billingNumber, dt, oppId));
+                                                    SalesRepCompanyId, 
+                                                    SalesPercentAmount, 
+                                                    'Owner', IsTeam, salesOrderId, billingNumber, dt, oppId, creditOrderId));
+                }
+                    
             // }
             
             if(HasManRep && ManufacturerId != null){
                 if(ManRepPercent != null ){
                 // if(ManRepPercent != null && ManRepPercent > 0){
                     Decimal ManufacturerAmount = BillingTotalDivide * billingLineTotal * (ManRepPercent / 100);
+                    system.debug('BillingTotalDivide: '+BillingTotalDivide);
+                    system.debug('ManufacturerAmount: '+ManufacturerAmount);
                     ManufacturerAmount = ManufacturerAmount.setScale(2, RoundingMode.HALF_EVEN);
                     commissions.add(MakeCommissions(IsCash, ReceiptId, OwnerId, ReferralId, 
                                                     ManufacturerId, 
                                                     SpecifiedId,
-                                                    SalesRepCompanyId, ManufacturerAmount, 
-                                                    'ManRep', IsTeam, salesOrderId, billingNumber, dt, oppId));
+                                                    SalesRepCompanyId, 
+                                                    ManufacturerAmount, 
+                                                    'ManRep', IsTeam, salesOrderId, billingNumber, dt, oppId, creditOrderId));
                 }
             }
 
@@ -1224,7 +1282,7 @@ public class CalculateCommissionsHandler {
                                                     ManufacturerId, SpecifiedId, 
                                                     SalesRepCompanyId, 
                                                     SpecifiedAmount, 
-                                                    'Specified', IsTeam, salesOrderId, billingNumber, dt, oppId));
+                                                    'Specified', IsTeam, salesOrderId, billingNumber, dt, oppId, creditOrderId));
                 }
             }
             
@@ -1245,8 +1303,9 @@ public class CalculateCommissionsHandler {
         string salesOrderId, 
         string billingNumber, 
         datetime dt,
-        Id oppId){
+        Id oppId, Id credOrderId){
             
+            system.debug('zayshlo v MakeCommissions');
             Sales_Order_Commissions__c commission = new Sales_Order_Commissions__c();
             
             if(typeOfCommission == 'Referral'){ 
@@ -1263,7 +1322,7 @@ public class CalculateCommissionsHandler {
                 commission.Specified_Rep__c = SpecifiedId;
             }
             commission.Commission_Amount__c = IsCash ? amt.setScale(2, System.RoundingMode.HALF_EVEN) : 
-            amt.setScale(2, System.RoundingMode.HALF_EVEN);
+            -amt.setScale(2, System.RoundingMode.HALF_EVEN);
             // -amt.setScale(2, System.RoundingMode.HALF_EVEN);
             commission.Sales_Order__c = salesOrderId;
             commission.Billing_Cash_Receipt__c = IsCash ? ReceiptId : null;
@@ -1271,6 +1330,7 @@ public class CalculateCommissionsHandler {
             commission.Reference_Number__c = billingNumber;
             commission.Billing_Paid_Date__c = dt;
             commission.Opportunity__c = oppId;
+            commission.Credit_Order__c = credOrderId;
             return commission;
         }
     
@@ -1350,6 +1410,7 @@ public class CalculateCommissionsHandler {
                              AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c, 
                              AcctSeed__Billing__r.AcctSeed__Opportunity__c, 
                              AcctSeed__Billing__r.AcctSeed__Total__c,
+                             AcctSeed__Billing__r.Credit_Order__c,
                              AcctSeed__Billing__r.AcctSeed__Credit_Memo_Applied_Amount__c,
                              AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.IsTeam__c,
                              AcctSeed__Billing__r.AcctSeedERP__Sales_Order__r.Sales_Rep_o__r.Company_Name_Lookup__c,
@@ -1538,7 +1599,9 @@ public class CalculateCommissionsHandler {
                              AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__r.Commission_Rate_Sales_Rep__c,
                              AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__r.Commission_Rate_Manufacturer_Rep__c,
                              AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__r.Commission_Rate_Referral_Sales_Rep__c,
-                             AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__r.Commission_Rate_Specified_Rep__c
+                             AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__r.Commission_Rate_Specified_Rep__c,
+
+                             AcctSeed__Billing_Credit_Memo__r.Credit_Order__c
                              from AcctSeed__Billing_Credit_Memo__c
                              where AcctSeed__Billing_Invoice__r.AcctSeedERP__Sales_Order__c =: recordId OR AcctSeed__Billing_Invoice__r.AcctSeed__Opportunity__c =: recordId LIMIT 100];
         

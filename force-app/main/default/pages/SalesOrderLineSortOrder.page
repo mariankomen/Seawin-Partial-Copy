@@ -215,16 +215,10 @@
                     function(result, event){
                         console.log('active by stage result: ', result)
                         if (event.status) {
-                            $.alert({
-                                title: 'Notification',
-                                content: 'Sorting has been saved successfully.',
-                                boxWidth: '15%',
-                                useBootstrap: false
-
-                            });
+                            
                             setTimeout(() => {
                                 document.location = '/'+id;
-                            },2000)
+                            },1000)
                         } else if (event.type === 'exception') {
                             
                                 console.log('Exception has occured in Active Opportunities by Stage...');

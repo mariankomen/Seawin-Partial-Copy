@@ -31,11 +31,11 @@
     <apex:form id="theForm">
         <apex:sectionHeader title="Opportunity" subtitle="{!opportunityName}" />
         <apex:pageBlock title="Opportunity Lines">
-            <apex:pageBlockButtons>
+            <apex:pageBlockButtons >
                 <apex:commandButton value="Save" onclick="savesort(); return false;" reRender="" />
                 <apex:commandButton value="Back" action="{!back}"/>
             </apex:pageBlockButtons>
-            <apex:pagemessages></apex:pagemessages>
+            <apex:pagemessages ></apex:pagemessages>
 
             <apex:outputPanel rendered="{!wrapper_lines.size > 0}">
                 <div style="height: 30px; width: 100%; margin-bottom: 5px; margin-top: 17px;">
@@ -43,7 +43,7 @@
                 </div>
             </apex:outputPanel>
             
-            <apex:pageBlockTable value="{!wrapper_lines}" var="line" styleClass='mainTable' rendered="{!wrapper_lines.size > 0}">
+            <apex:pageBlockTable value="{!wrapper_lines}" var="line" styleClass="mainTable" rendered="{!wrapper_lines.size > 0}">
                 <apex:column value="{!line.recordId}" title="{!line.recordId}" headerClass="hiddenColumn" styleClass="hiddenColumn"/>
                 <apex:column value="{!line.productName}" headerValue="Product Name"  styleClass="col_1"/>
                 <apex:column value="{!line.quantity}" headerValue="Quantity" styleClass="col_2"/>
@@ -60,7 +60,7 @@
         </apex:pageBlock>
     </apex:form>
 
-    <apex:outputPanel>
+    <apex:outputPanel >
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
         <script type="text/javascript">
@@ -68,7 +68,7 @@
             //jQuery.noConflict();
             $(function () {
                     $(".mainTable").sortable({
-                        items: 'tr',
+                        items: 'tr:not(:first)',
                         cursor: 'pointer',
                         axis: 'y',
                         dropOnEmpty: false,
@@ -111,16 +111,10 @@
                     function(result, event){
                         console.log('active by stage result: ', result)
                         if (event.status) {
-                            $.alert({
-                                title: 'Notification',
-                                content: 'Sorting has been saved successfully.',
-                                boxWidth: '15%',
-                                useBootstrap: false
-
-                            });
+                            
                             setTimeout(() => {
                                 document.location = '/'+oppId;
-                            },2000)
+                            },1000)
                         } else if (event.type === 'exception') {
                             
                                 console.log('Exception has occured in Active Opportunities by Stage...');

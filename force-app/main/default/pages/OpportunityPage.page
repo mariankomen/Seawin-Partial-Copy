@@ -679,27 +679,7 @@
     
     </script>
     <script> 
-    $('#CloneMenu a.menuButtonMenuLink').click(function(e){
-        /*
-                    var OriginalCloneURI = e.target.href.split(".com/")[1];
-                    window.location.replace( 
-                        "/apex/OpportunitySalesRepPage?oppId={!Opportunity.Id}&retURL={!Opportunity.Id}&continue=/"+
-                        OriginalCloneURI);
-                    */
-        var whole_url = new URL(e.target.href);
-        
-        var products = 'no';
-        if(whole_url.searchParams.has("cloneli")) products = 'yes';
-        
-        var comUrl = "{!$User.ContactId}" != "" ? "/sales" : "";
-        
-        window.location.replace(comUrl +  
-                                "/apex/OpportunitySalesRepPage?oppId={!Opportunity.Id}&createproducts="+products+
-                                "&retURL={!Opportunity.Id}&continue="+
-                                "/apex/CloneOpportunityPage?id={!Opportunity.id}");
-        
-        e.preventDefault();
-    });
+    
     </script>
     <script>
     $("input[type=button][name='clone']")[0].onclick = null;
@@ -716,7 +696,6 @@
     
     <script>
         $("#opportunitypage_maindetailform_{!LEFT(Opportunity.id,15)}_RelatedLineItemList_body").find("a[href^='/apex/InventoryInformationPage']").parent('td').css('text-align', 'right')
-    
     </script>
     
 </apex:page>

@@ -2,12 +2,12 @@
 
     <style type="text/css">
     textarea {
-        width: 175px;
-        height: 75px;
+        max-width: 175px;
+        min-height: 75px;
     }
     .descriptionBlock {
-        width: 175px;
-        height: 75px;
+        max-width: 175px;
+        min-height: 75px;
     }
     </style>
     <apex:form id="theForm">
@@ -54,7 +54,7 @@
                         </apex:outputPanel>
                     </apex:column>
 
-                    <apex:column headerValue="Item Description">
+                    <apex:column headerValue="Item Description" style="min-width: 200px;">
 
                         <apex:outputPanel rendered="{!line.allow_changes}">
                             <apex:inputTextarea value="{!line.description}"/>
@@ -62,7 +62,7 @@
 
                         <apex:outputPanel rendered="{!!line.allow_changes}">
                             <div class='descriptionBlock'>
-                                <apex:outputText value="{!line.description}" styleClass="descriptionBlock"/>
+                                <apex:outputText value="{!line.description}" style="white-space:pre;" escape="false" styleClass="descriptionBlock"/>
                             </div>
                         </apex:outputPanel>
                     </apex:column>

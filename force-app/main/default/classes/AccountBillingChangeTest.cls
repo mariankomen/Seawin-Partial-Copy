@@ -3,8 +3,8 @@ public class AccountBillingChangeTest {
     
     @testSetup static void createData(){
         
-        // Profile pf = [Select Id from profile where Name = 'System Administrator']; 
-        Profile pf = [Select Id from profile where Name = 'Sales Rep'];
+         Profile pf = [Select Id from profile where Name = 'System Administrator']; 
+        //Profile pf = [Select Id from profile where Name = 'Sales Rep'];
         
         String orgId = UserInfo.getOrganizationId(); 
         String dateString = String.valueof(Datetime.now()).replace(' ','').replace(':','').replace('-','') ;
@@ -57,15 +57,23 @@ public class AccountBillingChangeTest {
         cont.AccountId = acct.Id;
         
         insert cont;
-        
+
+        AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
+        accVar.Name = 'Seawin USA';
+        accVar.AcctSeed__Type__c = 'GL Account Variable 1';
+        insert accVar;
+
         AcctSeed__GL_Account__c aegl = new AcctSeed__GL_Account__c();
         aegl.name = 'glaccount';
         aegl.AcctSeed__Type__c = 'Expense';
         aegl.AcctSeed__Sub_Type_1__c = 'Facilities';
         aegl.AcctSeed__Sub_Type_2__c = 'Rent';
         aegl.AcctSeed__Bank__c = true;
-        
+        aegl.GL_Account_Variable_1__c = accVar.Id;
         insert aegl;
+        
+        User user_record = [SELECT Id FROM User WHERE Name = 'Michael Siwko' LIMIT 1];
+
         
         // Gl account with bank unchecked
         AcctSeed__GL_Account__c ga = new AcctSeed__GL_Account__c();
@@ -102,7 +110,7 @@ public class AccountBillingChangeTest {
         opp.StageName = 'Closed Won';
         opp.CloseDate = system.today();
         opp.ContactPerson__c = cont.Id;
-        
+        opp.GL_Account_Variable_1__c = accVar.Id;
         insert opp;
         
         // create quote
@@ -112,8 +120,11 @@ public class AccountBillingChangeTest {
         qt.OpportunityId = opp.id;
         qt.Quote_Date__c = Date.today();
         qt.Status = 'Presented';
+
+        System.runAs(user_record){
+            insert qt;
+        }
         
-        insert qt;
         
         // create pricebook2
         Pricebook2 priceb2 = new Pricebook2();

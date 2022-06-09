@@ -12,7 +12,7 @@ public with sharing class OpportunityDashboardHandlerTest {
         insert sr;
 
         AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
-        accVar.Name = 'Test GL';
+        accVar.Name = 'Seawin USA';
         accVar.AcctSeed__Type__c = 'GL Account Variable 1';
         insert accVar;
 
@@ -47,6 +47,7 @@ public with sharing class OpportunityDashboardHandlerTest {
         OpportunityDashboardHandler.createNewRecord(opps);
         OpportunityDashboardHandler.updateExistingRecords(opps);
         OpportunityDashboardHandler.deleteRecords(opps);
-
+        
+        delete opps[0];
     }
 }

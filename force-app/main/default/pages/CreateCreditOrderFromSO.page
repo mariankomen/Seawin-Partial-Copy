@@ -1,4 +1,4 @@
-<apex:page controller="CreateCreditOrderController" tabStyle="Credit_Order__c" docType="html-5.0">
+<apex:page controller="CreateCreditOrderController" tabStyle="AcctSeedERP__Sales_Order__c" docType="html-5.0">
 
     <apex:stylesheet value="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css" />
     <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"/>
@@ -6,54 +6,48 @@
 
     <style>
     textarea{
-        width: 100%;
-        height: 45px;
+        width: 90%;
+        min-height: 100px;
         
+    }
+    #first_section{
+        background: red !important;
     }
     </style>
     <apex:form id="theForm">
-        <apex:sectionHeader title="New Credit Order" subtitle="Test"/>
+        <apex:sectionHeader title="New Credit Order" subtitle="{!sales_order.Name}" id='first_section' />
         <apex:pageBlock id="thePageBlock" title="Credit Order">
+            <apex:pageMessages id="msg"></apex:pageMessages>
             <apex:pageBlockButtons >
                 <apex:commandButton status="saveStatus" value="Create Credit Order" action="{!saveCreating}"/>
                 <apex:commandButton value="Back" action="/{!soId}" immediate="true" />
             </apex:pageBlockButtons>
             <apex:pageBlockSection columns="2" title="Credit Order">
-                <apex:inputField value="{!sales_order.Name}"></apex:inputField>
-                <apex:pageBlockSectionItem >
-                    <apex:outputLabel value="Opportunity" />
-                    <apex:InputField value="{!sales_order.AcctSeedERP__Opportunity__c}" />
-                </apex:pageBlockSectionItem>
+
                 <apex:pageBlockSectionItem >
                     <apex:outputLabel value="Customer" />
-                    <apex:InputField value="{!sales_order.AcctSeedERP__Customer__c}" />
+                    <apex:outputField value="{!sales_order.AcctSeedERP__Customer__c}" />
+                    <!-- <apex:InputField value="{!sales_order.AcctSeedERP__Customer__c}" /> -->
                 </apex:pageBlockSectionItem>
+
                 <apex:pageBlockSectionItem >
                     <apex:outputLabel value="GL Account Variable 1" />
                     <apex:InputField value="{!sales_order.GL_Account_Variable_1__c}" />
                 </apex:pageBlockSectionItem>
+
                 <apex:pageBlockSectionItem >
-                    <apex:outputLabel value="Sales Rep/Team" />
-                    <apex:InputField value="{!sales_order.Sales_Rep_O__c}" />
+                    <apex:outputLabel value="Ledger:" />
+                    <apex:selectList value="{!selectedledger}" multiselect="false" size="1" >
+                        <apex:selectOptions value="{!LedgerList}"/>
+                    </apex:selectList>
                 </apex:pageBlockSectionItem>
-                <apex:pageBlockSectionItem >
-                    <apex:outputLabel value="Referral Sales Rep" />
-                    <apex:InputField value="{!sales_order.Referral_Sales_Rep__c}" />
-                </apex:pageBlockSectionItem>
-                <apex:pageBlockSectionItem >
-                    <apex:outputLabel value="Manufacturer Rep" />
-                    <apex:InputField value="{!sales_order.Manufacturer_Rep__c}" />
-                </apex:pageBlockSectionItem>
-                <apex:pageBlockSectionItem >
-                    <apex:outputLabel value="Specified Rep" />
-                    <apex:InputField value="{!sales_order.Specified_Rep__c}" />
-                </apex:pageBlockSectionItem>
+
             </apex:pageBlockSection>
             <apex:pageBlockSection columns="1" title="Credit Order Lines">
 
 
             <apex:actionFunction action='{!rerenderAction}' name='rerenderTable' rerender="thePageBlockTable"/>
-
+                
                 <apex:pageBlockTable id="thePageBlockTable" value="{!wrapper_lines}" var="line" cellpadding="6">
                     <apex:column>
                         <apex:facet name="header">
@@ -61,9 +55,11 @@
                                 <apex:actionSupport event="onchange" rerender="thePageBlockTable" action="{!processCheckChange}"/>
                             </apex:inputCheckbox>
                         </apex:facet>
-                        <apex:inputCheckbox value="{!line.selected}"/>
+                        <apex:inputCheckbox value="{!line.selected}" rendered="{!!line.isFullyApplied}"/>
                     </apex:column>
-                    <apex:column value="{!line.sol.AcctSeedERP__Product__r.Name}" />
+                    <apex:column headerValue="Product" >
+                        <apex:outputText value="{!line.sol.AcctSeedERP__Product__r.Name}" />
+                    </apex:column>
 
                     <apex:column styleClass="align-right" headerClass="align-right" headerValue="Product Code">
                         <apex:outputText value="{!line.sol.ProductCode__c}" />
@@ -79,9 +75,19 @@
 
                     </apex:column>
 
-                    <apex:column styleClass="align-right" headerClass="align-right" headerValue="Quantity Ordered">
-                        <apex:inputField type='number' id="quantityOrdered" value="{!line.sol.AcctSeedERP__Quantity_Ordered__c}" onchange="handleCheckQuantity(this, event)">
-                        </apex:inputField>
+                    <apex:column styleClass="align-right" headerClass="align-right" headerValue="Quantity">
+                        <apex:outputText    html-data-quantity="{!line.sol.AcctSeedERP__Quantity_Ordered__c}" 
+                                            html-data-availablequantity="{!line.available_quantity}" 
+                                            value="{!line.available_quantity}"  
+                                            rendered="{!IF(ordered_map[line.sol.Id] >= line.sol.AcctSeedERP__Quantity_Ordered__c, true, false)}">
+                        </apex:outputText>
+                        
+                        <apex:inputText html-data-quantity="{!line.sol.AcctSeedERP__Quantity_Ordered__c}" 
+                                        html-data-availablequantity="{!line.available_quantity}" 
+                                        value="{!line.available_quantity}"  
+                                        onchange="handleCheckQuantity(this, event)"
+                                        rendered="{!IF(ordered_map[line.sol.Id] < line.sol.AcctSeedERP__Quantity_Ordered__c, true, false)}">
+                        </apex:inputText>
                     </apex:column>
 
                     <apex:column styleClass="align-right" headerClass="align-right" headerValue="Sales Price">
@@ -104,16 +110,31 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
         <script type="text/javascript">
+
             function handleCheckQuantity(element, event){
-                if(event.target.value > -1){
+                let max_quantity = $(element).attr("data-quantity")
+                let available_quantity = +$(element).attr("data-availablequantity")
+                
+                if(event.target.value <= 0){
                     $.alert({
-                            title: 'Error',
-                            content: 'Quantity of Credit Order Line can must be negative.',
+                            title: 'Warning',
+                            content: 'Quantity of Credit Order Line can not be negative or equal 0.',
                             boxWidth: '25%',
                             useBootstrap: false
 
                         });
-                    element.value = -1
+                    element.value = 1
+                }
+                console.log('available_quantity: ',available_quantity)
+                if(event.target.value > available_quantity){
+                    $.alert({
+                            title: 'Warning',
+                            content: 'Total quantity of Credit Order Line can not be greater than quantity of Sales Order Line.',
+                            boxWidth: '25%',
+                            useBootstrap: false
+
+                        });
+                    element.value = available_quantity
                 }
                 rerenderTable();
             }

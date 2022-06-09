@@ -118,8 +118,8 @@ public with sharing class OpportunityEditAllController {
         List<OpportunityLineItem> updatableLines = new List<OpportunityLineItem>();
 
         for(ItemWrapper iw: wrapper_lines){
+            iw.sales_price = iw.sales_price.replaceAll(' ', '');
             List<String> splittedCurrency = iw.sales_price.split('');
-
             if(opportunityLineItemsMap.containsKey(iw.recordId)){
                 OpportunityLineItem oli = opportunityLineItemsMap.get(iw.recordId);
                 oli.Quantity = iw.quantity;
@@ -148,6 +148,7 @@ public with sharing class OpportunityEditAllController {
         List<Optional_Products_Opportunity__c> updatableOptionalLines = new List<Optional_Products_Opportunity__c>();
 
         for(ItemWrapper iw: wrapper_lines){
+            iw.sales_price = iw.sales_price.replaceAll(' ', '');
             List<String> splittedCurrency = iw.sales_price.split('');
             if(opportunityOptionalItemsMap.containsKey(iw.recordId)){
                 Optional_Products_Opportunity__c opo = opportunityOptionalItemsMap.get(iw.recordId);

@@ -353,7 +353,7 @@ public class CommissionFieldsReplicateHandler {
       }
       Map<Id, Opportunity> updated_map = new Map<Id, Opportunity>(queriedData);
 
-       update queriedData;
+      update queriedData;
     }
     
   }
