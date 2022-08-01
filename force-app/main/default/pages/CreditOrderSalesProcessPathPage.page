@@ -98,13 +98,15 @@
                         if(currentStage == 'Received'){
                             alert('Credit Order already received, and stage can not be changed.')
                         }else{
-                            if(val == 'Received' && quantityOrdered !== quantityShipped){
-                                alert('Stage can not be changed to Receive because not all items has been shipped.')
-                            }else if(val == 'Received' && +totalBalances !== 0){
-                                alert('Credit Order cannot be Received. Either all products have not been billed OR all billings are not posted yet.')
-                            }else{
-                                midFunction(val);
-                            }
+                            
+
+                            // if(val = 'Received'){
+                            //     alert('You can not change stage to Received manually. Current stage will automatically selects after receiving items.')
+                            // }else{
+                            //     midFunction(val);
+                            // }
+
+                            midFunction(val);
                         }
                         
                     }

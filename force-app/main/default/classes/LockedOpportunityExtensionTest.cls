@@ -5,7 +5,7 @@ public class LockedOpportunityExtensionTest {
      
         AcctSeed__Accounting_Variable__c av = new AcctSeed__Accounting_Variable__c();
         
-        av.Name = 'GL Account Variable Test';
+        av.Name = 'Seawin USA';
         av.AcctSeed__Active__c = true;
         av.AcctSeed__Type__c = 'GL Account Variable 1';
         
@@ -40,6 +40,7 @@ public class LockedOpportunityExtensionTest {
         opp.GL_Account_Variable_1__c = av.Id;
         opp.Sent_for_Approval__c = true;
         opp.TotalBills__c = 1;
+        opp.Referral_Sales_Rep__c = [SELECT Id, IsActive FROM User where IsActive = true limit 1].Id;
         insert opp;
         
         // Create Sales Order

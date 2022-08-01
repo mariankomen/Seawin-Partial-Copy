@@ -92,7 +92,7 @@
                     <apex:actionRegion >
                         <apex:inputText id="billtype" title="myTitle" styleClass="align-right clearText billtypefilled" value="{!sow.billTypeVal}" style="width:80px" 
                                         required="false" onkeyup="recalculateBill(this.id, this.title,this.value, {!sow.UnbilledAmount}, {!sow.soLine.AcctSeedERP__Unit_Price__c}, {!sow.soLine.AcctSeedERP__Quantity_Ordered__c}, {!sow.quantityBilled}, {!sow.soLine.AcctSeedERP__Total__c}, {!sow.billedAmount})"
-                                        disabled="{!sow.quantityBilled == sow.soLine.AcctSeedERP__Quantity_Ordered__c}">
+                                        disabled="{!sow.billedAmount == sow.soLine.Total_Price__c}">
                         </apex:inputText>
                     </apex:actionRegion>
                 </apex:column>
@@ -133,9 +133,9 @@
         </apex:pageBlock>
     </apex:form>
     <script>
+    
     var keyvalue = [];
     function calculateBillOnload(isOnChange, inputtype = ''){
-        
         // selected
         var SelectedElement = document.getElementsByClassName('istype');
         var selected = SelectedElement[0].value;
@@ -194,10 +194,11 @@
                                       -document.getElementById(unBilledAmountTemp).innerHTML.replace(/[()]/g, '').replace('$', '').replace(/,/g, '') : 
                                       document.getElementById(unBilledAmountTemp).innerHTML.replace('$', '').replace(/,/g, '');
                 
-                var InitPercent = (unbilledAmount / totalAmount) * 100;
+                var InitPercent = 100
+                // var InitPercent = (unbilledAmount / totalAmount) * 100;
                 
                 var totalPercent = (totalAmount > 0) ? trueRound(InitPercent, 5): 100;
-
+                console.log('totalPercent:',totalPercent)
                 if(selected == 'quantity'){
                     
                     // get the quantity
@@ -212,8 +213,7 @@
                     var deposit = '{!deposit}';
                     
                     // check what the user has selected in the isdeposit select
-                    document.getElementById(billtypeval).value = 
-                        (unbilled > 0 && firstbillings && selectedisDeposit == 'deposit') ? deposit : ((unbilled > 0) ? totalPercent : '');
+                    document.getElementById(billtypeval).value = (unbilled > 0 && firstbillings && selectedisDeposit == 'deposit') ? deposit : ((unbilled > 0) ? totalPercent : '');
                     
                 }else if(selected == 'amount'){
                     var unbilledamountTempVal = parseFloat(document.getElementById(unBilledAmountTemp).innerHTML.indexOf('(') != -1 ?
@@ -279,7 +279,8 @@
             // actual
             var forPercent = parseFloat(totalforActual);
             var forAmount = parseFloat(UnBilledAmountStepOne);
-            
+            //console.log('totalforActual: ',totalforActual)
+            //console.log('UnBilledAmountStepOne: ',UnBilledAmountStepOne)
             // unitprice
             var unitprice = parseFloat(UnitPriceStepOne);
             
@@ -288,7 +289,7 @@
             
             var amount = 0;
             if(selected == 'percent'){
-                amount = forPercent * (entered/100);
+                amount = forAmount * (entered/100);
             }else if(selected == 'amount'){
                 amount = forAmount;
             }else if(selected == 'quantity'){
@@ -367,9 +368,11 @@
         
         var amount = 0;
         if(selected == 'percent'){
-            
-            amount = actual * (entered/100);
-            
+            console.log('unbilledAmount: ',unbilledAmount)
+            console.log('actual: ',actual)
+            amount = unbilledAmount * (entered/100);
+
+            console.log('amount percent: ',amount)
             //amount = RectifyAmount(parseFloat(actual), parseFloat(billedAmount), parseFloat(amount));
             
             if(entered != '' && (entered > 100 || entered < 1)){
@@ -381,7 +384,11 @@
                 document.getElementById(id).value = '';
                 amount = 0;
             }
+
         }else if(selected == 'amount'){
+            console.log('entered: ',entered)
+            console.log('actual: ',actual)
+            console.log('unbilledAmount: ',unbilledAmount)
             if(actual.toString().indexOf('-') != -1 && entered > 0){ // if its negative amount
                 alert('The amount cannot be more than 0.');
                 document.getElementById(id).value = '';
@@ -395,6 +402,9 @@
                 document.getElementById(id).value = '';
             }else if(actual.toString().indexOf('-') < 0 && entered < 0){
                 alert('The amount cannot be negative.');
+                document.getElementById(id).value = '';
+            }else if(entered > unbilledAmount){
+                alert('The amount cannot be more than unbilled amount: ' + unbilledAmount);
                 document.getElementById(id).value = '';
             }else{
                 amount = (entered == undefined || entered == '' || entered == null) ? 0 : parseFloat(entered);

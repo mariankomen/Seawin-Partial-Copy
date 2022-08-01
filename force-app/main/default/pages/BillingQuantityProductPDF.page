@@ -121,6 +121,10 @@
             .td-width{
                 width: 104px !important;
             }
+
+            .fw_bold {
+                font-weight: bold;
+            }
         </style>
     </head>
     <body>
@@ -414,53 +418,212 @@
             </apex:pageBlock>
             <br/>
             <div style="height: 78px; width: 100%; margin-bottom: 50px;">
-                <table style="width:300px;border-collapse:collapse;float:right">
-                    <tr class="tableRowAmount">
-                        <td style="padding:6px">
-                            <span style="">
-                                <apex:outputText value="Grand Total:"/>
-                            </span>
-                        </td>
-                        <td style="text-align:right;padding:6px">
-                            <span style="">
-                                <apex:outputField value="{!AcctSeed__Billing__c.AcctSeed__Total__c}" />
-                            </span>
-                        </td>
-                    </tr>
-                    <tr class="tableRowAmount">
-                        <td style="padding:6px">
-                            <span style="">
-                                <apex:outputText value="Paid:"/>
-                            </span>
-                        </td>
-                        <td style="text-align:right;padding:6px">
-                            <span style="">
-                                <apex:outputField value="{!AcctSeed__Billing__c.AcctSeed__Received_Amount__c}" />
-                            </span>
-                        </td>
-                    </tr>
-                    <tr class="tableRowAmount">
-                        <td style="padding:6px">
-                            <span style="">
-                                <apex:outputText value="Amount Due:"/>
-                            </span>
-                        </td>
-                        <td style="text-align:right;padding:6px">
-                            <span style="">
-                                <!-- <apex:outputField value="{!AcctSeed__Billing__c.AcctSeed__Balance__c}" /> -->
-                                <!--<apex:outputText value="{0, Number, Currency}" >
-                                    <apex:param value="{!AcctSeed__Billing__c.AcctSeed__Total__c - AcctSeed__Billing__c.AcctSeed__Balance__c}" />
-                                </apex:outputText>-->
-                                <apex:outputText value="{0, Number, Currency}" >
-                                    <apex:param value="{!AcctSeed__Billing__c.AcctSeed__Total__c - AcctSeed__Billing__c.AcctSeed__Received_Amount__c}" />
-                                </apex:outputText>
-                            </span>
-                        </td>
-                    </tr>
-                </table>
+                    <table style="width:300px;border-collapse:collapse;float:right">
+                        <apex:outputText >
+                            <tr class="tableRowAmount">
+                                <td style="padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="Sales Order Total:" rendered="{!AcctSeed__Billing__c.AcctSeedERP__Sales_Order__c != null}"/>
+                                        <apex:outputText value="Quote Total:" rendered="{!AcctSeed__Billing__c.AcctSeedERP__Sales_Order__c == null}"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;padding:6px">
+                                    <span style="">
+                                        <apex:outputField value="{!AcctSeed__Billing__c.AcctSeedERP__Sales_Order__r.Total_Actual__c}"
+                                                          rendered="{!AcctSeed__Billing__c.AcctSeedERP__Sales_Order__c != null}"/>
+                                        <apex:outputField value="{!AcctSeed__Billing__c.AcctSeed__Opportunity__r.Amount}" 
+                                                          rendered="{!AcctSeed__Billing__c.AcctSeedERP__Sales_Order__c == null}"/>
+                                    </span>
+                                </td>
+                            </tr>
+                        </apex:outputText>
+                        <apex:outputText >
+                            <tr class="tableRowAmount">
+                                <td style="padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="Invoice Amount Due:"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="{0, Number, Currency}">
+                                            <apex:param value="{!AcctSeed__Billing__c.Sub_Total__c}" />
+                                        </apex:outputText>
+                                    </span>
+                                </td>
+                            </tr>
+                        </apex:outputText> 
+                        <!-- <apex:outputText rendered="{!AcctSeed__Billing__c.AcctSeed__Discount_Amount__c  > 0}">
+                            <tr class="tableRowAmount">
+                                <td style="padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="Discount Amount:"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;padding:6px">
+                                    <span style="">
+                                        (<apex:outputText value="{0, Number, Currency}">
+                                            <apex:param value="{!AcctSeed__Billing__c.AcctSeed__Discount_Amount__c}" />
+                                        </apex:outputText>)
+                                    </span>
+                                </td>
+                            </tr>
+                        </apex:outputText> -->
+                        
+                        <apex:outputText rendered="{!AcctSeed__Billing__c.AcctSeed__Sales_Tax2__c > 0}">
+                            <tr class="tableRowAmount">
+                                <td style="padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="Sales Tax:"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="{0, Number, Currency}">
+                                            <apex:param value="{!AcctSeed__Billing__c.AcctSeed__Sales_Tax2__c}" />
+                                        </apex:outputText>
+                                    </span>
+                                    
+                                </td>
+                            </tr>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!AcctSeed__Billing__c.Credit_Card_Fee__c  > 0}">
+                            <tr class="tableRowAmount">
+                                <td style="padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="Credit Card Fee:"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="{0, Number, Currency}">
+                                            <apex:param value="{!AcctSeed__Billing__c.Credit_Card_Fee__c}" />
+                                        </apex:outputText>
+                                    </span>
+                                    
+                                </td>
+                            </tr>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!AcctSeed__Billing__c.AcctSeed__Sales_Tax2__c != 0 ||
+                            AcctSeed__Billing__c.Credit_Card_Fee__c  != 0 
+                            }">
+                            <tr class="tableRowAmount">
+                                <td style="padding:6px">
+                                       <!-- rendered="{!AcctSeed__Billing__c.AcctSeed__Received_Amount__c < 0 && AcctSeed__Billing__c.Total_Adjustment_Amount__c < 0}" -->
+                                    <apex:outputText >
+                                            <apex:outputText value="Total Amount Due:"/>
+                                    </apex:outputText>
+                                    <!-- <apex:outputText rendered="{!AcctSeed__Billing__c.AcctSeed__Received_Amount__c == 0 && AcctSeed__Billing__c.Total_Adjustment_Amount__c == 0}">
+                                            
+                                                <apex:outputText value="Total Amount Due:"/>
+                                            <
+                                    </apex:outputText> -->
+                                    
+                                </td>
+                                <td style="text-align:right;padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="{0, Number, Currency}">
+                                            <apex:param value="{!AcctSeed__Billing__c.Total_Amount_Due__c}" />
+                                        </apex:outputText>
+                                    </span>
+                                </td>
+                            </tr>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!AcctSeed__Billing__c.AcctSeed__Received_Amount__c >= 0}">
+                            <tr class="tableRowAmount">
+                                <td style="padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="Paid:"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;padding:6px">
+                                    <span style="">
+                                        <apex:outputField value="{!AcctSeed__Billing__c.AcctSeed__Received_Amount__c}" />
+                                    </span>
+                                </td>
+                            </tr>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!AcctSeed__Billing__c.Total_Adjustment_Amount__c  != 0}">
+                            <tr class="tableRowAmount">
+                                <td style="padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="Total Adjustment Amount:"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="{0, Number, Currency}">
+                                            <apex:param value="{!AcctSeed__Billing__c.Total_Adjustment_Amount__c}" />
+                                        </apex:outputText>
+                                    </span>
+                                </td>
+                            </tr>
+                        </apex:outputText>
+                        <apex:outputText>
+                            <tr class="tableRowAmount">
+                                <td style="padding:6px">
+    
+                                    <!-- <apex:outputText rendered="{!IF(AcctSeed__Billing__c.AcctSeed__Received_Amount__c == 0, false, true)}">
+                                        <apex:outputText value="Balance Due:"/>
+                                    </apex:outputText> -->
+                                    
+                                    <apex:outputText >
+    
+                                        <span class='fw_bold'>
+                                            <apex:outputText value="Balance Due:"/>
+                                        </span>
+                                    </apex:outputText>
+                                </td>
+                                <td style="text-align:right;padding:6px">
+                                    <span style="">
+                                        <apex:outputText value="{0, Number, Currency}">
+                                            <apex:param value="{!AcctSeed__Billing__c.AcctSeed__Balance__c}" />
+                                        </apex:outputText>
+                                    </span>
+                                    
+                                </td>
+                            </tr>
+                        </apex:outputText>
+                        <tr class="tableRowAmount">
+                            <td style="padding:6px">
+                                <span style="">
+                                    <apex:outputText value="Remaining Balance After This Invoice:"/>
+                                </span>
+                            </td>
+                            <td style="text-align:right;padding:6px">
+                                <span style="">
+                                    <!--<apex:outputText value="{0, Number, Currency}" 
+                                                     rendered="{!AcctSeed__Billing__c.AcctSeedERP__Sales_Order__c != null}">
+                                        <apex:param value="{!IF(AcctSeed__Billing__c.AcctSeedERP__Sales_Order__r.Total_Actual__c >= 
+                                        AcctSeed__Billing__c.AcctSeedERP__Sales_Order__r.Paid_Amount__c,
+                                        AcctSeed__Billing__c.AcctSeedERP__Sales_Order__r.Total_Actual__c - 
+                                        AcctSeed__Billing__c.AcctSeedERP__Sales_Order__r.Paid_Amount__c, 0) -
+                                            AcctSeed__Billing__c.Total_Adjustment_Amount__c - 
+                                            (AcctSeed__Billing__c.Sub_Total__c - AcctSeed__Billing__c.Received_Amount_Actual__c)}" />
+                                    </apex:outputText>
+                                    <apex:outputText value="{0, Number, Currency}" 
+                                                     rendered="{!AcctSeed__Billing__c.AcctSeedERP__Sales_Order__c == null && 
+                                                               AcctSeed__Billing__c.AcctSeed__Opportunity__c != null}">
+                                        <apex:param value="{!AcctSeed__Billing__c.AcctSeed__Opportunity__r.Amount - 
+                                            AcctSeed__Billing__c.AcctSeed__Opportunity__r.Bill_Paid_Amount__c -
+                                            AcctSeed__Billing__c.Total_Adjustment_Amount__c - 
+                                            (AcctSeed__Billing__c.Sub_Total__c - AcctSeed__Billing__c.Received_Amount_Actual__c)}" />
+                                    </apex:outputText>
+                                    <apex:outputText value="{0, Number, Currency}" 
+                                                     rendered="{!AcctSeed__Billing__c.AcctSeedERP__Sales_Order__c == null && 
+                                                               AcctSeed__Billing__c.AcctSeed__Opportunity__c == null}">
+                                        <apex:param value="{!0}" />
+                                    </apex:outputText>-->
+                                    <apex:outputText value="{0, Number, Currency}">
+                                        <apex:param value="{!AcctSeed__Billing__c.Remaining_Balance__c}" />
+                                    </apex:outputText>
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
             </div>
 
-            <div class="clearfix"></div>
+            <div class="clearfix" style="margin-top: 150px;"></div>
             <apex:pageBlock title="Cash Receipts">
                 <table id="itemstable" style="width:100%; {!IF(receipts.size > 0,'','display: none;')}">
                     <tr>

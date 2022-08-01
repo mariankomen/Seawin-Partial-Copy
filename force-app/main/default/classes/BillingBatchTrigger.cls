@@ -1,10 +1,13 @@
 
-public class BillingBatchTrigger implements Database.Batchable<sObject>{
+public class BillingBatchTrigger implements Database.Batchable<sObject>, Database.stateful{
 
     public List<AcctSeed__Billing__c> triggered_billings;
-
+    public List<AcctSeedERP__Sales_Order__c> so_for_update;
+    public List<Opportunity> opp_for_update;
     public BillingBatchTrigger(List<AcctSeed__Billing__c> bills) {
         triggered_billings = bills;
+        so_for_update = new List<AcctSeedERP__Sales_Order__c>();
+        opp_for_update = new List<Opportunity>();
     }
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
@@ -52,40 +55,24 @@ public class BillingBatchTrigger implements Database.Batchable<sObject>{
             try{
                 if(so.size() > 0){
                     so[0].Billing_Balances__c = amount;
-                    update so;
+                    so_for_update.add(so[0]);
+                    // update so;
                 }
     
                 if(opp.size() > 0){
-                    opp[0].Run_Validation_Rule__c = true;
-                    update opp;
                     opp[0].Billing_Balances__c = amount;
-                    update opp;
-                    // opp[0].op.Run_Validation_Rule__c = false;
-                    // update opp;
+                    opp_for_update.add(opp[0]);
 
-
-
-                    // op.Run_Validation_Rule__c = true;
-                    // update op;
-                    // List<AcctSeed__Billing__c> bills = [SELECT Id, AcctSeed__Balance__c, AcctSeedERP__Sales_Order__c FROM AcctSeed__Billing__c WHERE AcctSeed__Type__c = 'Invoice' AND AcctSeed__Opportunity__c =: op.Id];
-                    // Decimal amount = 0.00;
-                    // for(AcctSeed__Billing__c b:bills){
-                    //     amount+=b.AcctSeed__Balance__c;
-                    // }
-                    // system.debug('amount: '+amount);
-                    // system.debug('trigger.old[0].AcctSeed__Balance__c'+trigger.old[0].AcctSeed__Balance__c);
-                    // op.Billing_Balances__c = amount - trigger.old[0].AcctSeed__Balance__c;
-                    // update op;
                 }
             } catch(Exception e){
                 if(so.size() > 0){
                     so[0].Billing_Balances__c = amount;
-                    update so;
+                    // update so;
+                    so_for_update.add(so[0]);
                 } 
             }
              
         }
-
 
         Integer i = 0;
         i++;
@@ -156,27 +143,19 @@ public class BillingBatchTrigger implements Database.Batchable<sObject>{
         i++;
         i++;
         i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
-        i++;
+        
         
     }
 
     public void finish(Database.BatchableContext bc){
+
+        for(Opportunity opp: opp_for_update){
+            opp.Run_Validation_Rule__c = true;
+        }
+        update opp_for_update;
+
+        update so_for_update;
+        
         System.debug('Fields on Opportunity and Sales Order record was updated successfully.');
     }
 }

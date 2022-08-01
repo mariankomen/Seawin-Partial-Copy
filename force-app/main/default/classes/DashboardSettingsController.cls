@@ -23,6 +23,8 @@ public with sharing class DashboardSettingsController {
         allDashboards.put('Accounting Dashboard', 'Accounting Dashboard USA');
         allDashboards.put('Sales Support Dashboard', 'Sales Support Dashboard');
 
+        allDashboards.put('Specified Dashboard', 'Specified Dashboard');
+
         selectedDashboards = new List<SelectOption>();
         availableDashboards = new List<SelectOption>();
         String userId = ApexPages.currentPage().getParameters().get('id');

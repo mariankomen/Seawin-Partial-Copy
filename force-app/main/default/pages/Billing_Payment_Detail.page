@@ -1,6 +1,11 @@
 <apex:page standardController="AcctSeed__Billing__c" extensions="Billing_Payment_Controller" title="{!AcctSeed__Billing__c.Name}" contentType="text/html;charset=utf-8" lightningStylesheets="true">
 
-
+<style type="text/css">
+    .rich_text_input {
+        width: 65% !important;
+        height: 35% !important;
+    }
+</style>
 <apex:form id="theForm">
 
     <apex:sectionHeader title="Billing" subtitle="Billing PDF" />
@@ -57,11 +62,20 @@
                     <apex:outputLabel value="Subject" />
                     <apex:inputText id="emailSubject" value="{!emailSubject}" style="width:65%" />
                 </apex:pageBlockSectionItem>
-                <apex:pageBlockSectionItem >
+                <apex:pageBlockSectionItem rendered="{!isHTML}">
+                    <apex:outputLabel value="Body" />
+                    <apex:inputTextarea id="emailBodyRich" value="{!templateBodyPreview}"
+                                        style="width:45%;line-height:1em;height:15em;"
+                                        richText="true"
+                                        styleClass='rich_text_input' 
+                                        />
+                    
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!!isHTML}">
                     <apex:outputLabel value="Body" />
                     <apex:inputTextarea id="emailBody" value="{!templateBodyPreview}"
-                                        style="width:65%;line-height:1em;height:7em;"
-                                        richText="{!templateBodyPreview}" />
+                                        style="width:45%;line-height:1em;height:15em;"
+                                        />
                 </apex:pageBlockSectionItem>
             </apex:pageBlockSection>
     </apex:pageBlock>

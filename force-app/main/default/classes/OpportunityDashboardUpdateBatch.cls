@@ -73,7 +73,9 @@ public class OpportunityDashboardUpdateBatch implements Database.Batchable<sObje
             opp_dashb.IsWon__c = opp.IsWon;
             opp_dashb.Last_Modified_By_Copy__c = opp.LastModifiedById;
             opp_dashb.RecordTypeName__c = opp.RecordType.Name;
-    
+            opp_dashb.Specified__c = opp.Specified_del__c;
+            opp_dashb.Sub_Stage__c = opp.Sub_Stage__c;
+
             /* Refferences */
             opp_dashb.Opportunity__c = opp.Id;                
             opp_dashb.LastModifiedDate_Copy__c = opp.LastModifiedDate;

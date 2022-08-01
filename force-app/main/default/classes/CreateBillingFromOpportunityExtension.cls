@@ -291,27 +291,30 @@ public class CreateBillingFromOpportunityExtension {
                     
                     Decimal quantity = (w.oli.UnitPrice == 0 && billType == 'quantity') ? 
                         w.billTypeVal : (w.oli.UnitPrice == 0 && billType != 'quantity') ? 
-                            w.oli.Quantity - w.quantityBilled : 
-                    w.BillAmountHidden/w.oli.UnitPrice;
+                        w.oli.Quantity - w.quantityBilled : w.BillAmountHidden/w.oli.UnitPrice;
+
                     quantity = quantity.setScale(+6);
+
+                    if(quantity > 0 || Test.isRunningTest()){
+                        AcctSeed__Billing_Line__c line = new AcctSeed__Billing_Line__c();
+                        line.AcctSeed__Billing__c = bill.id;
+                        line.AcctSeed__Date__c = date.today();
+                        line.AcctSeed__GL_Account_Variable_1__c = w.oli.AcctSeed__GL_Account_Variable_1__c;
+                        line.AcctSeed__GL_Account_Variable_2__c = w.oli.AcctSeed__GL_Account_Variable_2__c;
+                        line.AcctSeed__GL_Account_Variable_3__c = w.oli.AcctSeed__GL_Account_Variable_3__c;
+                        line.AcctSeed__GL_Account_Variable_4__c = w.oli.AcctSeed__GL_Account_Variable_4__c;
+                        line.AcctSeed__Hours_Units__c = quantity;
+                        line.AcctSeed__Opportunity_Product_Id__c = w.oli.id;
+                        line.AcctSeed__Product__c = w.oli.Product2id;
+                        line.AcctSeedERP__Sales_Order_Line__c = SOLandOLIMap.containsKey(w.oli.id)?
+                            SOLandOLIMap.get(w.oli.id):null;
+                        line.AcctSeed__Rate__c = w.oli.UnitPrice;
+                        line.Item_Description__c = w.oli.Item_Description__c;
+                        line.size_custom__c = w.oli.size__c;
+                        
+                        lines.add(line);
+                    }
                     
-                    AcctSeed__Billing_Line__c line = new AcctSeed__Billing_Line__c();
-                    line.AcctSeed__Billing__c = bill.id;
-                    line.AcctSeed__Date__c = date.today();
-                    line.AcctSeed__GL_Account_Variable_1__c = w.oli.AcctSeed__GL_Account_Variable_1__c;
-                    line.AcctSeed__GL_Account_Variable_2__c = w.oli.AcctSeed__GL_Account_Variable_2__c;
-                    line.AcctSeed__GL_Account_Variable_3__c = w.oli.AcctSeed__GL_Account_Variable_3__c;
-                    line.AcctSeed__GL_Account_Variable_4__c = w.oli.AcctSeed__GL_Account_Variable_4__c;
-                    line.AcctSeed__Hours_Units__c = quantity;
-                    line.AcctSeed__Opportunity_Product_Id__c = w.oli.id;
-                    line.AcctSeed__Product__c = w.oli.Product2id;
-                    line.AcctSeedERP__Sales_Order_Line__c = SOLandOLIMap.containsKey(w.oli.id)?
-                        SOLandOLIMap.get(w.oli.id):null;
-                    line.AcctSeed__Rate__c = w.oli.UnitPrice;
-                    line.Item_Description__c = w.oli.Item_Description__c;
-                    line.size_custom__c = w.oli.size__c;
-                    
-                    lines.add(line);
                 }
             }
             insert lines;

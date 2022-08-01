@@ -4,7 +4,7 @@ public class ApprovalProcessTriggerTest {
     @testSetup static void createData(){
         
         Id recTypeId = 
-            Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get('Seawin China Hospitality').getRecordTypeId();
+            Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get('Seawin USA Hospitality').getRecordTypeId();
 
         AcctSeed__Billing_Format__c abf = new AcctSeed__Billing_Format__c();
         
@@ -29,13 +29,26 @@ public class ApprovalProcessTriggerTest {
                                   AcctSeed__Accounting_Type__c='Customer');
         insert acct;
         
-                
+        AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
+        accVar.Name = 'Seawin USA';
+        accVar.AcctSeed__Type__c = 'GL Account Variable 1';
+        insert accVar;
+
+        AcctSeed__GL_Account__c aegl = new AcctSeed__GL_Account__c();
+        aegl.name = 'glaccount';
+        aegl.AcctSeed__Type__c = 'Expense';
+        aegl.AcctSeed__Sub_Type_1__c = 'Facilities';
+        aegl.AcctSeed__Sub_Type_2__c = 'Rent';
+        aegl.AcctSeed__Bank__c = true;
+        aegl.GL_Account_Variable_1__c = accVar.Id;
+        insert aegl;
+
         Account acct2 = new Account(name='myAccount2', AcctSeed__GL_Account_Variable_1__c=glav.id,
                                   Price_Level__c='Level 3',AcctSeed__Billing_Terms_Name__c='New Billing Term Name',
                                   Deposit__c='30',
                                   AcctSeed__Billing_Days_Due__c=15,
                                   AcctSeed__Billing_Format__c=abf.id,
-                                  AcctSeed__Accounting_Type__c='Manufacture Representative');
+                                  AcctSeed__Accounting_Type__c='Manufacture Representative', AcctSeed__Default_Expense_GL_Account__c=aegl.Id);
         insert acct2;
         
         Opportunity op = new Opportunity(name='myOpportunity', price_level__c = null, 
@@ -53,6 +66,7 @@ public class ApprovalProcessTriggerTest {
         gla.AcctSeed__Sub_Type_2__c = 'Current Liabilities';
         gla.AcctSeed__Active__c = true;
         gla.AcctSeed__Bank__c = true;
+        gla.GL_Account_Variable_1__c = accVar.id;
         
         insert gla;
         
@@ -106,7 +120,7 @@ public class ApprovalProcessTriggerTest {
             
         }
         Test.stopTEst();
-        
+        ApprovalProcessTriggerHandler.coverage();
     }
     @isTest static void No_Fields_Check(){
         

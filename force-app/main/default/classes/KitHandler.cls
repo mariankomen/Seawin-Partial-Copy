@@ -58,7 +58,7 @@ public class KitHandler {
                     
                 }
                 
-                update products;
+                Database.update(products,false);
             }
         }
     }

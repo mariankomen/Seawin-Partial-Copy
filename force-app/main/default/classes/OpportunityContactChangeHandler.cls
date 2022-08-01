@@ -51,4 +51,13 @@ public class OpportunityContactChangeHandler {
             }
         }
     }
+
+
+    public static void handleChangeSpecified(List<Opportunity> opportunities){
+
+        for(Opportunity opp: opportunities){
+            if(opp.Specified_Rep__c == null && opp.Referral_Sales_Rep__c == null) opp.Specified_del__c = false;
+        }
+
+    }
 }

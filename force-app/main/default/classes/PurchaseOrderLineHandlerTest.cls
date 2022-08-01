@@ -3,8 +3,8 @@ public class PurchaseOrderLineHandlerTest
 {
     static testMethod void testMethod1() 
  	{
-        // Profile pf = [Select Id from profile where Name = 'System Administrator']; 
-        Profile pf = [Select Id from profile where Name = 'Sales Rep'];
+        Profile pf = [Select Id from profile where Name = 'System Administrator']; 
+      //   Profile pf = [Select Id from profile where Name = 'Sales Rep'];
          
         String orgId = UserInfo.getOrganizationId(); 
         String dateString = String.valueof(Datetime.now()).replace(' ','').replace(':','').replace('-','') ;
@@ -53,13 +53,18 @@ public class PurchaseOrderLineHandlerTest
         
         insert cont;
         
+        AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
+        accVar.Name = 'Seawin USA';
+        accVar.AcctSeed__Type__c = 'GL Account Variable 1';
+        insert accVar;
+
         AcctSeed__GL_Account__c aegl = new AcctSeed__GL_Account__c();
         aegl.name = 'glaccount';
         aegl.AcctSeed__Type__c = 'Expense';
         aegl.AcctSeed__Sub_Type_1__c = 'Facilities';
         aegl.AcctSeed__Sub_Type_2__c = 'Rent';
         aegl.AcctSeed__Bank__c = true;
-        
+        aegl.GL_Account_Variable_1__c = accVar.Id;
         insert aegl;
         
         // create product
@@ -86,7 +91,7 @@ public class PurchaseOrderLineHandlerTest
         opp.StageName = 'Follow up';
         opp.CloseDate = system.today();
         opp.ContactPerson__c = cont.Id;
-        
+        opp.GL_Account_Variable_1__c = accVar.Id;
         insert opp;
         
         // create pricebook2
@@ -165,8 +170,8 @@ public class PurchaseOrderLineHandlerTest
         salesorder.AcctSeedERP__Opportunity__c = opp.Id;
         salesorder.Contact__c = cont.Id;
         salesorder.AcctSeedERP__Status__c = 'Open';
-       	salesorder.AcctSeedERP__Ledger__c = ledger.id;
-
+        salesorder.AcctSeedERP__Ledger__c = ledger.id;
+        salesorder.GL_Account_Variable_1__c = accVar.Id;
         insert salesorder;
         
         // create a sales order
@@ -186,7 +191,7 @@ public class PurchaseOrderLineHandlerTest
         po.AcctSeedERP__Purchase_Order_Format__c = abf.id;
         po.AcctSeedERP__Order_Date__c = Date.today();
         po.AcctSeedERP__Ledger__c = ledger.id;
-        
+        po.GL_Account_Variable_1__c = accVar.Id;
         insert po;
         
         AcctSeedERP__Purchase_Order_Line__c plines = new AcctSeedERP__Purchase_Order_Line__c();
@@ -198,6 +203,8 @@ public class PurchaseOrderLineHandlerTest
 
         insert plines;
         
+        plines.AcctSeedERP__Quantity__c = 5;
+        update plines;
         solines.AcctSeedERP__Purchase_Order_Line__c = plines.id;
         update solines;
     }

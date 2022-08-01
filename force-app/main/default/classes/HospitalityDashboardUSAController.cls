@@ -1542,7 +1542,6 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
                                                             GROUP BY Opportunity_StageName__c];
         system.debug('opp_dashboard_dataopp_dashboard_data :'+JSON.serialize(opp_dashboard_data));
         return opp_dashboard_data;
-
         // Set<string> All_SalesReps = getAll_SalesReps();
 
         // map<string, List<ValuesWrapper>> ActiveOpptyByStageMapLocal = new Map<string, List<ValuesWrapper>>();
@@ -2406,6 +2405,253 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
         return NewCustomersLast12MonthsByTypeMapLocal;
     }
 
+    //NEW GRAPHS
+
+    @RemoteAction
+    @ReadOnly
+    global static List<AggregateResult> Company_Total_Pre_Order_Pipeline_Last_12_Months() {
+        /*****************************************************************************************************
+        *   @dashboard name  : Company Total Pipeline Last 12 Months
+        *   @chart name      : Company_Total_Pipeline_SMD_USA
+        *   @description     : Preparing data for frontend rendering
+        *   @author          : Marian Lyzhychka ©Peeklogic
+        *****************************************************************************************************/
+        Set<string> All_SalesReps = getAll_SalesReps();
+
+        Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
+        
+        List<AggregateResult> opportunity_data = [
+            SELECT  
+            SUM(Amount__c) amount, 
+            calendar_month(Inserting_Date__c) month,
+            calendar_year(Inserting_Date__c) year
+            FROM Opportunity_Dashboard__c 
+            WHERE 
+            Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
+            AND Opportunity_Forecast_Category__c = 'Pipeline'
+            AND Opportunity_StageName__c = 'Pre-Order'
+            AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+            AND Amount__c != null
+            AND Sal_Rep_Team_Name__c IN:All_SalesReps
+            
+            GROUP BY calendar_year(Inserting_Date__c), calendar_month(Inserting_Date__c)
+        ];
+        system.debug(JSON.serialize(opportunity_data));
+        
+        return opportunity_data;
+    }
+
+    @RemoteAction
+    @ReadOnly
+    global static Map<String, List<AggregateResult>> Sales_Reps_Total_Pipeline_Pre_Order_Last_12_Months() {
+        /*****************************************************************************************************
+        *   @dashboard name  : Pipeline Preorder Last 12 Months by Sales Rep / Team
+        *   @chart name      : Sales_Reps_Total_Pipeline_SMD_USA
+        *   @description     : Preparing data for frontend rendering
+        *   @author          : Marian Lyzhychka ©Peeklogic
+        *****************************************************************************************************/
+        Set<string> All_SalesReps = getAll_SalesReps();
+
+        Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
+        
+        List<AggregateResult> opp_dashboard_data = [SELECT  SUM(Amount__c) amount, 
+                                                            calendar_month(Inserting_Date__c) month,
+                                                            calendar_year(Inserting_Date__c) year,
+                                                            Sales_Rep_Team__r.Name sal_rep
+                                                            FROM Opportunity_Dashboard__c
+                                                            WHERE Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
+                                                            AND Opportunity_Forecast_Category__c = 'Pipeline'
+                                                            AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+                                                            AND Amount__c != null
+                                                            AND Opportunity_StageName__c = 'Pre-Order'
+                                                            AND Sal_Rep_Team_Name__c IN:All_SalesReps
+                                                            GROUP BY Sales_Rep_Team__r.Name, 
+                                                                    calendar_year(Inserting_Date__c), 
+                                                                    calendar_month(Inserting_Date__c)];
+
+        Map<String, List<AggregateResult>> sal_rep_month = new Map<String, List<AggregateResult>>();
+        
+        for(AggregateResult ar:opp_dashboard_data){
+            String salRepName = String.valueOf(ar.get('sal_rep'));
+            if(!sal_rep_month.containsKey(salRepName)){
+                List<AggregateResult> sal_rep_data = new List<AggregateResult>();
+                sal_rep_data.add(ar);
+                sal_rep_month.put(salRepName,sal_rep_data);
+            } else{
+                sal_rep_month.get(salRepName).add(ar);
+            }
+        }
+
+        return sal_rep_month;
+    }
+
+
+    @RemoteAction
+    @ReadOnly
+    global static Map<String, List<AggregateResult>> Pipeline_Pre_Order_Last_12_Months_By_Lead_Source() {
+        /*****************************************************************************************************
+        *   @dashboard name  : Pipeline Last 12 Months By Lead Source
+        *   @chart name      : Total_Pipeline_By_Lead_Source_SMD_USA
+        *   @description     : Preparing data for frontend rendering
+        *   @author          : Marian Lyzhychka ©Peeklogic
+        *****************************************************************************************************/
+        Set<string> All_SalesReps = getAll_SalesReps();
+
+        Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
+        
+        List<AggregateResult> opp_dashboard_data = [SELECT  SUM(Amount__c) amount, 
+                                                            calendar_month(Inserting_Date__c) month,
+                                                            calendar_year(Inserting_Date__c) year,
+                                                            Opportunity_Lead_Source__c lead_source
+                                                            FROM Opportunity_Dashboard__c
+                                                            WHERE Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
+                                                            AND Opportunity_Forecast_Category__c = 'Pipeline'
+                                                            AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+                                                            AND Amount__c != null
+                                                            AND Opportunity_StageName__c = 'Pre-Order'
+                                                            AND Sal_Rep_Team_Name__c IN:All_SalesReps
+                                                            GROUP BY Opportunity_Lead_Source__c, 
+                                                                    calendar_year(Inserting_Date__c), 
+                                                                    calendar_month(Inserting_Date__c)];
+
+            Map<String, List<AggregateResult>> lead_source_month = new Map<String, List<AggregateResult>>();
+            
+            for(AggregateResult ar:opp_dashboard_data){
+                String lead_source = String.valueOf(ar.get('lead_source')); 
+                if(!lead_source_month.containsKey(lead_source)){
+                    List<AggregateResult> sal_rep_data = new List<AggregateResult>();
+                    sal_rep_data.add(ar);
+                    lead_source_month.put(lead_source,sal_rep_data);
+                } else{
+                    lead_source_month.get(lead_source).add(ar);
+                }
+            }
+
+        return lead_source_month;
+    }
+
+    //Negotiation Graphs
+    @RemoteAction
+    @ReadOnly
+    global static List<AggregateResult> Company_Total_Negotiation_Pipeline_Last_12_Months() {
+        /*****************************************************************************************************
+        *   @dashboard name  : Negotiation Pipeline Last 12 Months
+        *   @chart name      : Company_Total_Pipeline_SMD_USA
+        *   @description     : Preparing data for frontend rendering
+        *   @author          : Marian Lyzhychka ©Peeklogic
+        *****************************************************************************************************/
+        Set<string> All_SalesReps = getAll_SalesReps();
+
+        Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
+        
+        List<AggregateResult> opportunity_data = [
+            SELECT  
+            SUM(Amount__c) amount, 
+            calendar_month(Inserting_Date__c) month,
+            calendar_year(Inserting_Date__c) year
+            FROM Opportunity_Dashboard__c 
+            WHERE 
+            Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
+            AND Opportunity_Forecast_Category__c = 'Pipeline'
+            AND Opportunity_StageName__c = 'Negotiation'
+            AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+            AND Amount__c != null
+            AND Sal_Rep_Team_Name__c IN:All_SalesReps
+            
+            GROUP BY calendar_year(Inserting_Date__c), calendar_month(Inserting_Date__c)
+        ];
+        system.debug(JSON.serialize(opportunity_data));
+        
+        return opportunity_data;
+    }
+
+    @RemoteAction
+    @ReadOnly
+    global static Map<String, List<AggregateResult>> Sales_Reps_Total_Pipeline_Negotiation_Last_12_Months() {
+        /*****************************************************************************************************
+        *   @dashboard name  : Negotiation Pipeline Last 12 Months by Sales Rep / Team
+        *   @chart name      : Sales_Reps_Total_Pipeline_SMD_USA
+        *   @description     : Preparing data for frontend rendering
+        *   @author          : Marian Lyzhychka ©Peeklogic
+        *****************************************************************************************************/
+        Set<string> All_SalesReps = getAll_SalesReps();
+
+        Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
+        
+        List<AggregateResult> opp_dashboard_data = [SELECT  SUM(Amount__c) amount, 
+                                                            calendar_month(Inserting_Date__c) month,
+                                                            calendar_year(Inserting_Date__c) year,
+                                                            Sales_Rep_Team__r.Name sal_rep
+                                                            FROM Opportunity_Dashboard__c
+                                                            WHERE Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
+                                                            AND Opportunity_Forecast_Category__c = 'Pipeline'
+                                                            AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+                                                            AND Amount__c != null
+                                                            AND Opportunity_StageName__c = 'Negotiation'
+                                                            AND Sal_Rep_Team_Name__c IN:All_SalesReps
+                                                            GROUP BY Sales_Rep_Team__r.Name, 
+                                                                    calendar_year(Inserting_Date__c), 
+                                                                    calendar_month(Inserting_Date__c)];
+
+        Map<String, List<AggregateResult>> sal_rep_month = new Map<String, List<AggregateResult>>();
+        
+        for(AggregateResult ar:opp_dashboard_data){
+            String salRepName = String.valueOf(ar.get('sal_rep'));
+            if(!sal_rep_month.containsKey(salRepName)){
+                List<AggregateResult> sal_rep_data = new List<AggregateResult>();
+                sal_rep_data.add(ar);
+                sal_rep_month.put(salRepName,sal_rep_data);
+            } else{
+                sal_rep_month.get(salRepName).add(ar);
+            }
+        }
+
+        return sal_rep_month;
+    }
+
+    @RemoteAction
+    @ReadOnly
+    global static Map<String, List<AggregateResult>> Pipeline_Negotiation_Last_12_Months_By_Lead_Source() {
+        /*****************************************************************************************************
+        *   @dashboard name  : Negotiation Pipeline Last 12 Months By Lead Source
+        *   @chart name      : Total_Pipeline_By_Lead_Source_SMD_USA
+        *   @description     : Preparing data for frontend rendering
+        *   @author          : Marian Lyzhychka ©Peeklogic
+        *****************************************************************************************************/
+        Set<string> All_SalesReps = getAll_SalesReps();
+
+        Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
+        
+        List<AggregateResult> opp_dashboard_data = [SELECT  SUM(Amount__c) amount, 
+                                                            calendar_month(Inserting_Date__c) month,
+                                                            calendar_year(Inserting_Date__c) year,
+                                                            Opportunity_Lead_Source__c lead_source
+                                                            FROM Opportunity_Dashboard__c
+                                                            WHERE Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
+                                                            AND Opportunity_Forecast_Category__c = 'Pipeline'
+                                                            AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+                                                            AND Amount__c != null
+                                                            AND Opportunity_StageName__c = 'Negotiation'
+                                                            AND Sal_Rep_Team_Name__c IN:All_SalesReps
+                                                            GROUP BY Opportunity_Lead_Source__c, 
+                                                                    calendar_year(Inserting_Date__c), 
+                                                                    calendar_month(Inserting_Date__c)];
+
+            Map<String, List<AggregateResult>> lead_source_month = new Map<String, List<AggregateResult>>();
+            
+            for(AggregateResult ar:opp_dashboard_data){
+                String lead_source = String.valueOf(ar.get('lead_source')); 
+                if(!lead_source_month.containsKey(lead_source)){
+                    List<AggregateResult> sal_rep_data = new List<AggregateResult>();
+                    sal_rep_data.add(ar);
+                    lead_source_month.put(lead_source,sal_rep_data);
+                } else{
+                    lead_source_month.get(lead_source).add(ar);
+                }
+            }
+
+        return lead_source_month;
+    }
     public HospitalityDashboardUSAController() {
 
     }

@@ -31,7 +31,7 @@ public class OpportunityContactChangeHandlerTest {
         
         Opportunity op = new Opportunity(name='myOpportunity', price_level__c = null, stagename='Closed Won',
                                          contactperson__c = contct1.id,
-                                         CloseDate=date.today() + 60, accountid=acct.id);
+                                         CloseDate=date.today() + 60, accountid=acct.id, GL_Account_Variable_1__c=glav.Id);
         
         insert op;
         

@@ -23,4 +23,5 @@ public with sharing class ShipmentCreditOrderLineTriggerHandler {
             }
         }                                                                             
     }
+
 }

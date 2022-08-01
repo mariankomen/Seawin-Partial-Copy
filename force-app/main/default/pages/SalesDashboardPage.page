@@ -1035,30 +1035,71 @@
     
     Visualforce.remoting.timeout = 120000;
     
+    function getMapLast12MonthReversed(){
+        let date = new Date();
+        date.setDate(1);
+        let year_month_obj = {};
+        for(let month = 1; month <= 12; month++){
+            let index = 12 - month;
+            let iteration_month = date.getMonth() + 1;
+            let iteration_year = date.getFullYear();
+
+            year_month_obj[index] = {
+                month: iteration_month,
+                year: iteration_year
+            }
+            date.setMonth(date.getMonth() - 1);
+        }
+        let new_map = {}
+        let index = 0
+        for(let i = 11; i>=0; i--){
+            new_map[index] = year_month_obj[i]
+            index++
+        }
+        return new_map;
+    }
+
     Visualforce.remoting.Manager.invokeAction(
         '{!$RemoteAction.SalesDashboardController.Monthly_Sales_Last_12_Months}',
         function(result, event){
             
             if (event.status) {
-                for (var key in result) {
-                    mainArray = new Array();
-                    
-                    result[key].forEach(buildarray);
-                    
-                    function buildarray(item, index) {
-                        
-                        subArray = new Array();
-                        
-                        subArray.push(item.valueindex, item.amount);
-                        mainArray.push(subArray);
+                const date_map = getMapLast12MonthReversed()
+                const rendered_data = []
+                const sal_rep_map = {}
+                result.forEach(el => {
+                    if(!sal_rep_map[el.name]){
+                        sal_rep_map[el.name] = [el]
+                    }else{
+                        sal_rep_map[el.name].push(el)
                     }
-                    
-                    midArray = {name:key, data:mainArray, custom:key};
-                    
-                    MonthlySalesData.push(midArray);
+                })
+                for(let char in sal_rep_map){
+                    let res_obj_item = {
+                        name: char,
+                        data: [],
+                        custom: char
+                    }
+                    sal_rep_map[char].forEach(el => {
+                        for(let date_item in date_map){
+                            let item = date_map[date_item]
+                            if(el.month === item.month && el.year === item.year){
+                                console.log('ELEMENT: ',el)
+                                console.log('ITEM: ',item)
+                                console.log(date_item)
+                                console.log('---------')
+                                res_obj_item.data.push([
+                                    +date_item, el.c
+                                ])
+                            }
+                        }
+                    })
+                    res_obj_item.data.sort(function(a, b){
+                        return a[0] - b[0]
+                    })
+                    rendered_data.push(res_obj_item)
                 }
-                
-                RenderMonthlySalesLast12Months(MonthlySalesData);
+                RenderMonthlySalesLast12Months(rendered_data);
             } else if (event.type === 'exception') {
                 
                 console.log('Exception has occured in Monthly Sales Last 12 Months...');
@@ -1214,7 +1255,7 @@
                     midArray = {name:key, data:mainArray, custom:"{!YEAR(TODAY())}"};
                     SalesForecastPipelineByLeadSourceData.push(midArray); 
                 }
-                
+                console.log('SalesForecastPipelineByLeadSourceData: ',JSON.stringify(SalesForecastPipelineByLeadSourceData))
                 RenderChartSalesForecastLineByLeadSource(SalesForecastPipelineByLeadSourceData);
             } else if (event.type === 'exception') {
                 

@@ -27,7 +27,7 @@ public with sharing class Billing_Payment_Controller_Test {
 
         AcctSeed__Accounting_Variable__c av = new AcctSeed__Accounting_Variable__c();
         
-        av.Name = 'GL Account Variable Test';
+        av.Name = 'Seawin USA';
         av.AcctSeed__Active__c = true;
         av.AcctSeed__Type__c = 'GL Account Variable 1';
         
@@ -164,10 +164,10 @@ public with sharing class Billing_Payment_Controller_Test {
         
         AcctSeed__Billing_Format__c abf = new AcctSeed__Billing_Format__c();
         
-        abf.Name = 'newPDF Format';
-        abf.AcctSeed__Type__c = 'Purchase Order';
-        abf.AcctSeed__Visualforce_PDF_Page__c = 'BillingActivityStatementPDF';
-        abf.AcctSeed__Default_Email_Template__c = 'Activity_Statement_Email_Template';
+        abf.Name = 'Invoice with Payment Link';
+        abf.AcctSeed__Type__c = 'Billing';
+        abf.AcctSeed__Visualforce_PDF_Page__c = 'BillingInvoicePDF';
+        abf.AcctSeed__Default_Email_Template__c = 'Billing_Email_Template_Payment_Link';
         
         insert abf;
         AcctSeed__GL_Account__c aegl_c = new AcctSeed__GL_Account__c();

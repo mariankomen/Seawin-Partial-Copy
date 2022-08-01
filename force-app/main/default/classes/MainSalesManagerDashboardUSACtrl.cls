@@ -581,6 +581,8 @@ public virtual class MainSalesManagerDashboardUSACtrl {
 
         return All_SalesReps;
     }
+
+
     
     public static List<Sales_rep__c> AllSalesRepsList(){
 
@@ -720,6 +722,21 @@ public virtual class MainSalesManagerDashboardUSACtrl {
 
     }
 
+    public static Set<String> getAll_Specified(){
+        Set<String> All_Specified_Names = new Set<String>();
+
+        List<AggregateResult> accList = new List<AggregateResult>([SELECT Name FROM Account where AcctSeed__Accounting_Type__c='Sales Represantative' group by Name]);
+
+        if(accList.size() > 0){
+            for(AggregateResult opp: accList){
+                string spec_name = (string) opp.get('Name');
+                spec_name = String.isNotEmpty(spec_name) ? spec_name.capitalize () : spec_name;
+                All_Specified_Names.add(spec_name);
+            }
+        }
+
+        return All_Specified_Names;
+    }
     public static Set<string> getAll_Account_Types(){
 
         Set<string> All_Account_Types = new Set<string>();

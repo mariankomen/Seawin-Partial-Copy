@@ -173,6 +173,59 @@
             
 
             <!-- END OPP DASHBOARD -->
+
+            <!-- START SO CUSTOM DASHBOARD -->
+            
+            <apex:variable value="{!SerialNumber}" var="k"/>
+            <apex:pageBlockTable id="soCustomDashb" value="{!so_dashboards}" var="o" rendered="{!so_dashboards.size > 0}">
+                <apex:column headerValue="#">
+                    <apex:outputText value="{!k + 1}"></apex:outputText>
+                    <apex:variable value="{!k + 1}" var="k"/>
+                </apex:column>
+                <apex:column headerValue="Sales Order Name ⇅">
+                    <apex:outputLink value="/{!o.Sales_Order__c}">{!o.Sales_Order__r.Name}</apex:outputLink>
+                </apex:column>
+                <apex:column headerValue="Lead Source ⇅">
+                    <apex:outputField value="{!o.LeadSource__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Opportunity  ⇅">
+                    <apex:outputField value="{!o.Opportunity__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Customer ⇅" >
+                    <apex:outputField value="{!o.Customer__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Status ⇅" >
+                    <apex:outputText value="{!o.Status__c}"></apex:outputText>
+                </apex:column>
+                <apex:column headerValue="Total ⇅" >
+                    <apex:outputField value="{!o.Total_With_Fee__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Billed_Amount__c ⇅" >
+                    <apex:outputField value="{!o.Billed_Amount__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Paid Amount ⇅">
+                    <apex:outputField value="{!o.Paid_Amount__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Balance__c ⇅" >
+                    <apex:outputField value="{!o.Balance__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Sales Rep ⇅" rendered="{!ShowFC}">
+                    <apex:outputField value="{!o.Sales_Rep_Team__r.Name}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Manufacture Rep ⇅">
+                    <apex:outputField value="{!o.Manufacturer_Rep__r.Name}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Created Date ⇅">
+                    <apex:outputText value="{0, date, M'/'d'/'yyyy}">
+                        <apex:param value="{!o.Sales_Order__r.CreatedDate}" /> 
+                    </apex:outputText>
+                </apex:column>
+
+                
+            </apex:pageBlockTable>
+            
+
+            <!-- END SO CUSTOM DASHBOARD -->
             <apex:variable value="{!SerialNumber}" var="k"/>
             <apex:pageBlockTable id="opptyblock" value="{!Opportunities}" var="o" style="width:100%" rendered="{!Opportunities.size > 0 || list_opps_big.size > 0}">
                 <apex:column headerValue="#">
@@ -455,7 +508,7 @@
                                         top: 35px; 
                                         float: right; 
                                         right: 75px;"
-                                                rendered="{!opp_dashboards.size > 0 || list_opps_big.size > 0}">
+                                                rendered="{!opp_dashboards.size > 0 || list_opps_big.size > 0 || so_dashboards.size > 0}">
                     <apex:outputLabel value="Month End Total: " 
                                         style="font-weight: bold; margin-right: 10px;">
                     </apex:outputLabel>
@@ -466,7 +519,7 @@
 
 
             <apex:outputPanel style="position: relative; top: 20px;"
-            rendered="{!opp_dashboards.size == 0}">
+            rendered="{!opp_dashboards.size == 0 && so_dashboards.size == 0}">
                 <apex:outputtext style="font-weight: bold;" styleclass="detailText"
                                  value="Page {!pageNumber} of {!TotalPages}" rendered="{!TotalPages > 0}"></apex:outputtext>
                 <apex:panelGrid columns="5"> 
@@ -504,7 +557,7 @@
                                                      Opportunities.size < 1 &&
                                                      accounts.size < 1 &&
                                                      tasks.size < 1 && billings.size < 1
-                                                     && leads.size < 1 && opp_dashboards.size < 1}"></apex:pageMessage>
+                                                     && leads.size < 1 && opp_dashboards.size < 1 && so_dashboards.size < 1}"></apex:pageMessage>
         </apex:pageBlock>
     </apex:form>
 

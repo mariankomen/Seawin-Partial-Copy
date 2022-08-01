@@ -43,6 +43,7 @@
         }
     </style>
     <apex:form id="OpportunityChangeForm">
+        
         <apex:outputPanel rendered="{!OpportunityHasChanged}">
             <div class="message infoM2" role="alert">
                 <table border="0" cellpadding="0" cellspacing="0" class="messageTable" style="padding:0px;margin:0px;">
@@ -679,9 +680,106 @@
     
     </script>
     <script> 
+    $('#CloneMenu a.menuButtonMenuLink').click(function(e){
+        /*
+                    var OriginalCloneURI = e.target.href.split(".com/")[1];
+                    window.location.replace( 
+                        "/apex/OpportunitySalesRepPage?oppId={!Opportunity.Id}&retURL={!Opportunity.Id}&continue=/"+
+                        OriginalCloneURI);
+                    */
+        // var whole_url = new URL(e.target.href);
+        
+        // var products = 'no';
+        // if(whole_url.searchParams.has("cloneli")) products = 'yes';
+        
+        // var comUrl = "{!$User.ContactId}" != "" ? "/sales" : "";
+        
+        // window.location.replace(comUrl +  
+        //                         "/apex/OpportunitySalesRepPage?oppId={!Opportunity.Id}&createproducts="+'zasdasda'+
+        //                         "&retURL={!Opportunity.Id}&continue="+
+        //                         "/apex/CloneOpportunityPage?id={!Opportunity.id}");
+        
+        // e.preventDefault();
+    });
+
     
+        $('#CloneMenu a.menuButtonMenuLink').each(function(){
+            var productss = 'no';
+            let target_url = this.href + ''
+            console.log('volodymyt 154: ',target_url)
+            if(target_url.includes("cloneli")){
+                productss = 'yes';
+            } 
+            console.log('volodya pr: ',products)
+            console.log('volod this; ',this)
+            var comUrl = "{!$User.ContactId}" != "" ? "/sales" : "";
+            // products = 'yes'
+            this.href = comUrl +  
+                                    "/apex/OpportunitySalesRepPage?oppId={!Opportunity.Id}&createproducts="+productss+
+                                    "&retURL={!Opportunity.Id}&continue="+
+                                    "/apex/CloneOpportunityPage?id={!Opportunity.id}"
+        })
+    
+
     </script>
     <script>
+        console.log(4)
+
+    if(document.getElementById('CloneButton')){
+        document.getElementById('CloneButton').click()
+
+        //Communirt override
+        $('#CloneMenu > a').each(function () {
+            var products = 'no';
+            let target_url = this.href + ''
+            console.log(target_url)
+            if(target_url.includes("cloneli")){
+                products = 'yes';
+            } 
+            console.log(products)
+            var comUrl = "{!$User.ContactId}" != "" ? "/sales" : "";
+            // products = 'yes'
+            this.href = comUrl +  
+                                    "/apex/OpportunitySalesRepPage?oppId={!Opportunity.Id}&createproducts="+products+
+                                    "&retURL={!Opportunity.Id}&continue="+
+                                    "/apex/CloneOpportunityPage?id={!Opportunity.id}"
+        });
+
+        setTimeout(() => {
+            document.getElementById('CloneButton').click()
+
+        }, 300)
+    }
+    
+
+    //Homepageoverride not community
+    setTimeout(() => {
+        $('#CloneSelect > option').each(function () {
+            console.log(this.value)
+
+            if(this.value+'' !== '#'){
+                var products = 'no';
+                let target_url = this.value + ''
+                if(target_url.includes("cloneli")){
+                    products = 'yes';
+                } 
+                var comUrl = "{!$User.ContactId}" != "" ? "/sales" : "";
+
+                this.value = comUrl +  
+                                        "/apex/OpportunitySalesRepPage?oppId={!Opportunity.Id}&createproducts="+products+
+                                        "&retURL={!Opportunity.Id}&continue="+
+                                        "/apex/CloneOpportunityPage?id={!Opportunity.id}"
+            }
+            
+        })
+    },1000)
+    
+
+
+
+
+
+
     $("input[type=button][name='clone']")[0].onclick = null;
     $("input[type=button][name='clone']").click(function(e){
         
@@ -692,10 +790,14 @@
                                 "/apex/CloneOpportunityPage?id={!Opportunity.id}");
         e.preventDefault();
     });
+    console.log(44)
+    console.log($("select[name='CloneSelect']").options)
+    console.log(45)
     </script>
     
     <script>
         $("#opportunitypage_maindetailform_{!LEFT(Opportunity.id,15)}_RelatedLineItemList_body").find("a[href^='/apex/InventoryInformationPage']").parent('td').css('text-align', 'right')
+    
     </script>
     
 </apex:page>

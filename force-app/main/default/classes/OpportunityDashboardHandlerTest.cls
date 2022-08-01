@@ -36,6 +36,9 @@ public with sharing class OpportunityDashboardHandlerTest {
         opp.GL_Account_Variable_1__c = accVar.Id;
         
         insert opp;
+
+        opp.Name = 'test';
+        update opp;
     }
 
 

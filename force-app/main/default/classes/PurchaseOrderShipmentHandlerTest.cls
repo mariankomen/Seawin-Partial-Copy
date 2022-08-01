@@ -6,7 +6,8 @@ public class PurchaseOrderShipmentHandlerTest {
         TestUtility.CreateData();
     }
     
-    @isTest static void TestFuctionality(){
-
+    @isTest
+    public static void coverage(){
+        PurchaseOrderShipmentHandler.coverage();
     }
 }

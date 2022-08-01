@@ -53,10 +53,12 @@ public class PurchaseOrderSalesProcessPath {
         string stageNameIs = ApexPages.currentPage().getParameters().get('stageNameIs');
         
         
-        if(stageNameIs == 'Received'){
-            shouldRedirect = true;
-            redirectUrl = communityUrl + '/apex/PurchaseOrderReceivePage?scontrolCaching=1&id='+PO.id;}else if(stageNameIs == 'Partially Received'){shouldRedirect = true;redirectUrl = '/apex/PurchaseOrderReceivePage?scontrolCaching=1&id='+PO.id;
-        }
+        // if(stageNameIs == 'Received'){
+        //     shouldRedirect = true;
+        //     redirectUrl = communityUrl + '/apex/PurchaseOrderReceivePage?scontrolCaching=1&id='+PO.id;
+        // }else if(stageNameIs == 'Partially Received'){
+        //     shouldRedirect = true;redirectUrl = '/apex/PurchaseOrderReceivePage?scontrolCaching=1&id='+PO.id;
+        // }
         
         
         if(stageNameis != null && stageNameIs != PO.Stage__c || Test.isRunningTest()){

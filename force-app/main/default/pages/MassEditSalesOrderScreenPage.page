@@ -58,7 +58,7 @@
             <apex:pageBlockSection title="Sales Order Lines" id="pbs" collapsible="false" rendered="{!visible}">
                 <apex:pageBlockTable value="{!lines}" var="line"  id='main_table'> 
                     <apex:column style='width: 75px;'>
-                        <apex:commandLink value="Delete" action="{!TrashIt}">
+                        <apex:commandLink value="Delete" action="{!TrashIt}" >
                             <apex:param name="solId" value="{!line.id}"/>
                         </apex:commandLink>
                     </apex:column> 
@@ -72,16 +72,19 @@
                     <apex:column headervalue="Product Code">
                         <apex:outputText value="{!line.ProductCode__c}"></apex:outputText>
                     </apex:column>
+                    
+                    <apex:column headervalue="Size">
+                        <apex:inputField value="{!line.Size__c}" rendered="{!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:inputField>
+                        <apex:outputText value="{!line.Size__c}" rendered="{!!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:outputText>
+                    </apex:column>
+
                     <apex:column headervalue="Item Description" style="width:250px" >
 
                         <apex:inputField value="{!line.Item_Description__c}" rendered="{!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:inputField>
                         <apex:outputText value="{!line.Item_Description__c}" rendered="{!!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:outputText>
 
                     </apex:column>
-                    <apex:column headervalue="Size">
-                        <apex:inputField value="{!line.Size__c}" rendered="{!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:inputField>
-                        <apex:outputText value="{!line.Size__c}" rendered="{!!line.AcctSeedERP__Product__r.Allow_Product_Description_Change__c}"></apex:outputText>
-                    </apex:column>
+                    
                     <apex:column headervalue="Quantity">
                         <apex:outputPanel id="quantity_field">
                             <apex:inputField value="{!line.AcctSeedERP__Quantity_Ordered__c}" html-min="1" rendered="{!!line.Kit_Children__c && !hasBillings}">

@@ -1,28 +1,31 @@
 public with sharing class CreditOrderLineTriggerHandler {
     
 
-    public static void insertExecute(List<Credit_Order_Line__c> trigger_new){
-        Map<Id,Id> inventory_balance_map = getInventoryBalanceMap();
+    public static void beforeUpdateExtension(List<Credit_Order_Line__c> updatable){
+        Set<Id> credit_order_ids = getSetFromListHepler(updatable);
 
-        // 
-    }
-
-    public static void updateExecute(){
-
-    }
-
-    public static void deleteExecute(){
-
-    }
-
-
-    public static Map<Id,Id> getInventoryBalanceMap(){
-        
-        List<AcctSeedERP__Inventory_Balance__c> inventory_balance = [SELECT Id, AcctSeedERP__Product__c FROM AcctSeedERP__Inventory_Balance__c];
-        Map<Id,Id> inventory_map = new Map<Id, Id>();
-        for(AcctSeedERP__Inventory_Balance__c item:inventory_balance){
-            inventory_map.put(item.AcctSeedERP__Product__c, item.Id);
+        Map<Id, AcctSeed__Billing_Line__c> credit_line_bill = new Map<Id, AcctSeed__Billing_Line__c>();
+        for(AcctSeed__Billing_Line__c bill_line: [SELECT Id, 
+                                                         Credit_Order_Line__c 
+                                                         FROM AcctSeed__Billing_Line__c 
+                                                         WHERE Credit_Order_Line__c IN:credit_order_ids]){
+            credit_line_bill.put(bill_line.Credit_Order_Line__c, bill_line);
         }
-        return inventory_map;
+
+        for(Credit_Order_Line__c col:updatable){
+            if(credit_line_bill.containsKey(col.Id)){
+                col.addError('Credit Order Line can not be edited, bacause it associated with Billing Line.');
+            }
+        }
     }
+
+    public static Set<Id> getSetFromListHepler(List<Credit_Order_Line__c> lines){
+        Set<Id> set_ids = new Set<Id>();
+        for(Credit_Order_Line__c l:lines){
+            set_ids.add(l.Id);
+        }
+
+        return set_ids;
+    }
+
 }

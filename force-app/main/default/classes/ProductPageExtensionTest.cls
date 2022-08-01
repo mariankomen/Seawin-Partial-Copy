@@ -5,7 +5,7 @@ public class ProductPageExtensionTest {
  	{
          integer recordSize = 2;
     	AcctSeed__Accounting_Variable__c av = 
-            new AcctSeed__Accounting_Variable__c(Name = 'Seawin China', 
+            new AcctSeed__Accounting_Variable__c(Name = 'Seawin USA', 
             AcctSeed__Type__c = 'GL Account Variable 1');
         insert av;
         
@@ -494,7 +494,10 @@ public class ProductPageExtensionTest {
         obj.gotoParent();
         obj.saveMoreOP();
         obj.gotoParentMore();
-
+        obj.checkSort();
+        obj.resetSort('Product Name');
+        obj.resetSort('Product Code');
+        obj.resetSort('Size');
 
         
         Test.stopTest();
@@ -902,6 +905,7 @@ public class ProductPageExtensionTest {
         obj.gotoParent();
         obj.saveMoreOP();
         obj.gotoParentMore();
+        
         
         Test.stopTest();
     }

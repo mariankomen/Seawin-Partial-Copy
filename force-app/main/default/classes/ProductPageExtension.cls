@@ -616,7 +616,8 @@ queryStr +
                     APIIs == 'Size__c' ||
                     APIIs == 'Category__c' ||
                     APIIs == 'Type__c' ||
-                    APIIs == 'AcctSeed__Inventory_Type__c'
+                    APIIs == 'AcctSeed__Inventory_Type__c' ||
+                    APIIs == 'UPC_Code__c'
                 ) {
                     SearchValList.add(new SelectOption(APIIs, LabelIs));
                 }
@@ -810,8 +811,19 @@ queryStr +
         get {
             if (Oli == null && section == 'oli') {
                 Oli = new List<OpportunityLineItem>{};
+                    List<OpportunityLineItem> already_created_lines = [SELECT Id, SortOrder FROM OpportunityLineItem WHERE OpportunityId=:OppId];
+                    Integer sort_order;
+                    if(!already_created_lines.isEmpty()) {
+                        sort_order = already_created_lines[already_created_lines.size() - 1].SortOrder != null 
+                                            ? already_created_lines[already_created_lines.size() - 1].SortOrder + 1
+                                            : 1;
+                    }else{
+                        sort_order = 1;
+                    }
+                    system.debug('sort order is: '+sort_order);
+                    system.debug('prods: '+JSON.serialize(prods));
                     for (productSelection ps : prods) {
-
+                        system.debug('sort_order on start loop: '+sort_order);
                         OpportunityLineItem line = new OpportunityLineItem(
                             OpportunityId = OppId,
                             UnitPrice = ProductsPrice.containsKey(ps.prod.id) ? ProductsPrice.get(ps.prod.id).UnitPrice : 0.00,
@@ -821,8 +833,10 @@ queryStr +
                             PricebookEntryId = ProductsPrice.containsKey(ps.prod.id) ? ProductsPrice.get(ps.prod.id).id : null,
                             AcctSeed__GL_Account_Variable_1__c = agl,
                             Allow_Custom_Image__c = ps.prod.Allow_Custom_Image__c,
-                            Allow_Product_Description_Change__c = ps.prod.Allow_Product_Description_Change__c
+                            Allow_Product_Description_Change__c = ps.prod.Allow_Product_Description_Change__c,
+                            SortOrder = sort_order
                         );
+                        
                         if (prods.size() == 1) {
                             Oli.add(
                                 line
@@ -832,7 +846,7 @@ queryStr +
                                 Oli.add(
                                     line
                                 );
-                                
+                                sort_order++;
                             }
                         }
                         
@@ -847,6 +861,7 @@ queryStr +
                                 : ps.prod.ProductImageURL__c
                             );
                         }
+                        system.debug('sort_order on end loop: '+sort_order);
                     }
             }
             return Oli;
@@ -858,7 +873,17 @@ queryStr +
         get {
             if (OPO == null && section == 'opo') {
                 OPO = new List<Optional_Products_Opportunity__c>{};
-                    
+
+                    List<Optional_Products_Opportunity__c> already_created_lines = [SELECT Id, SortOrder__c FROM Optional_Products_Opportunity__c WHERE Opportunity__c=:OppId];
+                    Decimal sort_order;
+                    if(!already_created_lines.isEmpty()) {
+                        sort_order = already_created_lines[already_created_lines.size() - 1].SortOrder__c != null 
+                                            ? already_created_lines[already_created_lines.size() - 1].SortOrder__c + 1
+                                            : 1;
+                    }else{
+                        sort_order = 1;
+                    }
+
                     for (productSelection ps : prods) {
 
                         Optional_Products_Opportunity__c line = new Optional_Products_Opportunity__c(
@@ -883,16 +908,18 @@ queryStr +
                             // Allow_Product_Description_Change__c = ps.prod.Allow_Product_Description_Change__c
                         );
                         if (prods.size() == 1) {
-							line.sortorder__c = HighestSort != null ? ++HighestSort : 1;
+							line.sortorder__c = sort_order;
                             OPO.add(
                                 line
                             );
+                            sort_order++;
                         } else {
                             if (ps.isSelected) {
- 								line.sortorder__c = HighestSort != null ? ++HighestSort : 1;
+ 								line.sortorder__c = sort_order;
                                 OPO.add(
                                     line
                                 );
+                                sort_order++;
                             }
                         }
                         

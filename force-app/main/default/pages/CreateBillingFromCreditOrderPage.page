@@ -9,7 +9,7 @@
         <apex:pageBlock id="thePageBlock" title="Create Billing">
             <apex:pageMessages id="msg"></apex:pageMessages>
             <apex:pageBlockButtons >
-                <apex:commandButton status="saveStatus" value="Save" action="{!createBilling}"/>
+                <apex:commandButton status="saveStatus" value="Save" action="{!createBilling}" rendered="{!!allIsPaid}"/>
                 <apex:commandButton value="Back" action="/{!creditOrderId}" immediate="true" />
             </apex:pageBlockButtons>
             <apex:pageBlockSection columns="2" >

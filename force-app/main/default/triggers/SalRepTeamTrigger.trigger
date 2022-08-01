@@ -2,7 +2,7 @@ trigger SalRepTeamTrigger on Sales_Rep__c (after insert, after update, after del
 
     if(Trigger.isAfter){
         if(Trigger.isUpdate){
-            SalRepTeamHandler.handleSharingAccess(Trigger.old,Trigger.new);
+           // SalRepTeamHandler.handleSharingAccess(Trigger.old,Trigger.new);
         }
     }
 }

@@ -5,7 +5,6 @@ public class OpportunitySalesProcessPathExtension {
     
     public map<string, integer> StagePositionMap {get; set;}
     public list<string> StageValuesList {public get; private set;}
-    public integer ListLength {public get; private set;}
     
     private ApexPages.StandardController stdController;
     public String redirectUrl {public get; private set;}
@@ -23,9 +22,8 @@ public class OpportunitySalesProcessPathExtension {
         
     }
     
-
+    public Decimal total_bill_balances {get;set;}
     private String oldStage {get; set;}
-    
     public boolean hasClearanceStage {get; set;}
     
     public Boolean getrenderlist(){
@@ -35,7 +33,7 @@ public class OpportunitySalesProcessPathExtension {
     public OpportunitySalesProcessPathExtension(ApexPages.StandardController std){
         dependendPicklistValues = DependentPicklistExtension.getDependentPicklistValues(Opportunity.Sub_Stage__c);
         List<String> picklistValues = DependentPicklistExtension.getOpportunityStages();
-
+        total_bill_balances = 0.00;
         for(String pv: picklistValues){
             if(!dependendPicklistValues.containsKey(pv)){
                 dependendPicklistValues.put(pv, new List<String>());
@@ -90,6 +88,22 @@ public class OpportunitySalesProcessPathExtension {
                 i++;
             }
         }
+
+
+        List<AcctSeed__Billing__c> related_bills = [SELECT  Id, 
+                                                                    Name,
+                                                                    AcctSeed__Total__c,
+                                                                    AcctSeed__Balance__c,
+                                                                    AcctSeed__Opportunity__c
+                                                            FROM AcctSeed__Billing__c
+                                                            WHERE AcctSeed__Opportunity__c=:Opp.Id
+                                                            ];
+                
+        Decimal total_bill = 0.00;
+        for(AcctSeed__Billing__c bill:related_bills){
+            total_bill_balances += bill.AcctSeed__Balance__c;
+            total_bill += bill.AcctSeed__Total__c;
+        }
     }
     public void CheckUncheck(){
         
@@ -143,7 +157,12 @@ public class OpportunitySalesProcessPathExtension {
         
         string stageNameIs = ApexPages.currentPage().getParameters().get('stageNameIs'); 
         
-              
+        List<OpportunityStage> pipelineStages = [SELECT Id, ApiName, ForecastCategory, ForecastCategoryName, IsActive FROM OpportunityStage where ForecastCategory='Pipeline' and IsActive=true];
+        List<String> stagesPip = new List<String>();
+
+        for(OpportunityStage ops: pipelineStages){
+            stagesPip.add(ops.ApiName);
+        }
         if(stageNameis != null && stageNameIs != Opp.StageName){
             /*
             if(oldStage == 'Proposal' && stageNameis == 'Follow up'){
@@ -156,42 +175,18 @@ public class OpportunitySalesProcessPathExtension {
             */
             try{
                 List<String> closed_stages = new List<String>{'Closed Won', 'Closed Lost', 'Not Qualified'};
-
                 if(closed_stages.contains(Opp.StageName)){
                     Opp.Closed_Date__c = null;
                 }
                 Opp.StageName = stageNameIs;
                 Opp.Sub_Stage__c = '';
-
-
-                List<AcctSeed__Billing__c> related_bills = [SELECT  Id, 
-                                                                    Name,
-                                                                    AcctSeed__Total__c,
-                                                                    AcctSeed__Balance__c,
-                                                                    AcctSeed__Opportunity__c
-                                                            FROM AcctSeed__Billing__c
-                                                            WHERE AcctSeed__Opportunity__c=:Opp.Id
-                                                            ];
-                for(AcctSeed__Billing__c bill:related_bills){
-                    if(bill.AcctSeed__Balance__c != 0){
-                        OmittedExceptionOccurred = true;
-                    }
-                }
-
-                if(!OmittedExceptionOccurred){
-                    update Opp;
-                    shouldRedirect = true;
-                    redirectUrl = communityUrl + '/' + Opp.id;
-                }
                 
-
-
-
-
-                
+                update Opp;
+                shouldRedirect = true;
+                redirectUrl = communityUrl + '/' + Opp.id;
             }catch(Exception ex){
                 
-                system.debug(ex.getMessage());
+                system.debug('Error: '+ex.getMessage());
                 
                 string msg = ex.getMessage();
                 

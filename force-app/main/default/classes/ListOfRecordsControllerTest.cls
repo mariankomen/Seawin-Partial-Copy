@@ -2354,6 +2354,209 @@ public class ListOfRecordsControllerTest {
 		Test.stopTest();
 		
 	}
+	@isTEst static void Company_PreOrder_Pipeline_SMD_USATest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Company_PreOrder_Pipeline_SMD_USA');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+
+		ApexPages.currentPage().getParameters().put('click', 'poin');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Sales_Reps_PreOrder_Pipeline_SMD_USATest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Sales_Reps_PreOrder_Pipeline_SMD_USA');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'poin');
+		ApexPages.currentPage().getParameters().put('str', 'test');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void PreOrder_Pipeline_By_Lead_Source_SMD_USATest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'PreOrder_Pipeline_By_Lead_Source_SMD_USA');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'poin');
+		ApexPages.currentPage().getParameters().put('str', 'test');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Company_Negotiation_Pipeline_SMD_USATest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Company_Negotiation_Pipeline_SMD_USA');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'poin');
+		ApexPages.currentPage().getParameters().put('str', 'test');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Sales_Reps_Negotiation_Pipeline_SMD_USATest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Sales_Reps_Negotiation_Pipeline_SMD_USA');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'poin');
+		ApexPages.currentPage().getParameters().put('str', 'test');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Negotiation_Pipeline_By_Lead_Source_SMD_USATest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Negotiation_Pipeline_By_Lead_Source_SMD_USA');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'poin');
+		ApexPages.currentPage().getParameters().put('str', 'test');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Monthly_Sales_Last_12_Months_Spec_SMD_HTest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Monthly_Sales_Last_12_Months_Spec_SMD_H');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'poin');
+		ApexPages.currentPage().getParameters().put('str', 'test');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Spec_Pre_Order_Pipeline_SMD_USATest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Spec_Pre_Order_Pipeline_SMD_USA');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'poin');
+		ApexPages.currentPage().getParameters().put('str', 'test');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Sales_Forecast_Pre_Order_Pipeline_SMDTest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Sales_Forecast_Pre_Order_Pipeline_SMD');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'poin');
+		ApexPages.currentPage().getParameters().put('str', 'test');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Monthly_Sales_Last_12_Months_Refferral_HTest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Monthly_Sales_Last_12_Months_Refferral_H');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'poin');
+		ApexPages.currentPage().getParameters().put('str', 'test');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Ref_Reps_Total_Pipeline_SMD_USATest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Ref_Reps_Total_Pipeline_SMD_USA');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'poin');
+		ApexPages.currentPage().getParameters().put('str', 'test');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Sales_Forecast_Reff_Pipeline_SMDTest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Sales_Forecast_Reff_Pipeline_SMD');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'poin');
+		ApexPages.currentPage().getParameters().put('str', 'test');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
 	
 
 	@isTEst static void Sales_By_Lead_Source_Last_12_Months_SMD_CHK(){

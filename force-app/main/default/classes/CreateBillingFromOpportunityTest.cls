@@ -63,9 +63,9 @@ public class CreateBillingFromOpportunityTest {
 
     // create account
     Account acct2 = new Account();
-    acct2.Name = 'Manufacturer Representative';
+    acct2.Name = 'Sales Represantative';
     acct2.Type = 'Designer';
-    acct2.AcctSeed__Accounting_Type__c = 'Manufacturer Representative';
+    acct2.AcctSeed__Accounting_Type__c = 'Sales Represantative';
     acct2.AcctSeed__GL_Account_Variable_1__c = accVar.Id;
     acct2.Price_Level_1_12__c = 1;
     acct2.Price_Level_13_20__c = 1;

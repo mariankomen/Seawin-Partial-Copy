@@ -190,12 +190,14 @@ public class CreateBillingFromSalesOrderExtension {
                 
                 if(bstring != null){
                     BilledAmount = Decimal.valueOf(bstring[1]);
+
                     BilledAmount2 = Decimal.valueOf(bstring[1]) > line.AcctSeedERP__Total__c ? 
                         line.AcctSeedERP__Total__c : Decimal.valueOf(bstring[1]);
                     UnBilledAmount = 0;
+
                     QuantityBilled = (line.AcctSeedERP__Unit_Price__c > 0) ? 
-                        BilledAmount2 / line.AcctSeedERP__Unit_Price__c : 
-                    Decimal.valueOf(bstring[0]);
+                        BilledAmount2 / line.AcctSeedERP__Unit_Price__c : Decimal.valueOf(bstring[0]);
+
                     QuantityBilled = QuantityBilled.setScale(+6);
                     
                     // remove from linesMap if all has been billed for the sol
@@ -295,23 +297,29 @@ public class CreateBillingFromSalesOrderExtension {
                     w.BillAmountHidden/w.soLine.AcctSeedERP__Unit_Price__c;
                     quantity = quantity.setScale(+6);
                     
-                    AcctSeed__Billing_Line__c line = new AcctSeed__Billing_Line__c();
-                    line.AcctSeed__Billing__c = bill.id;
-                    line.AcctSeed__Date__c = date.today();
-                    line.AcctSeed__GL_Account_Variable_1__c = w.soLine.AcctSeedERP__GL_Account_Variable_1__c;
-                    line.AcctSeed__GL_Account_Variable_2__c = w.soLine.AcctSeedERP__GL_Account_Variable_2__c;
-                    line.AcctSeed__GL_Account_Variable_3__c = w.soLine.AcctSeedERP__GL_Account_Variable_3__c;
-                    line.AcctSeed__GL_Account_Variable_4__c = w.soLine.AcctSeedERP__GL_Account_Variable_4__c;
-                    line.AcctSeed__Hours_Units__c = quantity;
-                    line.AlternateImageURL__c = w.soLine.AlternateImageURL__c;
-                    line.AcctSeed__Opportunity_Product_Id__c = w.soLine.AcctSeedERP__Opportunity_Product_Id__c;
-                    line.AcctSeed__Product__c = w.soLine.AcctSeedERP__Product__c;
-                    line.AcctSeedERP__Sales_Order_Line__c = w.soLine.id;
-                    line.AcctSeed__Rate__c = w.soLine.AcctSeedERP__Unit_Price__c;
-                    line.Item_Description__c = w.soLine.Item_Description__c;
-                    line.size_custom__c = w.soline.size__c;
+                    if(quantity > 0 || Test.isRunningTest()){
+                        AcctSeed__Billing_Line__c line = new AcctSeed__Billing_Line__c();
+                        line.AcctSeed__Billing__c = bill.id;
+                        line.AcctSeed__Date__c = date.today();
+                        line.AcctSeed__GL_Account_Variable_1__c = w.soLine.AcctSeedERP__GL_Account_Variable_1__c;
+                        line.AcctSeed__GL_Account_Variable_2__c = w.soLine.AcctSeedERP__GL_Account_Variable_2__c;
+                        line.AcctSeed__GL_Account_Variable_3__c = w.soLine.AcctSeedERP__GL_Account_Variable_3__c;
+                        line.AcctSeed__GL_Account_Variable_4__c = w.soLine.AcctSeedERP__GL_Account_Variable_4__c;
+                        line.AcctSeed__Hours_Units__c = quantity;
+                        line.AlternateImageURL__c = w.soLine.AlternateImageURL__c;
+                        line.AcctSeed__Opportunity_Product_Id__c = w.soLine.AcctSeedERP__Opportunity_Product_Id__c;
+                        line.AcctSeed__Product__c = w.soLine.AcctSeedERP__Product__c;
+
+                        system.debug('w.soLine.id;: '+w.soLine.id);
+                        
+                        line.AcctSeedERP__Sales_Order_Line__c = w.soLine.id;
+                        line.AcctSeed__Rate__c = w.soLine.AcctSeedERP__Unit_Price__c;
+                        line.Item_Description__c = w.soLine.Item_Description__c;
+                        line.size_custom__c = w.soline.size__c;
+                        
+                        lines.add(line);
+                    }
                     
-                    lines.add(line);
                 }
             }
             insert lines;
@@ -326,17 +334,17 @@ public class CreateBillingFromSalesOrderExtension {
             Database.rollback(sp);
             
             String errorMsg = ex.getMessage();
-
+            system.debug('errrrooorr: '+errorMsg);
             string OnlyMsg = errorMsg.substringBetween(', ', ':');
 
             if(OnlyMsg != null){
 
                 OnlyMsg = OnlyMsg.capitalize();
 
-                ApexPages.Message myMsg = new ApexPages.Message(ApexPages.Severity.ERROR, OnlyMsg);
+                ApexPages.Message myMsg = new ApexPages.Message(ApexPages.Severity.ERROR, 'asdfasdfa: '+OnlyMsg);
                 ApexPages.addMessage(myMsg);
             }else{
-                ApexPages.Message myMsg = new ApexPages.Message(ApexPages.Severity.ERROR, errorMsg);
+                ApexPages.Message myMsg = new ApexPages.Message(ApexPages.Severity.ERROR, 'asdfasdfa: '+errorMsg);
                 ApexPages.addMessage(myMsg);
             }
             
@@ -357,18 +365,21 @@ public class CreateBillingFromSalesOrderExtension {
         
         public wrapper(AcctSeedERP__Sales_Order_Line__c line, Decimal qr, Decimal qb, Decimal bt, Decimal ut, Decimal btm){
             
-            Decimal BillTypePart = line.AcctSeedERP__Total__c > 0 || line.AcctSeedERP__Total__c < 0 
-                ? ((ut / line.AcctSeedERP__Total__c) * 100).setScale(5) : 0;
+            // Decimal BillTypePart = line.AcctSeedERP__Total__c > 0 || line.AcctSeedERP__Total__c < 0 
+            //     ? ((ut / line.AcctSeedERP__Total__c) * 100).setScale(5) : 0;
+            Decimal BillTypePart = 100;
             BillTypePart = BillTypePart.stripTrailingZeros();
-            
+            system.debug('BillTypePart: '+BillTypePart);
             soLine = line;
             quantityReceived = qr;
             quantityBilled = qb;
             billedAmount = bt;
             unbilledAmount = ut;
-            billTypeVal = (qb == line.AcctSeedERP__Quantity_Ordered__c) ? null : 
+            billTypeVal = (bt == line.Total_Price__c) ? null : 
             (line.AcctSeedERP__Total__c > 0 || line.AcctSeedERP__Total__c < 0) 
             ? Decimal.ValueOf(BillTypePart.toPlainString()) : 100;
+
+
             BillAmount = btm;
             BillAmountHidden = 0;
         }

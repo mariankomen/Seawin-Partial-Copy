@@ -23,10 +23,10 @@
             text-align: left;
         }
     </style>
-    <apex:stylesheet value="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
-    <apex:includeScript value="//code.jquery.com/jquery-1.10.2.js" />
-    <apex:includeScript value="//code.jquery.com/ui/1.11.2/jquery-ui.js" />
-    <apex:includeScript value="/soap/ajax/15.0/connection.js" />
+    <apex:stylesheet value="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+    <apex:includeScript value="https://code.jquery.com/jquery-1.10.2.js" />
+    <apex:includeScript value="https://code.jquery.com/ui/1.11.2/jquery-ui.js" />
+    <apex:includeScript value="/soap/ajax/55.0/connection.js" />
     <apex:includeScript value="/soap/ajax/15.0/apex.js" />
     
     <apex:sectionHeader title="Opportunity Edit" subtitle="{!Opp.Name}"></apex:sectionHeader>
@@ -181,7 +181,7 @@
     </apex:form>
     <script>
         sforce.connection.sessionId = "{!$Api.Session_ID}";
-        
+        sforce.connection.serverUrl = '{!$Site.Prefix}/services/Soap/u/55.0';
         function stageChange(stagename){
         
         //var stagename = document.getElementById('{!$Component.form.pageblock.pageblocksection.stagename}');
@@ -191,7 +191,7 @@
         var qr = sforce.connection.query("Select DefaultProbability,ForecastCategoryName From OpportunityStage where "+
         " MasterLabel = '" + stagename + "'") ; 
         records = qr.getArray("records");
-        
+            console.log(1111)
             for (var i=0; i< records.length; i++) {
                 var record = records[i];
                 $(probability).val(parseInt(record.DefaultProbability));

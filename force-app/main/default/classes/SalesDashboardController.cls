@@ -134,13 +134,13 @@ global class SalesDashboardController extends MainSalesDashboardController {
    
     @RemoteAction
     @ReadOnly
-    global static map<string, List<ValuesWrapper>> Monthly_Sales_Last_12_Months() {
+    global static List<AggregateREsult> Monthly_Sales_Last_12_Months() {
         
         List<String> Last12MonthsList = Last12MonthsList();
         DateTime Full_Start_Date = Full_Start_Date();
         DateTime Full_End_Date = Full_End_Date();
         List<String> Months = Months();
-        
+
         List<AggregateREsult> SalesData = [select sales_rep_o__r.name name,
                                           calendar_month(CreatedDate) month,calendar_year(CreatedDate) year,
                                           sum(AcctSeederp__total__c) c
@@ -153,53 +153,7 @@ global class SalesDashboardController extends MainSalesDashboardController {
                                           order by Sales_rep_o__r.name,calendar_month(CreatedDate),
                                           calendar_year(CreatedDate) asc];
         
-        map<string, List<ValuesWrapper>> SalesDataMapLocal = new Map<string, List<ValuesWrapper>>();
-        List<ValuesWrapper> SalesDataList = new List<ValuesWrapper>();
-        
-        if (!SalesData.isEmpty()) {
-            for (AggregateResult so : SalesData) {
-                string key = (string) so.get('name');
-                
-                ValuesWrapper vw = new ValuesWrapper(
-                            Last12MonthsList.indexOf(Months[(Integer) so.get('month') - 1]),
-                            Months[(Integer) so.get('month') - 1],
-                            Months[(Integer) so.get('month') - 1],
-                            (Decimal) so.get('c'),
-                            (Integer) so.get('year'),
-                            null,
-                            null
-                        );
-                
-                SalesDataList = new List<ValuesWrapper>();
-                
-                if (SalesDataMapLocal.containskey(key)) {
-                    SalesDataList = SAlesDataMapLocal.get(key);
-                    
-                    SalesDataList.add(
-                        vw
-                    );
-                } else {
-                    SalesDataList.add(
-                        vw
-                    );
-                }
-                
-                SalesDataMapLocal.put(key, SalesDataList);
-            }
-        }
-        if (SalesDataMapLocal.size() > 0) {
-            List<string> sortedKeys = sortedKeys(SalesDataMapLocal);
-            map<string, List<ValuesWrapper>> sortedMap = new Map<string, List<ValuesWrapper>>();
-            
-            for (string s : sortedKeys) {
-                if (SalesDataMapLocal.containskey(s)) {
-                    sortedMap.put(s, SalesDataMapLocal.get(s));
-                }
-            }
-            SalesDataMapLocal = sortedMap;
-        }
-        
-        return SalesDataMapLocal;
+        return SalesData;
     }
     
     @RemoteAction

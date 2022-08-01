@@ -1381,6 +1381,14 @@ public class CalculateCommissionsHandler {
     
     public static List<Sales_Order_Commissions__c> fetchCommissions(string SalesOrderId){
         
+        List<AcctSeed__Account_Payable__c> payables = [SELECT Id, Sales_Order_Commissions__c, Sales_Order__c FROM AcctSeed__Account_Payable__c WHERE Sales_Order__c=:SalesOrderId];
+        Set<Id> comm_id = new Set<Id>();
+        if(!payables.isEmpty()){
+            for(AcctSeed__Account_Payable__c p: payables){
+                comm_id.add(p.Sales_Order_Commissions__c);
+            }
+        }
+        
         List<Sales_Order_Commissions__c> commissions = new List<Sales_Order_Commissions__c>();
         
         commissions = [select id,  
@@ -1392,12 +1400,16 @@ public class CalculateCommissionsHandler {
                        Sales_Order__c,
                        Billing_Cash_Receipt__c,
                        Billing_Credit_Memo__c from Sales_Order_Commissions__c
-                       where sales_order__c =:SalesOrderId LIMIT 100];
+                       where sales_order__c =:SalesOrderId and id not in: comm_id LIMIT 100];
         
         return commissions;
         
     }
     
+    public static void deleteUnpaidCommissions(Id soId){
+
+    }
+
     public static List<AcctSeed__Billing_Cash_Receipt__c> Cash_Receipt_List(String SalesOrderId){
         
         List<AcctSeed__Billing_Cash_Receipt__c> Cash_Receipt_List = new List<AcctSeed__Billing_Cash_Receipt__c>();

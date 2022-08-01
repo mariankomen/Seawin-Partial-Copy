@@ -4,5 +4,5 @@ trigger PurchaseOrderShipmentTrigger on AcctSeedERP__Purchase_Order_Inventory_Mo
         
         PurchaseOrderShipmentHandler.CreateShipment(trigger.new);
     }
-
+    
 }

@@ -9,11 +9,12 @@ public with sharing class OpportunityEditAllController {
     public Boolean isOpportunityProduct {get; set;}
     public Boolean isOptionalProduct {get; set;}
     private String typeOfProduct {get; set;}
+    public Opportunity opp {get; set;}
 
     public List<ItemWrapper> wrapper_lines {get; set;}
     public List<Optional_Products_Opportunity__c> opportunityOptionalItems {get; set;}
     public List<OpportunityLineItem> opportunityLineItems {get; set;}
-
+    
     public OpportunityEditAllController() {
         wrapper_lines = new List<ItemWrapper>();
         opportunityOptionalItems = new List<Optional_Products_Opportunity__c>();
@@ -21,12 +22,25 @@ public with sharing class OpportunityEditAllController {
 
         opportunityId = ApexPages.currentPage().getParameters().get('oppId');
         typeOfProduct = ApexPages.currentPage().getParameters().get('recordType');
+
+        opp = [SELECT Id, Name FROM Opportunity WHERE Id=:opportunityId];
         
         isOpportunityProduct = typeOfProduct == 'oli' ? true : false;
         isOptionalProduct = typeOfProduct == 'opo' ? true : false;
 
         if(isOpportunityProduct){
             fetchOpportunityLineItems();
+            Boolean hasBilledLines = false;
+            for(ItemWrapper iw: wrapper_lines){
+                if(iw.hasRelatedBillLine){
+                    hasBilledLines = true;
+                }
+            }
+            if(hasBilledLines){
+                ApexPages.addmessage(new ApexPages.message(ApexPages.severity.WARNING,'Quantity and Sales Price fields cannot be edited because Opportunity already has a Billing(s).'));
+            }
+
+
         }else{
             fetchOpportunityOptionalItems();
         }
@@ -52,6 +66,20 @@ public with sharing class OpportunityEditAllController {
                                     FROM OpportunityLineItem
                                     WHERE OpportunityId=:opportunityId
                                     ORDER BY SortOrder ];
+        Set<Id> line_ids = new Set<Id>();
+        for(OpportunityLineItem oli: opportunityLineItems){
+            line_ids.add(oli.Id);
+        }                            
+        List<AcctSeed__Billing_Line__c> billed_lines = [SELECT Id, 
+                                                            AcctSeed__Opportunity_Product_Id__c 
+                                                            FROM AcctSeed__Billing_Line__c 
+                                                            where AcctSeed__Opportunity_Product_Id__c IN: line_ids];
+        Map<Id, Id> map_oli_bill = new Map<Id, Id>();
+        for(AcctSeed__Billing_Line__c bl:billed_lines){
+            map_oli_bill.put((Id)bl.AcctSeed__Opportunity_Product_Id__c, bl.Id);
+        }
+
+
         for(OpportunityLineItem oli: opportunityLineItems){
             wrapper_lines.add(  new ItemWrapper(oli.Id, 
                                                 oli.Product2.Name,
@@ -59,7 +87,8 @@ public with sharing class OpportunityEditAllController {
                                                 String.valueOf(oli.UnitPrice), 
                                                 oli.Size__c, 
                                                 oli.Item_Description__c, 
-                                                oli.Product2.Allow_Product_Description_Change__c));
+                                                oli.Product2.Allow_Product_Description_Change__c,
+                                                map_oli_bill.containsKey(oli.Id)));
         }                                                    
     }
     /*****************************************************************************************************
@@ -80,7 +109,7 @@ public with sharing class OpportunityEditAllController {
                                     FROM Optional_Products_Opportunity__c
                                     WHERE Opportunity__c=:opportunityId
                                     ORDER BY SortOrder__c ];
-                                   
+        
         for(Optional_Products_Opportunity__c opo: opportunityOptionalItems){
             wrapper_lines.add(new ItemWrapper(opo.Id, 
                                                 opo.Product__r.Name, 
@@ -88,7 +117,9 @@ public with sharing class OpportunityEditAllController {
                                                 String.valueOf(opo.UnitPrice__c), 
                                                 opo.Size__c, 
                                                 opo.Item_Description__c,
-                                                opo.Product__r.Allow_Product_Description_Change__c));
+                                                opo.Product__r.Allow_Product_Description_Change__c,
+                                                false
+                                                ));
         }                                                                    
         
     }
@@ -120,10 +151,13 @@ public with sharing class OpportunityEditAllController {
         for(ItemWrapper iw: wrapper_lines){
             iw.sales_price = iw.sales_price.replaceAll(' ', '');
             List<String> splittedCurrency = iw.sales_price.split('');
+            Boolean minus_amount = false;
+            if(splittedCurrency.contains('-')) minus_amount = true;
+
             if(opportunityLineItemsMap.containsKey(iw.recordId)){
                 OpportunityLineItem oli = opportunityLineItemsMap.get(iw.recordId);
                 oli.Quantity = iw.quantity;
-                oli.UnitPrice = splittedCurrency[0] == '$' ? Decimal.valueOf(iw.sales_price.substring(1)) : Decimal.valueOf(iw.sales_price);
+                oli.UnitPrice = minus_amount ? Decimal.valueOf(iw.sales_price.replaceAll('[^0-9.]', '')) * (-1) : Decimal.valueOf(iw.sales_price.replaceAll('[^0-9.]', ''));
                 oli.Size__c = iw.size;
                 oli.Item_Description__c = iw.description;
                 updatableLines.add(oli);
@@ -150,10 +184,13 @@ public with sharing class OpportunityEditAllController {
         for(ItemWrapper iw: wrapper_lines){
             iw.sales_price = iw.sales_price.replaceAll(' ', '');
             List<String> splittedCurrency = iw.sales_price.split('');
+            Boolean minus_amount = false;
+            if(splittedCurrency.contains('-')) minus_amount = true;
+
             if(opportunityOptionalItemsMap.containsKey(iw.recordId)){
                 Optional_Products_Opportunity__c opo = opportunityOptionalItemsMap.get(iw.recordId);
                 opo.Quantity__c = iw.quantity;
-                opo.UnitPrice__c = splittedCurrency[0] == '$' ? Decimal.valueOf(iw.sales_price.substring(1)) : Decimal.valueOf(iw.sales_price);
+                opo.UnitPrice__c = minus_amount ? Decimal.valueOf(iw.sales_price.replaceAll('[^0-9.]', '')) * (-1) : Decimal.valueOf(iw.sales_price.replaceAll('[^0-9.]', ''));
                 opo.Size__c = iw.size;
                 opo.Item_Description__c = iw.description;
                 updatableOptionalLines.add(opo);
@@ -172,6 +209,31 @@ public with sharing class OpportunityEditAllController {
         return pr;
     }
 
+    public PageReference TrashIt(){
+        String deletableId = typeOfProduct = ApexPages.currentPage().getParameters().get('deletableId');
+
+        PageReference url = new PageReference('/apex/OpportunityEditAllPage?oppId='+opportunityId+'&recordType='+typeOfProduct+'retURL='+opportunityId);
+        if(isOpportunityProduct){
+            OpportunityLineItem item = [SELECT Id,Name FROM OpportunityLineItem WHERE Id=:deletableId];
+            try{
+                delete item;
+
+            }catch(Exception e){
+                ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,e.getMessage()));
+            }
+        }else{
+            Optional_Products_Opportunity__c opo = [SELECT Id, Name FROM Optional_Products_Opportunity__c WHERE Id=:deletableId];
+
+            try{
+                delete opo;
+            }catch(Exception e){
+                ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,e.getMessage()));
+            }
+        }
+        return url;
+        
+
+    }
     public class ItemWrapper{
         public Id recordId {get; set;}
         public String productName {get; set;}
@@ -180,8 +242,9 @@ public with sharing class OpportunityEditAllController {
         public String size {get; set;}
         public String description {get; set;}
         public Boolean allow_changes {get; set;}
-
-        public ItemWrapper(Id prodId, String prodName, Decimal quant, String price, String siz, String descript, Boolean allow_cha){
+        public Boolean hasRelatedBillLine {get; set;}
+        
+        public ItemWrapper(Id prodId, String prodName, Decimal quant, String price, String siz, String descript, Boolean allow_cha, Boolean hasBilled){
             recordId = prodId;
             productName = prodName;
             quantity = quant;
@@ -189,6 +252,7 @@ public with sharing class OpportunityEditAllController {
             size = siz;
             description = descript;
             allow_changes = allow_cha;
+            hasRelatedBillLine = hasBilled;
         }
     }
 

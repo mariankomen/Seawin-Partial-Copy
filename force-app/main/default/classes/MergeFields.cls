@@ -5,6 +5,8 @@ public class MergeFields
         String objectAPI = '';
         for(Id objId : ids){
             objectAPI = getObjectAPI(objId);
+            system.debug('content: '+content);
+            system.debug('objectAPI: '+objectAPI);
             allApis.addAll(getFields(content, objectAPI));
             break;
         }

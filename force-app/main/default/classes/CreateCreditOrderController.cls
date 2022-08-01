@@ -21,7 +21,7 @@ public with sharing class CreateCreditOrderController {
 
 
     public CreateCreditOrderController() {
-        checkAllValues = false;
+        checkAllValues = true;
         wrapper_lines = new List<LinesWrapper>();
         ordered_map = new Map<Id, Decimal>();
         soId = ApexPages.currentPage().getParameters().get('id');
@@ -281,7 +281,7 @@ public with sharing class CreateCreditOrderController {
         public Boolean isFullyApplied {get; set;} // If quantity on col = sol
 
         public LinesWrapper(AcctSeedERP__Sales_Order_Line__c sol_item, Decimal av_q, Boolean isFullyQ){
-            selected = false;
+            selected = true;
             sol = sol_item;
             available_quantity = av_q;
             isFullyApplied = isFullyQ;

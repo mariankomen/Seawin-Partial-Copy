@@ -30,6 +30,7 @@ public without sharing class SalesOrderPDFController {
               AcctSeedERP__Customer__r.AcctSeed__Billing_Terms_Name__c,
               AcctSeedERP__Opportunity__r.name, AcctSeedERP__Shipping_City__c, 
               AcctSeedERP__Shipping_Country__c, AcctSeedERP__Shipping_PostalCode__c, 
+              Billing_Terms_Name__c,
               AcctSeedERP__Shipping_State__c, AcctSeedERP__Shipping_Street__c,
               Gl_Account_Variable_1__r.Name, Gl_Account_Variable_1__r.Sales_Order_Terms__c, 
               Gl_Account_Variable_1__r.Sales_Order_Header__c, Gl_Account_Variable_1__r.Sales_Order_Footer__c,
@@ -81,58 +82,6 @@ public without sharing class SalesOrderPDFController {
 
         lines.clear();
         lines.addAll(filtered_list);
-
-
-
-
-
-
-
-
-        /* This part of code sort Sales Order Lines in order KIT parent and above him related Kit Products */
-
-        // for(Id solId: sol_map.keySet()){
-        //     if(sol_map.get(solId).Kit__c == true && kit_relation.containsKey(solId)){
-        //         List<Id> childs = new List<Id>(); //List of related to KIT -> KIT products
-
-        //         //We make map with Kit and related Kit products to him 
-        //         for(Id kit_prod:kit_relation.get(solId)){
-        //             if(sol_map.containsKey(kit_prod)){
-        //                 childs.add(kit_prod);
-        //             }
-        //         }
-        //         current_so_relation.put(solId, childs); //Putting map with ProductId(KIT) and list of child(KIT Products)
-        //     }
-        // }
-
-        //We clear the main list because above we add new sorted items.
-        //This clearing is preventing for line duplication.
-        // lines.clear(); 
-
-        // for(Id product: current_so_relation.keySet()){
-        //     if(sol_map.containsKey(product)){
-        //         lines.add(sol_map.get(product));
-        //     }
-        //     for(Id child:current_so_relation.get(product)){
-        //         if(sol_map.containsKey(child)){
-        //             lines.add(sol_map.get(child));
-        //         }
-        //     }
-        // }
-
-        //lines.addAll(not_kit_not_kitprod); //Adding not KIT and not KIT Product lines
-        /* (END) This part of code sort Sales Order Lines in order KIT parent and above him related Kit Products */
-
-
-        system.debug('current_so_relation: '+JSON.serialize(current_so_relation));
-
-        system.debug('lines sol: '+JSON.serialize(lines));
-
-
-
-
-
-
 
         // checkout billing and process receipts
         CheckBillings();
@@ -299,11 +248,20 @@ public without sharing class SalesOrderPDFController {
 
         try{
 
-            if(so.AcctSeedERP__Customer__r.AcctSeed__Billing_Terms_Name__c == null)
-            so.AcctSeedERP__Customer__r.AcctSeed__Billing_Terms_Name__c = 'Not Applicable';
+            String terms_pattern;
 
+            // if(so.AcctSeedERP__Customer__r.AcctSeed__Billing_Terms_Name__c == null)
+            // so.AcctSeedERP__Customer__r.AcctSeed__Billing_Terms_Name__c = 'Not Applicable';
+            if(so.Billing_Terms_Name__c != null){
+                terms_pattern = so.Billing_Terms_Name__c;
+            }else if(so.AcctSeedERP__Customer__r.AcctSeed__Billing_Terms_Name__c != null){
+                terms_pattern = so.AcctSeedERP__Customer__r.AcctSeed__Billing_Terms_Name__c;
+            }else{
+                terms_pattern = 'Not Applicable';
+            }
+            
             string patternValue = string.valueOf(so.AcctSeedERP__Customer__r.AcctSeed__Billing_Terms_Name__c);
-            terms = terms.replaceAll('AcctSeed__Billing_Terms_Name__c', patternValue);
+            terms = terms.replaceAll('AcctSeed__Billing_Terms_Name__c', terms_pattern);
             
             patternValue = string.valueOf(so.AcctSeedERP__Customer__r.Name);
             terms = terms.replaceAll('AcctSeedERP__Customer__r.Name', patternValue);

@@ -17,16 +17,19 @@ public with sharing class CreateBillingFromCOController {
     public Map<Id, String> description_map {get; set;}
     public Map<Id, Decimal> billed_quantity_map {get; set;}
 
+    public Boolean allIsPaid {get; set;}
+
     public CreateBillingFromCOController(ApexPages.StandardController std) {
         billing = new AcctSeed__Billing__c();
         wrapper_lines = new List<LineWrapper>();
         wrapper_map = new Map<Id, LineWrapper>();
         billed_quantity_map = new Map<Id, Decimal>();
         description_map = new Map<Id, String>();
-
+        allIsPaid = false;
         creditOrderId = (Id)std.getId();
         typeBillingOptions = new List<SelectOption>();
         selected_type = 'Percent';
+
         credit_order = [SELECT Id, Name, Billing_City__c, Billing_Country__c, 
                     Billing_PostalCode__c, Billing_State__c, 
                     Shipping_Account__c, Shipping_Name__c,
@@ -50,7 +53,10 @@ public with sharing class CreateBillingFromCOController {
         typeBillingOptions.add(new SelectOption('Percent','Percent'));
         typeBillingOptions.add(new SelectOption('Quantity','Quantity'));
 
-        
+        checkDoesAllPaid();
+        if(allIsPaid){
+            ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.INFO, 'Billing can not be created because all credit order lines has been billed.'));
+        }
     }
     public void getAlreadyBilledLines(){
         List<AggregateResult> billed_quantities = [SELECT Credit_Order_Line__c col, 
@@ -148,6 +154,13 @@ public with sharing class CreateBillingFromCOController {
         
     }
 
+    public void checkDoesAllPaid(){
+        Integer counter = 0;
+        for(LineWrapper lw:wrapper_lines){
+            if(lw.billedQuantity == lw.orderedQuantity) counter++;
+        }   
+        allIsPaid = counter == wrapper_lines.size() ? true : false;
+    }
     public void test(){
         system.debug(JSON.serialize(wrapper_lines));
     }
@@ -243,7 +256,7 @@ public with sharing class CreateBillingFromCOController {
             // now insert the billing lines
             for(LineWrapper lw : wrapper_lines){
                 
-                if(lw.billedQuantity != lw.col.Quantity_Ordered__c){
+                if(lw.billedQuantity != lw.col.Quantity_Ordered__c && lw.quantityToBill > 0){
                     
                     Decimal quantity;
                     if(selected_type == 'Quantity'){
@@ -275,17 +288,27 @@ public with sharing class CreateBillingFromCOController {
                     lines.add(line);
                 }
             }
-            insert lines;
+
+            if(lines.size() > 0 ){
+                insert lines;
+                PageReference page = new PageReference('/'+bill.id+'/e?retURL='+bill.id);
+                page.setRedirect(true);
+                
+                return page;
+            }else{
+                ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.Error, 'All credit order lines has been already billed, and billing will not be created.'));
+                Database.rollback(sp);
+                PageReference page = new PageReference('/'+creditOrderId);
+                page.setRedirect(true);
+                return page;
+            }
             
-            PageReference page = new PageReference('/'+bill.id+'/e?retURL='+bill.id);
-            page.setRedirect(true);
             
-            return page;
             
         }catch(Exception ex){
             
             Database.rollback(sp);
-            
+            system.debug('error 311: '+ex.getMessage());
             String errorMsg = ex.getMessage();
 
             string OnlyMsg = errorMsg.substringBetween(', ', ':');
@@ -322,7 +345,6 @@ public with sharing class CreateBillingFromCOController {
         public Decimal quantityToBill {get; set;} //Current field can be differen on Percent - Amount - Quantity
         public Decimal amountToBill {get; set;}
         public String selected_type {get; set;}
-
         public LineWrapper(Credit_Order_Line__c credit_line, String prName, Decimal orderedQ, Decimal allocatedQ, Decimal shippedQ, Decimal billedQ,  Decimal unitP, String selType){
             col = credit_line;
             productName = prName;

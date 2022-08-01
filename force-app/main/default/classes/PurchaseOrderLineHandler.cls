@@ -1,5 +1,32 @@
 public with sharing class PurchaseOrderLineHandler {
 
+
+    public static void beforeUpdateHandler(Map<Id, AcctSeedERP__Purchase_Order_Line__c> trigger_old, Map<Id, AcctSeedERP__Purchase_Order_Line__c> trigger_new){
+
+        List<AcctSeed__Account_Payable_Line__c> payable_lines = [SELECT Id, 
+                                                                        AcctSeedERP__Purchase_Order_Line__c 
+                                                                FROM AcctSeed__Account_Payable_Line__c 
+                                                                WHERE AcctSeedERP__Purchase_Order_Line__c IN: trigger_new.keySet()];
+
+        Map<Id, Id> payable_pol = new Map<Id, Id>();
+        for(AcctSeed__Account_Payable_Line__c apl: payable_lines){
+            payable_pol.put(apl.AcctSeedERP__Purchase_Order_Line__c, apl.Id);
+        }
+
+        for(Id pol: trigger_new.keySet()){
+            AcctSeedERP__Purchase_Order_Line__c old_pol = trigger_old.get(pol);
+            AcctSeedERP__Purchase_Order_Line__c new_pol = trigger_new.get(pol);
+            if((old_pol.AcctSeedERP__Unit_Price__c != new_pol.AcctSeedERP__Unit_Price__c
+               || old_pol.AcctSeedERP__Quantity__c != new_pol.AcctSeedERP__Quantity__c) && payable_pol.containsKey(pol)){
+                    trigger_new.get(pol).addError('Price or Quantity cannot be changed, because payable exists.	');
+               }
+            // AcctSeedERP__Unit_Price__c
+        }
+    }
+
+
+
+
     public static void UpdateFields(List<AcctSeedERP__Purchase_Order_Line__c> POLines){
         /*
         set<Id> poIds = new Set<Id>();

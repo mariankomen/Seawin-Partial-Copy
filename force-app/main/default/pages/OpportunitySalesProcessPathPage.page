@@ -212,7 +212,11 @@
                     function substageClick(e){
                         e.stopPropagation();
                     }
+                    const negative_stages = ['Closed Lost', 'Not Qualified', 'Sleep'];
                     function changeStage(val){
+                        let billing_balance = +"{!total_bill_balances}"
+                        console.log('billing_balance: ',billing_balance)
+                        console.log('val: ',val)
                         var sentForApproval = "{!Opportunity.Sent_for_Approval__c}";
                             if((val == "Pre-Order" || val == 'Closed Won') && 
                                ("{!Opp.RecordType.Name}" == "Seawin USA Hospitality" || 
@@ -224,14 +228,33 @@
                             }else if(val == "Closed Won" && sentForApproval == "true"){
                                 alert("Locked Opportunity, Approval pending.");
                             }else{
-                                if(val == "Closed Lost"){
-                                    if("{!opp.Loss_Reason__c}" == ""){
-                                        alert("Loss Reason is required. Please first save the opportunity with Loss Reason and then change stage.");
-                                    }else{
-                                        midFunction(val);
-                                    }
-                                }else if("{!Opportunity.stagename}" == "Closed Won" && "{!Opportunity.TotalSalesOrderInOpp__c}" != "0.0" && "{!Opportunity.TotalSalesOrderInOpp__c}" != ""){
+                                if("{!Opportunity.stagename}" == "Closed Won" && "{!Opportunity.TotalSalesOrderInOpp__c}" != "0.0" && "{!Opportunity.TotalSalesOrderInOpp__c}" != ""){
                                     alert("Opportunity is Locked, because the Opportunity Stage is Closed Won and Opportunity has Sales Order(s).");
+                                }else if(negative_stages.includes(val) && billing_balance > 0){
+                                    if(val == 'Closed Lost'){
+                                        console.log(1)
+                                        if("{!opp.Loss_Reason__c}" == ""){
+                                            alert("Loss Reason is required. Please first save the opportunity with Loss Reason and then change stage.");
+                                        }else if(billing_balance > 0){
+                                            alert("Can not change stage, associated billing has a balance.");
+                                        }else{
+                                            midFunction(val);
+                                        }
+                                    }else{
+                                        alert("Can not change stage, associated billing has a balance.");
+                                    }
+                                    
+                                    
+                                }else if(val == 'Closed Lost'){
+                                        console.log(2)
+                                        if("{!opp.Loss_Reason__c}" == ""){
+                                            alert("Loss Reason is required. Please first save the opportunity with Loss Reason and then change stage.");
+                                        }else if(billing_balance > 0){
+                                            alert("Can not change stage, associated billing has a balance.");
+                                        }else{
+                                            midFunction(val);
+                                        }
+                                    
                                 }else{
                                   midFunction(val);
                                 }

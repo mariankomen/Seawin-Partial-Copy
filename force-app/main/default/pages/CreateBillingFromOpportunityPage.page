@@ -286,21 +286,52 @@
                 let isFirstBill = '{!firstBilling}'
                 if(amount.toString().includes('.') && entered < 100 && isFirstBill == 'true'){
                     amount = trueRound(amount, 2);
-                    let arr = amount.toString().split('.')
-                    if(arr.length < 2) arr.push('0')
-                    // console.log('amount.toString().split): ', arr)
 
-                    let second_num_after_dot = arr[1][1] !== undefined && arr[1][1] !== null && arr[1][1] !== '' ? arr[1][1] : 0;
+                    console.log('amount: ',amount)
+                    // let arr = amount.toString().split('.')
+                    // if(arr.length < 2) arr.push('0')
+                    // console.log('amount.toString().split): ', arr)
+                    let second_num_after_dot;
+                    // let second_num_after_dot = arr[1][1] !== undefined && arr[1][1] !== null && arr[1][1] !== '' ? arr[1][1] : 0;
+                    if(amount.toString().includes('.')){
+                        second_num_after_dot = amount.toString().split('.')[1][1]
+                    }else{
+                        second_num_after_dot = 0
+                    }
+                    console.log('forAmount: ',forAmount)
+                    console.log('second_num_after_dot MAIN: ',second_num_after_dot)
                     if(+second_num_after_dot % 2 !== 0 && second_num_after_dot){
-                        while(+second_num_after_dot % 2 !== 0){
-                            amount = trueRound((forPercent * (entered/100)),2)
-                            second_num_after_dot = amount.toString().split('.')[1][1]
-                            entered -= 0.01
-                            entered = entered.toFixed(2)
-                        }
+                        // while(+second_num_after_dot % 2 !== 0){
+                        //     amount = trueRound((forPercent * (entered/100)),2)
+                        //     second_num_after_dot = amount.toString().split('.')[1][1]
+                        //     entered -= 0.01
+                        //     entered = entered.toFixed(2)
+                        // }
                         TextInputs[i].value = entered;
                         //document.getElementById(id).value = entered;
                     }
+
+                    // amount = trueRound(amount, 2);
+                    // console.log(1)
+                    // console.log(amount)
+                    // let second_num_after_dot;
+
+                    // if(amount.toString().includes('.')){
+                    //     second_num_after_dot = amount.toString().split('.')[1][1]
+                    // }else{
+                    //     second_num_after_dot = 0
+                    // }
+                    // console.log(2)
+                    // console.log('second_num_after_dot: '+second_num_after_dot)
+                    // if(+second_num_after_dot % 2 !== 0){
+                    //     while(+second_num_after_dot % 2 !== 0){
+                    //         amount = trueRound((actual * (entered/100)),2)
+                    //         second_num_after_dot = amount.toString().split('.')[1][1]
+                    //         entered -= 0.01
+                    //         entered = entered.toFixed(2)
+                    //     }
+                    //     document.getElementById(id).value = entered;
+                    // }
                 }
                 
             }else if(selected == 'amount'){
@@ -391,7 +422,17 @@
             let isFirstBill = '{!firstBilling}'
             if(entered < 100 && entered > 0 && isFirstBill == 'true'){
                 amount = trueRound(amount, 2);
-                let second_num_after_dot = amount.toString().split('.')[1][1]
+                console.log(1)
+                console.log(amount)
+                let second_num_after_dot;
+
+                if(amount.toString().includes('.')){
+                    second_num_after_dot = amount.toString().split('.')[1][1]
+                }else{
+                    second_num_after_dot = 0
+                }
+                console.log(2)
+                console.log('second_num_after_dot: '+second_num_after_dot)
                 if(+second_num_after_dot % 2 !== 0){
                     while(+second_num_after_dot % 2 !== 0){
                         amount = trueRound((actual * (entered/100)),2)

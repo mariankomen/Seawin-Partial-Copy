@@ -23,10 +23,10 @@
             text-align: left;
         }
     </style>
-    <apex:stylesheet value="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
-    <apex:includeScript value="//code.jquery.com/jquery-1.10.2.js" />
-    <apex:includeScript value="//code.jquery.com/ui/1.11.2/jquery-ui.js" />
-    <apex:includeScript value="/soap/ajax/15.0/connection.js" />
+    <apex:stylesheet value="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+    <apex:includeScript value="https://code.jquery.com/jquery-1.10.2.js" />
+    <apex:includeScript value="https://code.jquery.com/ui/1.11.2/jquery-ui.js" />
+    <apex:includeScript value="/soap/ajax/55.0/connection.js" />
     <apex:includeScript value="/soap/ajax/15.0/apex.js" />
 	
     <apex:sectionHeader title="Opportunity Edit" subtitle="{!Opp.Name}"></apex:sectionHeader>
@@ -66,28 +66,33 @@
                 <apex:outputField value="{!Opp.RecordTypeId}"></apex:outputField>
 
                 <apex:inputField value="{!Opp.AccountId}" />
-                <!-- <apex:inputField value="{!Opp.Manufacturer_Rep__c}" /> -->
                 <apex:outputField value="{!Opp.Sales_Rep_O__c}" />
 
                 <apex:inputField value="{!Opp.ContactPerson__c}" />
-                <apex:inputField value="{!Opp.Referral_Sales_Rep__c}" />
+                <apex:inputField value="{!Opp.Manufacturer_Rep__c}" />
 
                 <apex:inputField value="{!Opp.Type}" required="true"/>
+                <apex:inputField value="{!Opp.Referral_Sales_Rep__c}" />
+
+                <apex:inputField value="{!Opp.LeadSource}" required="true"/>
                 <apex:inputField value="{!Opp.Specified_Rep__c}" />
                 
-                <apex:inputField value="{!Opp.LeadSource}" required="true"/>
-                <apex:inputField id="stagename" value="{!Opp.StageName}" onchange="stageChange(this.value);"/>
-                
                 <apex:inputField value="{!Opp.Parent_Opportunity__c}" />
-                <apex:inputField id="probability" value="{!Opp.Probability}"/>
-                
+                <apex:inputField id="stagename" value="{!Opp.StageName}" onchange="stageChange(this.value);"/>
+
                 <apex:inputField value="{!Opp.GL_Account_Variable_1__c}" />
-                <apex:inputField id="forecastcategoryname" value="{!Opp.ForecastCategoryName}" />
+                <apex:inputField id="substagename" value="{!Opp.Sub_Stage__c}" onchange="stageChange(this.value);"/>
                 
                 <apex:inputField value="{!Opp.Project__c}" />
-                <apex:inputField value="{!Opp.CloseDate}" />
+                <apex:inputField id="probability" value="{!Opp.Probability}"/>
                 
                 <apex:inputField value="{!Opp.Approval_Status__c}" required="true"/>
+                <apex:inputField id="forecastcategoryname" value="{!Opp.ForecastCategoryName}" />
+                
+                <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                <apex:inputField value="{!Opp.CloseDate}" />
+                
+                <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
                 <apex:inputField value="{!Opp.Loss_Reason__c}" />
 
                 <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
@@ -96,6 +101,8 @@
                 <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
                 <apex:inputField value="{!Opp.Price_Level__c}" />
             </apex:pageBlockSection>
+
+
             <apex:pageBlockSection title="Hospitality Analysis" columns="2" 
             collapsible="false" rendered="{!opp.recordtype.name == 'Seawin USA Hospitality'}">
                 <apex:inputField value="{!Opp.Quote_Due__c}" required="true"/>
@@ -104,6 +111,8 @@
                 <apex:inputField value="{!Opp.Project_Completion_Date__c}"/>
                 <apex:inputField value="{!Opp.Awarded_Owner__c}" required="true"/>
             </apex:pageBlockSection>
+
+
             <apex:pageBlockSection title="Hospitality Sales Related" columns="2" 
             collapsible="false" rendered="{!opp.recordtype.name == 'Seawin USA Hospitality'}">
                 <apex:inputField value="{!Opp.Sent_to_TakeOff_Team__c}"/>
@@ -183,12 +192,13 @@
     </apex:form>
     <script>
         sforce.connection.sessionId = "{!$Api.Session_ID}";
-        
+        sforce.connection.serverUrl = '{!$Site.Prefix}/services/Soap/u/55.0';
         function stageChange(stagename){
         
         //var stagename = document.getElementById('{!$Component.form.pageblock.pageblocksection.stagename}');
         var probability = document.getElementById('{!$Component.form.pageblock.pageblocksection.probability}');
         var forecastcategoryname = document.getElementById('{!$Component.form.pageblock.pageblocksection.forecastcategoryname}');
+        var substagename = document.getElementById('{!$Component.form.pageblock.pageblocksection.substagename}');
         
         var qr = sforce.connection.query("Select DefaultProbability,ForecastCategoryName From OpportunityStage where "+
         " MasterLabel = '" + stagename + "'") ; 
@@ -198,6 +208,7 @@
                 var record = records[i];
                 $(probability).val(parseInt(record.DefaultProbability));
                 $(forecastcategoryname).val(record.ForecastCategoryName);
+                $(substagename).val(null)
                 break;
             }
             return true;

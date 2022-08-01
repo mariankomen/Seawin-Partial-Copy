@@ -5,6 +5,9 @@
         
         <apex:include pageName="SalesSupportDashboardPage" 
         rendered="{!IF(dashboardName == 'Sales Support Dashboard', true, false)}"/>
+        
+        <apex:include pageName="SpecifiedDashboardPage" 
+        rendered="{!IF(dashboardName == 'Specified Dashboard', true, false)}"/>
 
         <apex:include pageName="AccountingDashboardPage" 
         rendered="{!IF(dashboardName == 'Accounting Dashboard', true, false)}"/>

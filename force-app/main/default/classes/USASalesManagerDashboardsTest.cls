@@ -927,8 +927,8 @@ public class USASalesManagerDashboardsTest {
     @isTest static void BillingAgingDashboardUSA(){
         Test.startTest();
         
-        BillingAgingDashboardUSAController.Billing_Aging();
-        BillingAgingDashboardUSAController.Billing_Collection_Performance();
+        //BillingAgingDashboardUSAController.Billing_Aging();
+        //BillingAgingDashboardUSAController.Billing_Collection_Performance();
 
         Test.stopTest();
     }
@@ -964,6 +964,23 @@ public class USASalesManagerDashboardsTest {
         HospitalityDashboardUSAController.Company_Total_Pipeline_Last_12_Months();
         HospitalityDashboardUSAController.Sales_Reps_Total_Pipeline_Last_12_Months();
         HospitalityDashboardUSAController.Pipeline_Last_12_Months_By_Lead_Source();
+
+
+        HospitalityDashboardUSAController.Company_Total_Pre_Order_Pipeline_Last_12_Months();
+        HospitalityDashboardUSAController.Sales_Reps_Total_Pipeline_Pre_Order_Last_12_Months();
+        HospitalityDashboardUSAController.Pipeline_Pre_Order_Last_12_Months_By_Lead_Source();
+        HospitalityDashboardUSAController.Company_Total_Negotiation_Pipeline_Last_12_Months();
+        HospitalityDashboardUSAController.Sales_Reps_Total_Pipeline_Negotiation_Last_12_Months();
+        HospitalityDashboardUSAController.Pipeline_Negotiation_Last_12_Months_By_Lead_Source();
+        HospitalityDashboardUSAController.Specififed_Reps_Total_Pipeline_Pre_Order_Last_12_Months();
+        HospitalityDashboardUSAController.Specififed_Reps_Sales_Last_12_Months();
+        HospitalityDashboardUSAController.Sales_Forecast_Pipeline_Spicified();
+        HospitalityDashboardUSAController.Refferal_Reps_Sales_Last_12_Months();
+        HospitalityDashboardUSAController.Refferral_Reps_Total_Pipeline_Pre_Order_Last_12_Months();
+        HospitalityDashboardUSAController.Sales_Forecast_Pipeline_Refferrall();
+        HospitalityDashboardUSAController.Manuf_Reps_Sales_Last_12_Months();
+        HospitalityDashboardUSAController.Manuf_Reps_Total_Pipeline_Pre_Order_Last_12_Months();
+        HospitalityDashboardUSAController.Sales_Forecast_Pipeline_Manuf();
 
         Test.stopTest();
         HospitalityDashboardUSAController.neglectedWrapper negl = new HospitalityDashboardUSAController.neglectedWrapper(1,1,1,1,'test');

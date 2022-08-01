@@ -1,7 +1,7 @@
 @isTest
 public class OpportunitySalesProcessPathTest {
 
-    static void createData(){
+    public static void createData(){
         
         // create GL Account Variable 1 needed by account
         AcctSeed__Accounting_Variable__c av = new AcctSeed__Accounting_Variable__c(

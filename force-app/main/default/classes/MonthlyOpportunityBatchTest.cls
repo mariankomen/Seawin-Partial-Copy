@@ -56,7 +56,7 @@ public with sharing class MonthlyOpportunityBatchTest {
         insert cont;
 
         AcctSeed__Accounting_Variable__c accVar = new AcctSeed__Accounting_Variable__c();
-        accVar.Name = 'GL acc var1';
+        accVar.Name = 'Seawin USA';
         accVar.AcctSeed__Type__c = 'GL Account Variable 1';
         insert accVar;
 
@@ -76,7 +76,19 @@ public with sharing class MonthlyOpportunityBatchTest {
         Datetime testDT = Datetime.newInstance(2020, 1, 1, 1, 1, 1);
         Test.setCreatedDate(opp.Id, testDT);
 
-
+        Opportunity opp1 = new Opportunity();
+        
+        opp1.Name = 'myOpportunit11111y';
+        opp1.Sales_Rep_O__c = sr.id;
+        opp1.AccountId = acct.Id;
+        opp1.Type = 'Actual Order';
+        opp1.StageName = 'Closed Won';
+        opp1.CloseDate = system.today();
+        opp1.ContactPerson__c = cont.Id;
+        opp1.GL_Account_Variable_1__c = accVar.Id;
+        insert opp1;
+        
+        delete opp1;
     }
 
     @IsTest
