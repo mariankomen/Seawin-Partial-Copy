@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>New_Shipment_Line</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>New Shipment Line</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>true</requireRowSelection>
+    <url>if(&apos;{!AcctSeedERP__Shipment__c.Credit_Order__c}&apos; == null){
+
+alert(&apos;Shipment Line(Credit Order) can not be created, because shipment has not related Credit Order.&apos;);
+
+}else{
+
+var communityUrl = &apos;{!$User.ContactId}&apos; == &apos;&apos; ? &apos;&apos; : &apos;/sales&apos;;
+let url = communityUrl + &apos;/a2H/e?&apos;
+url += &apos;CF00N8F000000TcQa={!AcctSeedERP__Shipment__c.Name}&apos;
+url += &apos;&amp;CF00N8F000000TcQL={!AcctSeedERP__Shipment__c.Credit_Order__c}&apos;
+//url += &apos;&amp;00N8F000000TcPw=Credit Order&apos;
+url += &apos;&amp;retURL=/{!AcctSeedERP__Shipment__c.Id}&amp;sfdc.override=1&apos;;
+
+
+window.location.href = url;
+
+
+
+
+}</url>
+</WebLink>

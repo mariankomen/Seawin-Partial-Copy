@@ -72,6 +72,7 @@ global without sharing class HospitalityDashboardUSAController extends MainSales
         return MonthlySalesMapLocal;
     }
     
+    
     @RemoteAction
     @ReadOnly
     global static map<string, List<ValuesWrapper>> Current_Sales_Contest_QTD() {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>QuantityShipped_Cant_Be_Grater_Ordered</fullName>
+    <active>true</active>
+    <description>If quantity shipped more that quantity ordered</description>
+    <errorConditionFormula>Quantity_Shipped__c &gt; ( Credit_Order_Line__r.Quantity_Ordered__c -  Credit_Order_Line__r.Shipped_Quantity__c )</errorConditionFormula>
+    <errorMessage>Quantity Shipped can&apos;t be more than quantity Ordered.</errorMessage>
+</ValidationRule>

@@ -56,16 +56,20 @@ public class UpdateCommissionsController {
     
     public PageReference PageAction(){
         
-        Pagereference page = null;
-        if(salesOrderCommissions){
-            CalculateCommissionsHandler.UpdateCommissions(so, SalesCommissionChanges, ManufacturerCommissionChanges, 
-            ReferralCommissionChanges, SpecifiedCommissionChanges);
-            page = new PageReference(communityUrl + '/' + so.id);
-        }else{
-            CalculateCommissionsHandler.UpdateCommissionsOpportunity(opp, SalesCommissionChanges, ManufacturerCommissionChanges, 
-            ReferralCommissionChanges, SpecifiedCommissionChanges);
-            page = new PageReference(communityUrl + '/' + opp.id);
-        }
+        Pagereference page = new PageReference(communityUrl + '/' + so.id);
+        CalculateCommissionsHandler.updateExistingCommissions(so.Id);
+
+        // if(salesOrderCommissions){
+        //     CalculateCommissionsHandler.UpdateCommissions(so, SalesCommissionChanges, ManufacturerCommissionChanges, 
+        //     ReferralCommissionChanges, SpecifiedCommissionChanges);
+
+        //     CalculateCommissionsHandler.updateExistingCommissions(so.Id);
+        //     page = new PageReference(communityUrl + '/' + so.id);
+        // }else{
+        //     CalculateCommissionsHandler.UpdateCommissionsOpportunity(opp, SalesCommissionChanges, ManufacturerCommissionChanges, 
+        //     ReferralCommissionChanges, SpecifiedCommissionChanges);
+        //     page = new PageReference(communityUrl + '/' + opp.id);
+        // }
         
         
         

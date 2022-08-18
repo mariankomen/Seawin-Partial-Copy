@@ -809,7 +809,6 @@
         var allSalesRep = {};
         var iterator = 0;
         <apex:repeat value="{!All_SalesReps}" var="rep">
-        console.log('{!rep}')
             if(!allSalesRep.hasOwnProperty('{!rep}')){
                 allSalesRep['{!rep}'] = colorList[iterator];
                 iterator++;
@@ -1136,7 +1135,6 @@
         '{!$RemoteAction.SpecifiedDashboardController.Specififed_Reps_Sales_Last_12_Months}',
             function(result, event){
 
-                console.log('resultresultresultresultresultresult: '+JSON.stringify(result))
                 if (event.status) {
                     const month_year_map = getMapLast12MonthSpec();
 
@@ -1177,7 +1175,6 @@
                             custom: char
                         })
                     }
-                    console.log('MONTHLY SALES LAST !@ MONTH: '+JSON.stringify(MonthlySalesData))
                     RenderMonthlySalesLast12MonthsSalRep(spec_rep_data);
                 } else if (event.type === 'exception') {
                     
@@ -1307,14 +1304,11 @@
             monthlySalesLastTwelveMonths.series[monthlySalesLastTwelveMonths.series.length - 1].remove();
 
         }
-        console.log(2222222222)
     </script>
 
     <script>
-        console.log(111111111111)
         /* --------------- Sales Forecast Pipeline ----------------------*/
         let ForecastDataSpec = new Array();
-        console.log(888888888888)
         let midArraySpec;
         let mainArraySpec = new Array();
         let subArraySpec = new Array();
@@ -1326,7 +1320,6 @@
             function(result, event){
                 
                 if (event.status) {
-                    console.log('FORECAST ============================== ',JSON.stringify(result))
                     for (let key in result) {
                         mainArraySpec = new Array();
                         subArraySpec = new Array();
@@ -1361,15 +1354,12 @@
                         midArraySpec = {name:key, data:mainArraySpec, custom:"{!YEAR(TODAY())}"};
                         ForecastDataSpec.push(midArraySpec);
                     }
-                    console.log('ForecastDataSpecForecastDataSpecForecastDataSpec: '+JSON.stringify(ForecastDataSpec))
                     RenderSalesForecastPipelineSpeccc(ForecastDataSpec);
                 } else if (event.type === 'exception') {
                     
-                        console.log('BLYAAAAAAAAAAAAAAAAAAAAAAAAAAA');
                         console.log(event.message);
                         console.log(event.where);
                 } else {
-                    console.log('BLYAAAAAAAAAAAAAAAAAAAAAAAAAAA');
                     console.log(event.message);
                 }
             }, 
@@ -1487,7 +1477,7 @@
 
     
     <script>
-        /* ---------------------- Company Total Pipeline Last 12 Months ---------------------- */
+        /* ---------------------- Company Total Specified Pipeline Last 12 Months ---------------------- */
         var CompanyTotalPipelineData = new Array();
 
         //Calculate map of last 12 year-month
@@ -1547,11 +1537,10 @@
                         data: month_amount
                     })
 
-                    console.log('dashboard_arr: total pipeline: ',dashboard_arr)
                     RenderCompanyTotalPipelineLast12MonthsSpecified(dashboard_arr);
                 } else if (event.type === 'exception') {
                     
-                        console.log('Exception has occured in Company Total Pipeline Last 12 Months...');
+                        console.log('Exception has occured in Company Total Specified Pipeline Last 12 Months...');
                         console.log(event.message);
                         console.log(event.where);
                 } else {
@@ -1574,8 +1563,8 @@
                 chart: {
                     events: {
                         click: function(event) {
-                            var chartName = "Company Total Pipeline Last 12 Months";
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Total_Pipeline_SMD_USA&title='+encodeURI(chartName)+'&click=chart';
+                            var chartName = "Company Total Specified Pipeline Last 12 Months";
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Total_Pipeline_Specified_SMD_USA&title='+encodeURI(chartName)+'&click=chart';
                             url += '&duration=&str=';
                             url += '&dashboard=SMD_USA';
                             window.open(url, '_blank');
@@ -1634,8 +1623,8 @@
                         events: {
                             legendItemClick: function(event) {
 
-                                var chartName = "Company Total Pipeline Last 12 Months";
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Total_Pipeline_SMD_USA&title='+encodeURI(chartName)+'&click=legend';
+                                var chartName = "Company Total Specified Pipeline Last 12 Months";
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Total_Pipeline_Specified_SMD_USA&title='+encodeURI(chartName)+'&click=legend';
                             url += '&duration=&str='+event.target.userOptions.name+'&year=';
                                 url += '&dashboard=SMD_USA';
                                 window.open(url, '_blank');
@@ -1656,13 +1645,10 @@
                                 let full_year = '20'
                                 // var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
                                 var year = full_year + YearIndex
-                                console.log('YearIndex: ',YearIndex)
-                                console.log('full_year: ',full_year)
-                                console.log('year: ',year)
                                 var duration = '';
 
-                                var chartName = "Company Total Pipeline Last 12 Months";
-                                var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Total_Pipeline_SMD_USA&title='+encodeURI(chartName)+'&click=point';
+                                var chartName = "Company Total Specified Pipeline Last 12 Months";
+                                var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Total_Pipeline_Specified_SMD_USA&title='+encodeURI(chartName)+'&click=point';
                                 url += '&duration='+duration+'&month='+month+'&year='+year+'&str='+
                                     event.point.series.userOptions.name;
                                 url += '&dashboard=SMD_USA';
@@ -1746,11 +1732,11 @@
                 RenderCompanyPipelineLast12MonthBySpecifiedRep(sales_rep_data);
             } else if (event.type === 'exception') {
                 
-                    console.log('Exception has occured in Pipeline Last 12 Months by Sales Rep / Team...');
+                    console.log('Exception has occured in Pipeline Last 12 Months by Specified Rep...');
                     console.log(event.message);
                     console.log(event.where);
             } else {
-                console.log('Error occured in Pipeline Last 12 Months by Sales Rep / Team...');
+                console.log('Error occured in Pipeline Last 12 Months by Specified Rep...');
                 console.log(event.message);
             }
         }, 
@@ -1769,8 +1755,8 @@
             chart: {
                 events: {
                     click: function(event) {
-                        var chartName = "Pre-Orders Pipeline last 12 months by Specified Rep";
-                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Spec_Pre_Order_Pipeline_SMD_USA&title='+encodeURI(chartName)+'&click=chart';
+                        var chartName = "Pipeline Last 12 Months by Specified Rep";
+                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Pipeline_By_Specified_SMD_USA&title='+encodeURI(chartName)+'&click=chart';
                         url += '&duration=&str=';
                         url += '&dashboard=SMD_USA';
                         window.open(url, '_blank');
@@ -1850,8 +1836,8 @@
                             var year = '20' + YearIndex
                             var duration = '';
 
-                            var chartName = "Pre-Orders Pipeline last 12 months by Specified Rep";
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Spec_Pre_Order_Pipeline_SMD_USA&title='+encodeURI(chartName)+'&click=point';
+                            var chartName = "Pipeline Last 12 Months by Specified Rep";
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Pipeline_By_Specified_SMD_USA&title='+encodeURI(chartName)+'&click=point';
                             url += '&duration='+duration+'&month='+month+'&year='+year+'&str='+
                                 event.point.series.userOptions.name;
                             url += '&dashboard=SMD_USA';
@@ -1877,87 +1863,87 @@
 </script>
 
 <script>
-    /* ------------------- Newly Submitted Opportunities Last 12 Months ------------------------ */
-    var NewlySubmittedOpportunitiesDataCountPerMonth = new Array();
-    var NewlySubmittedOpportunitiesData = new Array();
-    var NewlySubmittedOpportunitiesCategories = new Array();
+   /* ------------------- Newly Submitted Spec Opportunities Last 12 Months ------------------------ */
+   var NewlySubmittedOpportunitiesDataCountPerMonthSpecNewly = new Array();
+        var NewlySubmittedOpportunitiesDataSpecNewly = new Array();
+        var NewlySubmittedOpportunitiesCategoriesSpec = new Array();
 
-    
-    function NewlySubmittedOpportunities() {
         
-        for (var i = 11; i >= 0; i--) {
+        function NewlySubmittedOpportunitiesSpec() {
+            
+            for (var i = 11; i >= 0; i--) {
 
-            if(typeof NewlySubmittedOpportunitiesDataCountPerMonth[11-i] === 'undefined') {
-                NewlySubmittedOpportunitiesDataCountPerMonth[11-i] = 0;
+                if(typeof NewlySubmittedOpportunitiesDataCountPerMonthSpecNewly[11-i] === 'undefined') {
+                    NewlySubmittedOpportunitiesDataCountPerMonthSpecNewly[11-i] = 0;
+                }
+                NewlySubmittedOpportunitiesCategoriesSpec.push(Last12MonthsCategories[i]+ 
+                                                        ' ('+NewlySubmittedOpportunitiesDataCountPerMonthSpecNewly[11-i]+')');
             }
-            NewlySubmittedOpportunitiesCategories.push(Last12MonthsCategories[i]+ 
-                                                       ' ('+NewlySubmittedOpportunitiesDataCountPerMonth[11-i]+')');
         }
-    }
 
-    var mainArray = new Array(); 
-    var DataArray = new Array();
-    var subArray = new Array();
+        var mainArraySpecNewly = new Array(); 
+        var DataArraySpecNewly = new Array();
+        var subArraySpecNewly = new Array();
 
-    Visualforce.remoting.timeout = 120000;
+        Visualforce.remoting.timeout = 120000;
 
-    Visualforce.remoting.Manager.invokeAction(
-    '{!$RemoteAction.SpecifiedDashboardController.Newly_Submitted_Opportunities_By_Specified_Rep}',
-        function(result, event){
+        Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.SpecifiedDashboardController.Newly_Submitted_Opportunities_By_Specified_Rep}',
+            function(result, event){
+                console.log('PLEASE LOOK THERE::::: '+JSON.stringify(result))
+                if (event.status) {
+                    for (var key in result) {
 
-            if (event.status) {
-                for (var key in result) {
+                        DataArraySpecNewly = new Array();
 
-                    DataArray = new Array();
+                        mainArraySpecNewly = new Array(); 
 
-                    mainArray = new Array(); 
+                        result[key].forEach(buildarray);
+                        
+                        function buildarray(item, index) {
 
-                    result[key].forEach(buildarray);
-                    
-                    function buildarray(item, index) {
-
-                        subArray = new Array();
-                        var amount = item.amount;
-                        if(amount != ""){
-                            amount = parseInt(amount);
-                            subArray.push(item.valueindex, item.amount);
-                            DataArray.push(subArray);
-                            if(typeof NewlySubmittedOpportunitiesDataCountPerMonth[item.valueindex] === 'undefined') {
-                                NewlySubmittedOpportunitiesDataCountPerMonth[item.valueindex] = amount;
-                            }
-                            else{
-                                NewlySubmittedOpportunitiesDataCountPerMonth[item.valueindex] += amount;
+                            subArraySpecNewly = new Array();
+                            var amount = item.amount;
+                            if(amount != ""){
+                                amount = parseInt(amount);
+                                subArraySpecNewly.push(item.valueindex, item.amount ? item.amount : 0);
+                                DataArraySpecNewly.push(subArraySpecNewly);
+                                if(typeof NewlySubmittedOpportunitiesDataCountPerMonthSpecNewly[item.valueindex] === 'undefined') {
+                                    NewlySubmittedOpportunitiesDataCountPerMonthSpecNewly[item.valueindex] = amount;
+                                }
+                                else{
+                                    NewlySubmittedOpportunitiesDataCountPerMonthSpecNewly[item.valueindex] += amount;
+                                }
                             }
                         }
-                    }
 
-                    MainArray = {name:"newlySubmittedData", data:DataArray};
-                    NewlySubmittedOpportunitiesData.push(MainArray);
-                }
-                
-                NewlySubmittedOpportunities();
-                let setted_month = []
-                NewlySubmittedOpportunitiesData[0].data.forEach(el => setted_month.push(el[0]))
-
-                for(let i = 0; i<12; i++){
-                    if(!setted_month.includes(i)){
-                        NewlySubmittedOpportunitiesData[0].data.push([i, 0])
+                        mainArraySpecNewly = {name:"newlySubmittedData", data:DataArraySpecNewly};
+                        NewlySubmittedOpportunitiesDataSpecNewly.push(mainArraySpecNewly);
                     }
-                }
-                NewlySubmittedOpportunitiesData[0].data.sort((a, b) => b[0] - a[0]).reverse()
-                RenderNewlySubmittedSpecifiedOpportunitiesLast12Months(NewlySubmittedOpportunitiesData);
-            } else if (event.type === 'exception') {
-                
-                    console.log('Exception has occured in Newly Submitted Opportunities Last 12 Months...');
+                    
+                    NewlySubmittedOpportunitiesSpec();
+                    let setted_month = []
+                    NewlySubmittedOpportunitiesDataSpecNewly[0].data.forEach(el => setted_month.push(el[0]))
+
+                    for(let i = 0; i<12; i++){
+                        if(!setted_month.includes(i)){
+                            NewlySubmittedOpportunitiesDataSpecNewly[0].data.push([i, 0])
+                        }
+                    }
+                    NewlySubmittedOpportunitiesDataSpecNewly[0].data.sort((a, b) => b[0] - a[0]).reverse()
+                    RenderNewlySubmittedSpecifiedOpportunitiesLast12Months(NewlySubmittedOpportunitiesDataSpecNewly);
+                } else if (event.type === 'exception') {
+                    
+                        console.log('Exception has occured in Newly Submitted Opportunities Last 12 Months...');
+                        console.log(event.message);
+                        console.log(event.where);
+                } else {
+                    console.log('Error occured in Newly Submitted Opportunities Last 12 Months...');
                     console.log(event.message);
-                    console.log(event.where);
-            } else {
-                console.log('Error occured in Newly Submitted Opportunities Last 12 Months...');
-                console.log(event.message);
-            }
-        }, 
-        {escape: true}
-    ); 
+                }
+            }, 
+            {escape: true}
+        );  
 
     function RenderNewlySubmittedSpecifiedOpportunitiesLast12Months(NewlySubmittedOpportunitiesData){
 
@@ -1972,7 +1958,7 @@
 
                 events: {
                     click: function(event) {
-                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Newly_Submitted_Opportunities_Last_12_Months_SMD&title=Newly Submitted Opportunities Last 12 Months&click=chart';
+                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Newly_Submitted_Opportunities_Last_12_Months_Specified&title=Newly Submitted Specified Opportunities Last 12 Months&click=chart';
                         url += '&duration=&str=';
                         url += '&dashboard=SMD_USA';
                         window.open(url, '_blank');
@@ -1983,7 +1969,7 @@
                 text: ''
             },
             xAxis: {
-                categories: NewlySubmittedOpportunitiesCategories,
+                categories: NewlySubmittedOpportunitiesCategoriesSpec,
                 min: 0,
                 max: 11
             },
@@ -2033,7 +2019,7 @@
                             var year = (month >= 1 && month <= CurrentMonth) ? d.getFullYear(): d.getFullYear() - 1;
                             var duration = '';
 
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Newly_Submitted_Opportunities_Last_12_Months_SMD&title=Newly Submitted Opportunities Last 12 Months&click=month-point';
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Newly_Submitted_Opportunities_Last_12_Months_Specified&title=Newly Submitted Specified Opportunities Last 12 Months&click=month-point';
                             url += '&duration=&month='+month+'&year='+year+'&str=';
                             url += '&dashboard=SMD_USA';
                             window.open(url, '_blank');
@@ -2048,26 +2034,26 @@
         NewlySubmittedOpportunitiesLastTwelveMonths.addSeries({"data":[]});
         NewlySubmittedOpportunitiesLastTwelveMonths.series[NewlySubmittedOpportunitiesLastTwelveMonths.series.length - 1].remove();
     }
-    </script>
-
+</script>
 <script>
+
     /* ---------------------- Lost Specified Opportunities Last 12 Months ------------------------ */
-    var LostOpptysDataCountPerMonth = new Array();
-    var LostOpptysData = new Array();
-    var LostOpptysCategories = new Array();
+    var LostOpptysDataCountPerMonthSpec = new Array();
+    var LostOpptysDataSpec = new Array();
+    var LostOpptysCategoriesSpec = new Array();
     
-    function LostOpportunities() {
+    function LostOpportunitiesSpec() {
         
         for (var i = 11; i >= 0; i--) {
-            if(typeof LostOpptysDataCountPerMonth[11-i] === 'undefined') {
-                LostOpptysDataCountPerMonth[11-i] = 0;
+            if(typeof LostOpptysDataCountPerMonthSpec[11-i] === 'undefined') {
+                LostOpptysDataCountPerMonthSpec[11-i] = 0;
             }
-            LostOpptysCategories.push(Last12MonthsCategories[i]+ 
-            ' ('+LostOpptysDataCountPerMonth[11-i]+')');
+            LostOpptysCategoriesSpec.push(Last12MonthsCategories[i]+ 
+            ' ('+LostOpptysDataCountPerMonthSpec[11-i]+')');
         }
     }
     
-    var dataArray = new Array();
+    var dataArraySpec = new Array();
 
     Visualforce.remoting.timeout = 120000;
 
@@ -2089,34 +2075,34 @@
                         if(amount != ""){
                             amount = parseInt(amount);
                             subArray.push(item.valueindex, item.amount);
-                            dataArray.push(subArray);
-                            if(typeof LostOpptysDataCountPerMonth[item.valueindex] === 'undefined') {
-                                LostOpptysDataCountPerMonth[item.valueindex] = amount;
+                            dataArraySpec.push(subArray);
+                            if(typeof LostOpptysDataCountPerMonthSpec[item.valueindex] === 'undefined') {
+                                LostOpptysDataCountPerMonthSpec[item.valueindex] = amount;
                             }
                             else{
-                                LostOpptysDataCountPerMonth[item.valueindex] += amount;
+                                LostOpptysDataCountPerMonthSpec[item.valueindex] += amount;
                             }
                         }
                     }
                 }
 
-                var mainArray = {name:"lostOpportunities", data:dataArray};
-                LostOpptysData.push(mainArray);
+                var mainArray = {name:"lostOpportunities", data:dataArraySpec};
+                LostOpptysDataSpec.push(mainArray);
 
-                LostOpportunities();
+                LostOpportunitiesSpec();
                 let setted_month = []
-                LostOpptysData[0].data.forEach(el => setted_month.push(el[0]))
+                LostOpptysDataSpec[0].data.forEach(el => setted_month.push(el[0]))
 
                 for(let i = 0; i<12; i++){
                     if(!setted_month.includes(i)){
-                        LostOpptysData[0].data.push([i, 0])
+                        LostOpptysDataSpec[0].data.push([i, 0])
                     }
                 }
-                LostOpptysData[0].data.sort((a, b) => b[0] - a[0]).reverse()
-                RenderChartLostSpecifiedOpportunities(LostOpptysData);
+                LostOpptysDataSpec[0].data.sort((a, b) => b[0] - a[0]).reverse()
+                RenderChartLostSpecifiedOpportunities(LostOpptysDataSpec);
             } else if (event.type === 'exception') {
                 
-                    console.log('Exception has occured in Lost Opportunities Specified Last 12 Months...');
+                    console.log('Exception has occured in Lost Specified Opportunities Last 12 Months...');
                     console.log(event.message);
                     console.log(event.where);
             } else {
@@ -2137,7 +2123,7 @@
                 
                 events: {
                     click: function(event) {
-                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Lost_Opportunities_SMD&title=Lost Opportunities Last 12 Months&click=chart';
+                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Lost_Opportunities_Specified&title=Lost Specified Opportunities Last 12 Months&click=chart';
                         url += '&duration=&str=';
                         url += '&dashboard=SMD_USA';
                         window.open(url, '_blank');
@@ -2148,7 +2134,7 @@
                 text: ''
             },
             xAxis: {
-                categories: LostOpptysCategories,
+                categories: LostOpptysCategoriesSpec,
                 min:0,
                 max:11
             },
@@ -2200,9 +2186,9 @@
                             var duration = '';
                             
                             
-                            var chartName = "Lost Opportunities Last 12 Months";          
+                            var chartName = "Lost Specified Opportunities Last 12 Months";          
                             
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Lost_Opportunities_SMD&title='+encodeURI(chartName)+'&click=month-point';                                 
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Lost_Opportunities_Specified&title='+encodeURI(chartName)+'&click=month-point';                                 
                             url += '&duration='+duration+'&month='+month+'&year='+year+'&str=';
                             url += '&dashboard=SMD_USA';
                             window.open(url, '_blank');
@@ -2224,41 +2210,54 @@
 
 
     <script>
-        /* -------------------- Win Rate ------------------------ */
+        /* -------------------- Win Rate by Specified Rep ------------------------ */
         var WinRateData = new Array();
-        var WinRateCategories = new Array();
+        var WinRateCategoriesSpecified = new Array();
         var midArray;
 
         Visualforce.remoting.timeout = 120000;
 
         Visualforce.remoting.Manager.invokeAction(
-        '{!$RemoteAction.SpecifiedDashboardController.Win_Rate_Specified}',
+        '{!$RemoteAction.SpecifiedDashboardController.Win_Rate_Specified_New}',
             function(result, event){
 
                 if (event.status) {
-                    for (var key in result) {
 
-                        mainArray = new Array();
-
-                        result[key].forEach(buildarray);
-                        
-                        function buildarray(item, index) {
-
-                            var subArray = new Array();
-                            subArray.push(item.valueindex, item.amount);
-                            mainArray.push(subArray);
+   
+                    const specified_rep_map = {}
+                    const main_data = []
+                    result.forEach(rep => {
+                        if(!specified_rep_map[rep.Specified_Rep__r.Name]){
+                            specified_rep_map[rep.Specified_Rep__r.Name] = [rep];
+                        }else{
+                            specified_rep_map[rep.Specified_Rep__r.Name].push(rep);
                         }
+                    })
+                    let counter_win = 0
+                    for(let char in specified_rep_map){
+                        let counter_won = 0
+                        let counter_lost = 0
+                        let total_opp = 0
+                        specified_rep_map[char].forEach(el => {
+                            if(el.StageName == 'Closed Won'){
+                                counter_won++
+                            }else if(el.StageName == 'Closed Lost'){
+                                counter_lost++
+                            }
 
-                        WinRateCategories.push(key);
-                        midArray = {name:(key).split(',')[0], data:mainArray, custom:key};      
-                        WinRateData.push(midArray);
+                            total_opp++;
+                        })
+                        let win_percent = counter_won == 0 ? 0 : (counter_won * 100)/total_opp;
+                        main_data.push({
+                            name: char,
+                            data: [win_percent],
+                            custom: char
+                        })
+                        WinRateCategoriesSpecified.push(char)
+                        counter_win++;
                     }
-
-                    WinRateCategories = WinRateCategories.filter(onlyUnique);
-
-                    WinRateCategories.sort();
-
-                    RenderChartWinRateSpecified(WinRateData);
+                    
+                    RenderChartWinRateSpecified(main_data);
                 } else if (event.type === 'exception') {
                     
                         console.log('Exception has occured in Win Rate...');
@@ -2273,7 +2272,7 @@
         );
 
         function RenderChartWinRateSpecified(WinRateData){
-            var winRateSMD = Highcharts.chart('win_rate_specified', {
+            var winRateSMDSpec = Highcharts.chart('win_rate_specified', {
                 credits:{
                     enabled: false
                 },
@@ -2281,7 +2280,7 @@
                     type: 'bar',
                     events: {
                         click: function(event) {
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Win_Rate_SMD&title=Win Rate&click=chart';
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Win_Rate_Specified&title=Win Rate by Specified Rep&click=chart';
                             url += '&duration=&str=';
                             url += '&dashboard=SMD_USA';
                             window.open(url, '_blank');
@@ -2295,7 +2294,7 @@
                     floating: false,  
                     enabled: true,
                     labelFormatter: function () {
-                        this.color = getRepsColor(this.name);
+                        this.color = getSpecColor(this.name);
                         return '<span style="color: '+this.color+'"></span>' + this.name;
                     }     
                 },
@@ -2306,9 +2305,9 @@
                     text: ''
                 },
                 xAxis: {
-                    categories: WinRateCategories,
+                    categories: WinRateCategoriesSpecified,
                     crosshair: false,
-                    min: 0,  
+                    min: 0 
                 },
                 yAxis: {
                     min: 0,
@@ -2335,7 +2334,7 @@
                                 var category = event.point.category;
                                 // var duration = this.userOptions.name;
                                 
-                                var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Win_Rate_SMD&title=Win Rate&click=bar';
+                                var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Win_Rate_Specified&title=Win Rate by Specified Rep&click=bar';
                                 url += '&duration=&year=&str='+category;
                                 url += '&dashboard=SMD_USA';
                                 window.open(url, '_blank');
@@ -2346,10 +2345,9 @@
                 },
                 series: WinRateData
             });
-
             //For redraw the chart to add colors to the legend symbols
-            winRateSMD.addSeries({"data":[]});
-            winRateSMD.series[winRateSMD.series.length - 1].remove();
+            winRateSMDSpec.addSeries({"data":[]});
+            winRateSMDSpec.series[winRateSMDSpec.series.length - 1].remove();
         }
     </script>
 
@@ -2384,7 +2382,7 @@
 
     <!-- Refferall Graphs -->
     <script>
-        /* --------------------- Monthly Sales Last 12 Months ------------------------- */
+        /* --------------------- Monthly_Sales_Last_12_Months_Refferral_H ------------------------- */
         var MonthlySalesData = new Array();
 
         var mainArray = new Array();
@@ -2417,7 +2415,6 @@
         '{!$RemoteAction.SpecifiedDashboardController.Refferal_Reps_Sales_Last_12_Months}',
             function(result, event){
 
-                console.log('resultresultresultresultresultresult: '+JSON.stringify(result))
                 if (event.status) {
                     const month_year_map = getMapLast12MonthSpec();
 
@@ -2458,7 +2455,6 @@
                             custom: char
                         })
                     }
-                    console.log('MONTHLY SALES LAST !@ MONTH: '+JSON.stringify(MonthlySalesData))
                     RenderMonthlySalesLast12MonthsRefRep(spec_rep_data);
                 } else if (event.type === 'exception') {
                     
@@ -2588,12 +2584,11 @@
             monthlySalesLastTwelveMonths.series[monthlySalesLastTwelveMonths.series.length - 1].remove();
 
         }
-        console.log(2222222222)
     </script>
 
     <script>
             
-        /* ---------------- Pipeline Last 12 Months by Sales Rep / Team ----------------------*/
+        /* ---------------- Pre-Orders Pipeline last 12 months by Referral Rep ----------------------*/
         var SalesRepTotalPipelineData = new Array();
         
         var SalesRepTotalPipelineCategories_Temp = new Array();
@@ -2790,10 +2785,8 @@
     </script>
 
     <script>
-        console.log(111111111111)
-        /* --------------- Sales Forecast Pipeline ----------------------*/
+        /* --------------- Sales Forecast by Referral Rep ----------------------*/
         let ForecastDataReff = new Array();
-        console.log(888888888888)
         let midArrayRef;
         let mainArrayReff = new Array();
         let subArrayReff = new Array();
@@ -2805,7 +2798,6 @@
             function(result, event){
                 
                 if (event.status) {
-                    console.log('FORECAST ============================== ',JSON.stringify(result))
                     for (let key in result) {
                         mainArrayReff = new Array();
                         subArrayReff = new Array();
@@ -2840,15 +2832,12 @@
                         midArrayRef = {name:key, data:mainArrayReff, custom:"{!YEAR(TODAY())}"};
                         ForecastDataReff.push(midArrayRef);
                     }
-                    console.log('ForecastDataSpecForecastDataSpecForecastDataSpec: '+JSON.stringify(ForecastDataSpec))
                     RenderSalesForecastPipelineReff(ForecastDataReff);
                 } else if (event.type === 'exception') {
                     
-                        console.log('BLYAAAAAAAAAAAAAAAAAAAAAAAAAAA');
                         console.log(event.message);
                         console.log(event.where);
                 } else {
-                    console.log('BLYAAAAAAAAAAAAAAAAAAAAAAAAAAA');
                     console.log(event.message);
                 }
             }, 
@@ -2965,7 +2954,7 @@
     </script>
 
     <script>
-        /* ---------------------- Company Total Specified Pipeline Last 12 Months ---------------------- */
+        /* ---------------------- Company Total Referral Pipeline Last 12 Months ---------------------- */
         var CompanyTotalPipelineData = new Array();
 
         //Calculate map of last 12 year-month
@@ -3025,11 +3014,10 @@
                         data: month_amount
                     })
 
-                    console.log('dashboard_arr: total pipeline: ',dashboard_arr)
                     RenderCompanyTotalPipelineLast12MonthsReff(dashboard_arr);
                 } else if (event.type === 'exception') {
                     
-                        console.log('Exception has occured in Company Total Pipeline Last 12 Months...');
+                        console.log('Exception has occured in Company Total Referral Pipeline Last 12 Monthss...');
                         console.log(event.message);
                         console.log(event.where);
                 } else {
@@ -3052,8 +3040,8 @@
                 chart: {
                     events: {
                         click: function(event) {
-                            var chartName = "Company Total Pipeline Last 12 Months";
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Total_Pipeline_SMD_USA&title='+encodeURI(chartName)+'&click=chart';
+                            var chartName = "Company Total Referral Pipeline Last 12 Months";
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Total_Pipeline_Referral_SMD_USA&title='+encodeURI(chartName)+'&click=chart';
                             url += '&duration=&str=';
                             url += '&dashboard=SMD_USA';
                             window.open(url, '_blank');
@@ -3112,8 +3100,8 @@
                         events: {
                             legendItemClick: function(event) {
 
-                                var chartName = "Company Total Pipeline Last 12 Months";
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Total_Pipeline_SMD_USA&title='+encodeURI(chartName)+'&click=legend';
+                                var chartName = "Company Total Referral Pipeline Last 12 Months";
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Total_Pipeline_Referral_SMD_USA&title='+encodeURI(chartName)+'&click=legend';
                             url += '&duration=&str='+event.target.userOptions.name+'&year=';
                                 url += '&dashboard=SMD_USA';
                                 window.open(url, '_blank');
@@ -3134,13 +3122,10 @@
                                 let full_year = '20'
                                 // var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
                                 var year = full_year + YearIndex
-                                console.log('YearIndex: ',YearIndex)
-                                console.log('full_year: ',full_year)
-                                console.log('year: ',year)
                                 var duration = '';
 
-                                var chartName = "Company Total Pipeline Last 12 Months";
-                                var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Total_Pipeline_SMD_USA&title='+encodeURI(chartName)+'&click=point';
+                                var chartName = "Company Total Referral Pipeline Last 12 Months";
+                                var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Total_Pipeline_Referral_SMD_USA&title='+encodeURI(chartName)+'&click=point';
                                 url += '&duration='+duration+'&month='+month+'&year='+year+'&str='+
                                     event.point.series.userOptions.name;
                                 url += '&dashboard=SMD_USA';
@@ -3224,11 +3209,11 @@
                     RenderCompanyPipelineLast12MonthByRefRep(sales_rep_data);
                 } else if (event.type === 'exception') {
                     
-                        console.log('Exception has occured in Pipeline Last 12 Months by Sales Rep / Team...');
+                        console.log('Exception has occured in Pipeline Last 12 Months by Referral Rep...');
                         console.log(event.message);
                         console.log(event.where);
                 } else {
-                    console.log('Error occured in Pipeline Last 12 Months by Sales Rep / Team...');
+                    console.log('Error occured in Pipeline Last 12 Months by Referral Rep...');
                     console.log(event.message);
                 }
             }, 
@@ -3247,8 +3232,8 @@
                 chart: {
                     events: {
                         click: function(event) {
-                            var chartName = "Pre-Orders Pipeline last 12 months by Specified Rep";
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Spec_Pre_Order_Pipeline_SMD_USA&title='+encodeURI(chartName)+'&click=chart';
+                            var chartName = "Pipeline Last 12 Months by Referral Rep";
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Referral_Pipeline_Last_12_Month&title='+encodeURI(chartName)+'&click=chart';
                             url += '&duration=&str=';
                             url += '&dashboard=SMD_USA';
                             window.open(url, '_blank');
@@ -3328,8 +3313,8 @@
                                 var year = '20' + YearIndex
                                 var duration = '';
 
-                                var chartName = "Pre-Orders Pipeline last 12 months by Specified Rep";
-                                var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Spec_Pre_Order_Pipeline_SMD_USA&title='+encodeURI(chartName)+'&click=point';
+                                var chartName = "Pipeline Last 12 Months by Referral Rep";
+                                var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Referral_Pipeline_Last_12_Month&title='+encodeURI(chartName)+'&click=point';
                                 url += '&duration='+duration+'&month='+month+'&year='+year+'&str='+
                                     event.point.series.userOptions.name;
                                 url += '&dashboard=SMD_USA';
@@ -3399,7 +3384,7 @@
                             var amount = item.amount;
                             if(amount != ""){
                                 amount = parseInt(amount);
-                                subArray.push(item.valueindex, item.amount);
+                                subArray.push(item.valueindex, item.amount ? item.amount : 0);
                                 DataArray.push(subArray);
                                 if(typeof NewlySubmittedOpportunitiesDataCountPerMonthRef[item.valueindex] === 'undefined') {
                                     NewlySubmittedOpportunitiesDataCountPerMonthRef[item.valueindex] = amount;
@@ -3424,7 +3409,6 @@
                         }
                     }
                     NewlySubmittedOpportunitiesDataRef[0].data.sort((a, b) => b[0] - a[0]).reverse()
-                    
                     RenderNewlySubmittedReferralOpportunitiesLast12Months(NewlySubmittedOpportunitiesDataRef);
                 } else if (event.type === 'exception') {
                     
@@ -3452,7 +3436,7 @@
 
                     events: {
                         click: function(event) {
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Newly_Submitted_Opportunities_Last_12_Months_SMD&title=Newly Submitted Opportunities Last 12 Months&click=chart';
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Newly_Submitted_Referral_Opportunities_Last_12_Month&title=Newly Submitted Referral Opportunities Last 12 Months&click=chart';
                             url += '&duration=&str=';
                             url += '&dashboard=SMD_USA';
                             window.open(url, '_blank');
@@ -3513,7 +3497,7 @@
                                 var year = (month >= 1 && month <= CurrentMonth) ? d.getFullYear(): d.getFullYear() - 1;
                                 var duration = '';
 
-                                var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Newly_Submitted_Opportunities_Last_12_Months_SMD&title=Newly Submitted Opportunities Last 12 Months&click=month-point';
+                                var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Newly_Submitted_Referral_Opportunities_Last_12_Month&title=Newly Submitted Referral Opportunities Last 12 Months&click=month-point';
                                 url += '&duration=&month='+month+'&year='+year+'&str=';
                                 url += '&dashboard=SMD_USA';
                                 window.open(url, '_blank');
@@ -3617,7 +3601,7 @@
                 
                 events: {
                     click: function(event) {
-                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Lost_Opportunities_SMD&title=Lost Opportunities Last 12 Months&click=chart';
+                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Lost_Opportunities_Referrall&title=Lost Referral Opportunities Last 12 Months&click=chart';
                         url += '&duration=&str=';
                         url += '&dashboard=SMD_USA';
                         window.open(url, '_blank');
@@ -3680,9 +3664,9 @@
                             var duration = '';
                             
                             
-                            var chartName = "Lost Opportunities Last 12 Months";          
+                            var chartName = "Lost Referral Opportunities Last 12 Months";          
                             
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Lost_Opportunities_SMD&title='+encodeURI(chartName)+'&click=month-point';                                 
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Lost_Opportunities_Referrall&title='+encodeURI(chartName)+'&click=month-point';                                 
                             url += '&duration='+duration+'&month='+month+'&year='+year+'&str=';
                             url += '&dashboard=SMD_USA';
                             window.open(url, '_blank');
@@ -3710,40 +3694,73 @@
     Visualforce.remoting.timeout = 120000;
 
     Visualforce.remoting.Manager.invokeAction(
-    '{!$RemoteAction.SpecifiedDashboardController.Win_Rate_Referral}',
+    '{!$RemoteAction.SpecifiedDashboardController.Win_Rate_Ref_New}',
         function(result, event){
 
             if (event.status) {
-                for (var key in result) {
+                const specified_rep_map = {}
+                    const main_data = []
+                    result.forEach(rep => {
+                        if(!specified_rep_map[rep.Referral_Sales_Rep__r.Name]){
+                            specified_rep_map[rep.Referral_Sales_Rep__r.Name] = [rep];
+                        }else{
+                            specified_rep_map[rep.Referral_Sales_Rep__r.Name].push(rep);
+                        }
+                    })
+                    let counter_win = 0
+                    for(let char in specified_rep_map){
+                        let counter_won = 0
+                        let counter_lost = 0
+                        let total_opp = 0
+                        specified_rep_map[char].forEach(el => {
+                            if(el.StageName == 'Closed Won'){
+                                counter_won++
+                            }else if(el.StageName == 'Closed Lost'){
+                                counter_lost++
+                            }
 
-                    mainArray = new Array();
-
-                    result[key].forEach(buildarray);
-                    
-                    function buildarray(item, index) {
-
-                        var subArray = new Array();
-                        subArray.push(item.valueindex, item.amount);
-                        mainArray.push(subArray);
+                            total_opp++;
+                        })
+                        let win_percent = counter_won == 0 ? 0 : (counter_won * 100)/total_opp;
+                        main_data.push({
+                            name: char,
+                            data: [win_percent],
+                            custom: char
+                        })
+                        WinRateCategoriesRef.push(char)
+                        counter_win++;
                     }
 
-                    WinRateCategoriesRef.push(key);
-                    winRateMidArrayRef = {name:(key).split(',')[0], data:mainArray, custom:key};      
-                    WinRateDataRef.push(winRateMidArrayRef);
-                }
+                // for (var key in result) {
 
-                WinRateCategoriesRef = WinRateCategoriesRef.filter(onlyUnique);
+                //     mainArray = new Array();
 
-                WinRateCategoriesRef.sort();
+                //     result[key].forEach(buildarray);
+                    
+                //     function buildarray(item, index) {
 
-                RenderChartWinRateReferral(WinRateDataRef);
+                //         var subArray = new Array();
+                //         subArray.push(item.valueindex, item.amount);
+                //         mainArray.push(subArray);
+                //     }
+
+                //     WinRateCategoriesRef.push(key);
+                //     winRateMidArrayRef = {name:(key).split(',')[0], data:mainArray, custom:key};      
+                //     WinRateDataRef.push(winRateMidArrayRef);
+                // }
+
+                // WinRateCategoriesRef = WinRateCategoriesRef.filter(onlyUnique);
+
+                // WinRateCategoriesRef.sort();
+                // console.log('cyk: '+JSON.stringify(WinRateDataRef))
+                RenderChartWinRateReferral(main_data);
             } else if (event.type === 'exception') {
                 
-                    console.log('Exception has occured in Win Rate...');
+                    console.log('Exception has occured in Win Rate by Referral Rep...');
                     console.log(event.message);
                     console.log(event.where);
             } else {
-                    console.log('Error occured in Win Rate...');
+                    console.log('Error occured in Win Rate by Referral Repe...');
                     console.log(event.message);
             }
         }, 
@@ -3759,7 +3776,7 @@
                 type: 'bar',
                 events: {
                     click: function(event) {
-                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Win_Rate_SMD&title=Win Rate&click=chart';
+                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Win_Rate_Referrall&title=Win Rate by Referral Rep&click=chart';
                         url += '&duration=&str=';
                         url += '&dashboard=SMD_USA';
                         window.open(url, '_blank');
@@ -3813,7 +3830,7 @@
                             var category = event.point.category;
                             // var duration = this.userOptions.name;
                             
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Win_Rate_SMD&title=Win Rate&click=bar';
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Win_Rate_Referrall&title=Win Rate by Referral Rep&click=bar';
                             url += '&duration=&year=&str='+category;
                             url += '&dashboard=SMD_USA';
                             window.open(url, '_blank');
@@ -3867,7 +3884,6 @@
     '{!$RemoteAction.SpecifiedDashboardController.Manuf_Reps_Sales_Last_12_Months}',
         function(result, event){
 
-            console.log('resultresultresultresultresultresult: '+JSON.stringify(result))
             if (event.status) {
                 const month_year_map = getMapLast12MonthMan();
 
@@ -3908,7 +3924,6 @@
                         custom: char
                     })
                 }
-                console.log('MONTHLY SALES LAST !@ MONTH: '+JSON.stringify(MonthlySalesData))
                 RenderMonthlySalesLast12MonthsManRep(spec_rep_data);
             } else if (event.type === 'exception') {
                 
@@ -4038,7 +4053,6 @@
         monthlySalesLastTwelveMonths.series[monthlySalesLastTwelveMonths.series.length - 1].remove();
 
     }
-    console.log(2222222222)
 </script>
 
 <script>
@@ -4240,10 +4254,8 @@ function RenderCompanyPipelinePreorderLast12MonthsbyManTeam(SalesRepTotalPipelin
 </script>
 
 <script>
-console.log(111111111111)
 /* --------------- Sales Forecast Pipeline ----------------------*/
 let ForecastDataMan = new Array();
-console.log(888888888888)
 let midArrayMan;
 let mainArrayMan = new Array();
 let subArrayMan = new Array();
@@ -4255,7 +4267,6 @@ Visualforce.remoting.Manager.invokeAction(
     function(result, event){
         
         if (event.status) {
-            console.log('FORECAST ============================== ',JSON.stringify(result))
             for (let key in result) {
                 mainArrayMan = new Array();
                 subArrayMan = new Array();
@@ -4290,7 +4301,6 @@ Visualforce.remoting.Manager.invokeAction(
                 midArrayMan = {name:key, data:mainArrayMan, custom:"{!YEAR(TODAY())}"};
                 ForecastDataMan.push(midArrayMan);
             }
-            console.log('ForecastDataSpecForecastDataSpecForecastDataSpec: '+JSON.stringify(ForecastDataSpec))
             RenderSalesForecastPipelineMan(ForecastDataMan);
         } else if (event.type === 'exception') {
             
@@ -4412,5 +4422,493 @@ function RenderSalesForecastPipelineMan(ForecastData){
 
 }
 
+</script>
+
+
+<script>
+    /* --------------------- Sales Last 12 Months by Specified Rep ------------------------- */
+    var MonthlySalesDataSpecifiedRep = new Array();
+
+    var mainArraySpecifiedRepMonthly = new Array();
+    var midArraySpecifiedRepMonthly;
+    var subArraySpecifiedRepMonthly = new Array();
+
+    Visualforce.remoting.timeout = 120000;
+
+    Visualforce.remoting.Manager.invokeAction(
+    '{!$RemoteAction.SpecifiedDashboardController.Monthly_Sales_Last_12_Months_Specified}',
+        function(result, event){
+
+            if (event.status) {
+                for (var key in result) {
+                    mainArraySpecifiedRepMonthly = new Array();
+                    
+                    result[key].forEach(buildarray);
+                    
+                    function buildarray(item, index) {
+
+                        subArraySpecifiedRepMonthly = new Array();
+    
+                        subArraySpecifiedRepMonthly.push(item.valueindex, item.amount);
+                        mainArraySpecifiedRepMonthly.push(subArraySpecifiedRepMonthly);
+                    }
+
+                    midArraySpecifiedRepMonthly = {name:key, data:mainArraySpecifiedRepMonthly, custom:key};
+    
+                    MonthlySalesDataSpecifiedRep.push(midArraySpecifiedRepMonthly);
+                }
+                RenderMonthlySalesLast12MonthsSpecifiedRep(MonthlySalesDataSpecifiedRep);
+            } else if (event.type === 'exception') {
+                
+                    console.log('Exception has occured in Monthly Sales Last 12 Months...');
+                    console.log(event.message);
+                    console.log(event.where);
+            } else {
+                console.log('Error occured in Monthly Sales Last 12 Months...');
+                console.log(event.message);
+            }
+        }, 
+        {escape: true}
+    );
+
+    function RenderMonthlySalesLast12MonthsSpecifiedRep(MonthlySalesData){
+
+            var monthlySalesLastTwelveMonths = Highcharts.chart('Monthly_Sales_Last_12_Months_Spec_Rep', {
+            credits: {
+                enabled: false
+            },
+            chart: {
+                type: 'bar',
+                events: {
+                    click: function(event) {
+                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Monthly_Sales_Last_12_Months_SMD_H&title=Monthly Sales Last 12 Months - Hospitality&click=chart';
+                        url += '&duration=&str=';
+                        url += '&dashboard=SMD_USA';
+                        window.open(url, '_blank');
+                    }
+                }
+            },
+            title: {
+                text: ''
+            },
+            xAxis: {
+                categories: Last12MonthsCategories,
+                min: 0,
+                max: 11,
+                labels: {
+                    useHTML: true,
+                    formatter: function(){
+
+                        var monthYearList = this.value.split('\'');
+                        var year = '20'+monthYearList[1];
+                        var month = getMonthNumberFromMonthName(monthYearList[0]);
+                        return '<a href=\'{!communityUrl}/apex/ListOfRecordsPage?chart=Monthly_Sales_Last_12_Months_SMD_H&title=Monthly Sales Last 12 Months - Hospitality&click=left&dashboard=SMD_USA&year='+year+'&month='+month+'\' target=\'blank\'>'+this.value+'</a>';   
+                    }
+                } 
+            },
+            yAxis: {
+                min: 0,
+                allowDecimals: false,
+                title: {
+                    text: 'Amount ($)'
+                }
+            },
+            tooltip: {
+                shared: false,
+                formatter: function () {
+                    return '<b style="color: '+this.series.color+'; font-weight:bold">' + 
+                        this.series.userOptions.custom + '</b><br>'+ this.x +'<br>Amount: '+ this.y.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                        });
+                },
+                split: true,
+                positioner: function(labelWidth, labelHeight, point) {
+                    return {
+                        x: point.plotX - point.h/2 + labelWidth/2,
+                        y: point.plotY
+                    };
+                }
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                floating: false,
+                enabled: true,
+                labelFormatter: function () {
+                    this.color = getSpecColor(this.name);
+                    //return '<span style="color: '+this.color+'">'+ this.name + '</span>';
+                    return '<span style="color: '+this.color+'"></span>' + this.name ;
+                }
+            },
+            plotOptions: {
+                series: {
+                    stacking: 'normal',
+                    cursor: 'pointer',
+                    enabled: true,
+                    events: {
+                        legendItemClick: function(event) {
+
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Monthly_Sales_Last_12_Months_SMD_H&title=Monthly Sales Last 12 Months - Hospitality&click=legend';
+                            url += '&duration=&str='+event.target.name;
+                            url += '&dashboard=SMD_USA';
+                            window.open(url, '_blank');
+                            event.preventDefault();
+                            
+                        },
+                        click: function(event) { 
+
+                            var d = new Date();
+                            var MonthArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+                            
+                            var CategArray = event.point.category.split(" ");
+                            var CurrentMonth = parseInt(d.getMonth()) + 1;
+                            
+                            var month = parseInt(MonthArray.indexOf(CategArray[0]) + 1);
+                            var year = (month >= 1 && month <= CurrentMonth) ? d.getFullYear(): d.getFullYear() - 1;
+                            var duration = '';
+
+                            
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Monthly_Sales_Last_12_Months_SMD_H&title=Monthly Sales Last 12 Months - Hospitality&click=bar';
+                            url += '&duration='+duration+'&month='+month+'&year='+year+'&str='+event.point.series.userOptions.name;
+                            url += '&dashboard=SMD_USA';
+                            window.open(url, '_blank');
+                        }
+                    }
+                }
+            },
+            series: MonthlySalesData
+        });
+
+        //For redraw the chart to add colors to the legend symbols
+        monthlySalesLastTwelveMonths.addSeries({"data":[]});
+        monthlySalesLastTwelveMonths.series[monthlySalesLastTwelveMonths.series.length - 1].remove();
+
+    }
+</script>
+<script>
+    /* --------------------- Sales Last 12 Months by Referrall Rep ------------------------- */
+    var MonthlySalesDataReferrallRep = new Array();
+
+    var mainArrayReferrallRepMonthly = new Array();
+    var midArrayReferrallRepMonthly;
+    var subArrayReferrallRepMonthly = new Array();
+
+    Visualforce.remoting.timeout = 120000;
+
+    Visualforce.remoting.Manager.invokeAction(
+    '{!$RemoteAction.SpecifiedDashboardController.Monthly_Sales_Last_12_Months_Referrall}',
+        function(result, event){
+
+            if (event.status) {
+                for (var key in result) {
+                    mainArrayReferrallRepMonthly = new Array();
+                    
+                    result[key].forEach(buildarray);
+                    
+                    function buildarray(item, index) {
+
+                        subArrayReferrallRepMonthly = new Array();
+    
+                        subArrayReferrallRepMonthly.push(item.valueindex, item.amount);
+                        mainArrayReferrallRepMonthly.push(subArrayReferrallRepMonthly);
+                    }
+
+                    midArrayReferrallRepMonthly = {name:key, data:mainArrayReferrallRepMonthly, custom:key};
+    
+                    MonthlySalesDataReferrallRep.push(midArrayReferrallRepMonthly);
+                }
+                RenderMonthlySalesLast12MonthsReferrallRep(MonthlySalesDataReferrallRep);
+            } else if (event.type === 'exception') {
+                
+                    console.log('Exception has occured in Monthly Sales Last 12 Months...');
+                    console.log(event.message);
+                    console.log(event.where);
+            } else {
+                console.log('Error occured in Monthly Sales Last 12 Months...');
+                console.log(event.message);
+            }
+        }, 
+        {escape: true}
+    );
+
+    function RenderMonthlySalesLast12MonthsReferrallRep(MonthlySalesData){
+
+            var monthlySalesLastTwelveMonthsReferrallSales = Highcharts.chart('Monthly_Sales_Last_12_Months_Ref_Rep', {
+            credits: {
+                enabled: false
+            },
+            chart: {
+                type: 'bar',
+                events: {
+                    click: function(event) {
+                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Monthly_Sales_Last_12_Months_SMD_Ref&title=Monthly Sales Last 12 Months - Hospitality&click=chart';
+                        url += '&duration=&str=';
+                        url += '&dashboard=SMD_USA';
+                        window.open(url, '_blank');
+                    }
+                }
+            },
+            title: {
+                text: ''
+            },
+            xAxis: {
+                categories: Last12MonthsCategories,
+                min: 0,
+                max: 11,
+                labels: {
+                    useHTML: true,
+                    formatter: function(){
+
+                        var monthYearList = this.value.split('\'');
+                        var year = '20'+monthYearList[1];
+                        var month = getMonthNumberFromMonthName(monthYearList[0]);
+                        return '<a href=\'{!communityUrl}/apex/ListOfRecordsPage?chart=Monthly_Sales_Last_12_Months_SMD_Ref&title=Monthly Sales Last 12 Months - Hospitality&click=left&dashboard=SMD_USA&year='+year+'&month='+month+'\' target=\'blank\'>'+this.value+'</a>';   
+                    }
+                } 
+            },
+            yAxis: {
+                min: 0,
+                allowDecimals: false,
+                title: {
+                    text: 'Amount ($)'
+                }
+            },
+            tooltip: {
+                shared: false,
+                formatter: function () {
+                    return '<b style="color: '+this.series.color+'; font-weight:bold">' + 
+                        this.series.userOptions.custom + '</b><br>'+ this.x +'<br>Amount: '+ this.y.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                        });
+                },
+                split: true,
+                positioner: function(labelWidth, labelHeight, point) {
+                    return {
+                        x: point.plotX - point.h/2 + labelWidth/2,
+                        y: point.plotY
+                    };
+                }
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                floating: false,
+                enabled: true,
+                labelFormatter: function () {
+                    this.color = getSpecColor(this.name);
+                    //return '<span style="color: '+this.color+'">'+ this.name + '</span>';
+                    return '<span style="color: '+this.color+'"></span>' + this.name ;
+                }
+            },
+            plotOptions: {
+                series: {
+                    stacking: 'normal',
+                    cursor: 'pointer',
+                    enabled: true,
+                    events: {
+                        legendItemClick: function(event) {
+
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Monthly_Sales_Last_12_Months_SMD_Ref&title=Monthly Sales Last 12 Months - Hospitality&click=legend';
+                            url += '&duration=&str='+event.target.name;
+                            url += '&dashboard=SMD_USA';
+                            window.open(url, '_blank');
+                            event.preventDefault();
+                            
+                        },
+                        click: function(event) { 
+
+                            var d = new Date();
+                            var MonthArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+                            
+                            var CategArray = event.point.category.split(" ");
+                            var CurrentMonth = parseInt(d.getMonth()) + 1;
+                            
+                            var month = parseInt(MonthArray.indexOf(CategArray[0]) + 1);
+                            var year = (month >= 1 && month <= CurrentMonth) ? d.getFullYear(): d.getFullYear() - 1;
+                            var duration = '';
+
+                            
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Monthly_Sales_Last_12_Months_SMD_Ref&title=Monthly Sales Last 12 Months - Hospitality&click=bar';
+                            url += '&duration='+duration+'&month='+month+'&year='+year+'&str='+event.point.series.userOptions.name;
+                            url += '&dashboard=SMD_USA';
+                            window.open(url, '_blank');
+                        }
+                    }
+                }
+            },
+            series: MonthlySalesData
+        });
+
+        //For redraw the chart to add colors to the legend symbols
+        monthlySalesLastTwelveMonthsReferrallSales.addSeries({"data":[]});
+        monthlySalesLastTwelveMonthsReferrallSales.series[monthlySalesLastTwelveMonthsReferrallSales.series.length - 1].remove();
+
+    }
+</script>
+<script>
+    /* --------------------- Sales Last 12 Months by Manufacture Rep ------------------------- */
+    var MonthlySalesDataManufRep = new Array();
+
+    var mainArrayManufRepMonthly = new Array();
+    var midArrayManufRepMonthly;
+    var subArrayManufRepMonthly = new Array();
+
+    Visualforce.remoting.timeout = 120000;
+
+    Visualforce.remoting.Manager.invokeAction(
+    '{!$RemoteAction.SpecifiedDashboardController.Monthly_Sales_Last_12_Months_Manufacture}',
+        function(result, event){
+
+            if (event.status) {
+                for (var key in result) {
+                    mainArrayManufRepMonthly = new Array();
+                    
+                    result[key].forEach(buildarray);
+                    
+                    function buildarray(item, index) {
+
+                        subArrayManufRepMonthly = new Array();
+    
+                        subArrayManufRepMonthly.push(item.valueindex, item.amount);
+                        mainArrayManufRepMonthly.push(subArrayManufRepMonthly);
+                    }
+
+                    midArrayManufRepMonthly = {name:key, data:mainArrayManufRepMonthly, custom:key};
+    
+                    MonthlySalesDataManufRep.push(midArrayManufRepMonthly);
+                }
+                RenderMonthlySalesLast12MonthsManufRep(MonthlySalesDataManufRep);
+            } else if (event.type === 'exception') {
+                
+                    console.log('Exception has occured in Monthly Sales Last 12 Months...');
+                    console.log(event.message);
+                    console.log(event.where);
+            } else {
+                console.log('Error occured in Monthly Sales Last 12 Months...');
+                console.log(event.message);
+            }
+        }, 
+        {escape: true}
+    );
+
+    function RenderMonthlySalesLast12MonthsManufRep(MonthlySalesData){
+
+            var monthlySalesLastTwelveMonthsReferrallSales = Highcharts.chart('Monthly_Sales_Last_12_Months_Man_Rep', {
+            credits: {
+                enabled: false
+            },
+            chart: {
+                type: 'bar',
+                events: {
+                    click: function(event) {
+                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Monthly_Sales_Last_12_Months_SMD_Man&title=Monthly Sales Last 12 Months - Hospitality&click=chart';
+                        url += '&duration=&str=';
+                        url += '&dashboard=SMD_USA';
+                        window.open(url, '_blank');
+                    }
+                }
+            },
+            title: {
+                text: ''
+            },
+            xAxis: {
+                categories: Last12MonthsCategories,
+                min: 0,
+                max: 11,
+                labels: {
+                    useHTML: true,
+                    formatter: function(){
+
+                        var monthYearList = this.value.split('\'');
+                        var year = '20'+monthYearList[1];
+                        var month = getMonthNumberFromMonthName(monthYearList[0]);
+                        return '<a href=\'{!communityUrl}/apex/ListOfRecordsPage?chart=Monthly_Sales_Last_12_Months_SMD_Man&title=Monthly Sales Last 12 Months - Hospitality&click=left&dashboard=SMD_USA&year='+year+'&month='+month+'\' target=\'blank\'>'+this.value+'</a>';   
+                    }
+                } 
+            },
+            yAxis: {
+                min: 0,
+                allowDecimals: false,
+                title: {
+                    text: 'Amount ($)'
+                }
+            },
+            tooltip: {
+                shared: false,
+                formatter: function () {
+                    return '<b style="color: '+this.series.color+'; font-weight:bold">' + 
+                        this.series.userOptions.custom + '</b><br>'+ this.x +'<br>Amount: '+ this.y.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                        });
+                },
+                split: true,
+                positioner: function(labelWidth, labelHeight, point) {
+                    return {
+                        x: point.plotX - point.h/2 + labelWidth/2,
+                        y: point.plotY
+                    };
+                }
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                floating: false,
+                enabled: true,
+                labelFormatter: function () {
+                    this.color = getSpecColor(this.name);
+                    //return '<span style="color: '+this.color+'">'+ this.name + '</span>';
+                    return '<span style="color: '+this.color+'"></span>' + this.name ;
+                }
+            },
+            plotOptions: {
+                series: {
+                    stacking: 'normal',
+                    cursor: 'pointer',
+                    enabled: true,
+                    events: {
+                        legendItemClick: function(event) {
+
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Monthly_Sales_Last_12_Months_SMD_Man&title=Monthly Sales Last 12 Months - Hospitality&click=legend';
+                            url += '&duration=&str='+event.target.name;
+                            url += '&dashboard=SMD_USA';
+                            window.open(url, '_blank');
+                            event.preventDefault();
+                            
+                        },
+                        click: function(event) { 
+
+                            var d = new Date();
+                            var MonthArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+                            
+                            var CategArray = event.point.category.split(" ");
+                            var CurrentMonth = parseInt(d.getMonth()) + 1;
+                            
+                            var month = parseInt(MonthArray.indexOf(CategArray[0]) + 1);
+                            var year = (month >= 1 && month <= CurrentMonth) ? d.getFullYear(): d.getFullYear() - 1;
+                            var duration = '';
+
+                            
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Monthly_Sales_Last_12_Months_SMD_Man&title=Monthly Sales Last 12 Months - Hospitality&click=bar';
+                            url += '&duration='+duration+'&month='+month+'&year='+year+'&str='+event.point.series.userOptions.name;
+                            url += '&dashboard=SMD_USA';
+                            window.open(url, '_blank');
+                        }
+                    }
+                }
+            },
+            series: MonthlySalesData
+        });
+
+        //For redraw the chart to add colors to the legend symbols
+        monthlySalesLastTwelveMonthsReferrallSales.addSeries({"data":[]});
+        monthlySalesLastTwelveMonthsReferrallSales.series[monthlySalesLastTwelveMonthsReferrallSales.series.length - 1].remove();
+
+    }
 </script>
 </apex:page>

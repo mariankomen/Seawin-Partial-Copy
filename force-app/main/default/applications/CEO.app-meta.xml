@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <defaultLandingTab>standard-home</defaultLandingTab>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <label>CEO</label>
+    <logo>SharedDocuments/Seawin_Logo.png</logo>
+    <tabs>standard-Forecasting3</tabs>
+    <tabs>standard-Lead</tabs>
+    <tabs>standard-Account</tabs>
+    <tabs>standard-Contact</tabs>
+    <tabs>standard-Opportunity</tabs>
+    <tabs>AcctSeedERP__Sales_Order__c</tabs>
+    <tabs>AcctSeedERP__Purchase_Order__c</tabs>
+    <tabs>standard-Case</tabs>
+    <tabs>AcctSeed__Billing__c</tabs>
+    <tabs>AcctSeed__Account_Payable__c</tabs>
+    <tabs>standard-Product2</tabs>
+    <tabs>standard-Document</tabs>
+    <tabs>standard-report</tabs>
+    <tabs>Opportunity_Dashboard__c</tabs>
+    <tabs>Credit_Order__c</tabs>
+</CustomApplication>

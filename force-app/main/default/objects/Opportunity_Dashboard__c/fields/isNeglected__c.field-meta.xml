@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>isNeglected__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>This field show does current opportunity is neglected in current end of month. This param will help filter records in building gashboards.</description>
+    <externalId>false</externalId>
+    <label>isNeglected</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

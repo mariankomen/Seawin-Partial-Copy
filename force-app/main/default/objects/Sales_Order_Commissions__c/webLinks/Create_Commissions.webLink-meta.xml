@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Create_Commissions</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>Create Commissions</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>true</requireRowSelection>
+    <url>var nam = &quot;{!$Profile.Name}&quot;;
+
+if(nam.includes(&quot;Inside Sales&quot;)){
+ 
+ alert(&quot;Insufficient Privileges. Please contact your administrator.&quot;);
+
+}else{
+
+  var url = &apos;{!$User.ContactId}&apos; == &apos;&apos; ? &apos;&apos; : &apos;/sales&apos;;
+  url += &apos;/apex/CalculateCommissionsPage?id=&apos;
+		if(&apos;{!AcctSeedERP__Sales_Order__c.Id}&apos; !== &apos;&apos;){
+		    url+=&apos;{!AcctSeedERP__Sales_Order__c.Id}&apos;;
+		}else if(&apos;{!Opportunity.Id}&apos; !== &apos;&apos;){
+		    url+=&apos;{!Opportunity.Id}&apos;;
+		}
+		window.location.href = url
+		
+}</url>
+</WebLink>

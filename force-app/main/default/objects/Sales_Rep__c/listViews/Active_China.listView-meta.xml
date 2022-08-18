@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Active_China</fullName>
+    <columns>NAME</columns>
+    <columns>Company_Name_Lookup__c</columns>
+    <columns>Active__c</columns>
+    <columns>Monthly_Quota__c</columns>
+    <columns>CREATEDBY_USER.ALIAS</columns>
+    <columns>Default_Record_Type__c</columns>
+    <columns>Price_Level_1_12__c</columns>
+    <columns>Price_Level_13_20__c</columns>
+    <columns>Price_Level_21_26__c</columns>
+    <columns>Price_Level_27_30__c</columns>
+    <columns>IsTeam__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Active__c</field>
+        <operation>equals</operation>
+        <value>Yes</value>
+    </filters>
+    <filters>
+        <field>Default_Record_Type__c</field>
+        <operation>contains</operation>
+        <value>Seawin China</value>
+    </filters>
+    <label>Active China</label>
+    <sharedTo>
+        <role>CEO</role>
+        <role>VP_Hospitality_Sales_USA</role>
+        <role>VP_Sales_China</role>
+        <role>VP_Sales_USA</role>
+        <roleAndSubordinates>China_Division</roleAndSubordinates>
+    </sharedTo>
+</ListView>

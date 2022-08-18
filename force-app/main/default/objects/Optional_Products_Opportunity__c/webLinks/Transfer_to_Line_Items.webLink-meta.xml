@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Transfer_to_Line_Items</fullName>
+    <availability>online</availability>
+    <description>Save the selected product(s) as Line Item(s).</description>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>Transfer to Line Items</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>true</requireRowSelection>
+    <url>var url = &apos;{!IF(ISBLANK(User.ContactId),&quot;&quot;,&quot;/sales&quot;)}&apos;;
+if({!Opportunity.Sent_for_Approval__c} &amp;&amp; &quot;{!$User.Alias}&quot; != &quot;mashr&quot; &amp;&amp; &quot;{!$User.Alias}&quot; != &quot;gshilman&quot;){
+
+alert(&quot;Locked Opportunity, pending Approval.&quot;);
+
+}else{
+var opos = {!GETRECORDIDS($ObjectType.Optional_Products_Opportunity__c)}
+if(opos.length &lt; 1) {
+  alert(&apos;No records have been selected to transfer!&apos;)
+}
+else if(&quot;{!$User.Transfer_to_Line_Items__c}&quot; == &apos;false&apos;){
+alert(&quot;Insufficient Privileges, you are not allowed to make these changes. Please contact your administrator.&quot;);
+}else if(&quot;{!Opportunity.TotalSalesOrderInOpp__c}&quot; &gt; &quot;0&quot;){
+alert(&quot;Won Opportunity with Sales Order cannot be edited.&quot;);
+
+}else{
+
+  var add = &quot;&quot;;
+  for(var i = 0; i &lt; opos.length; i++){
+     if(i == 0){
+        add += &apos;id&apos; + i +&apos;=&apos;+ opos[i]; 
+     }else{
+        add += &apos;&amp;id&apos;+ i +&apos;=&apos;+ opos[i];
+     }
+  }
+
+  var total = opos.length;
+
+  url += &apos;/apex/TransferRelatedListProductsVFPage?id={!Opportunity.Id}&amp;count=&apos; +total+ &apos;&amp;&apos;+ add;
+
+window.location.href = url;
+
+}
+}</url>
+</WebLink>

@@ -1094,9 +1094,8 @@ global class SalesDashboardController extends MainSalesDashboardController {
                                                                     AND Opportunity__r.ownerId =:UserInfo.getUserId()
                                                                     AND Month_Year__c =:year_month
                                                                     AND Amount__c != NULL
-                                                                    AND RecordTypeName__c =: recordtypename
+                                                                    
                                                                     GROUP BY Opportunity_StageName__c];
-
         return opportunities_with_activity;
     }
     
@@ -1180,6 +1179,74 @@ global class SalesDashboardController extends MainSalesDashboardController {
             TempMap.put('taskcompletiondata', TasksCompletionData);
         
         return TempMap;
+    }
+
+
+
+    //NEW GRAPHS
+
+    @RemoteAction
+    @ReadOnly
+    global static List<AggregateResult> Company_Total_Pre_Order_Pipeline_Last_12_Months_Sales() {
+        /*****************************************************************************************************
+        *   @dashboard name  : Company Total Pipeline Last 12 Months
+        *   @chart name      : Company_Total_Pipeline_SMD_USA
+        *   @description     : Preparing data for frontend rendering
+        *   @author          : Marian Lyzhychka ©Peeklogic
+        *****************************************************************************************************/
+
+        Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
+        
+        List<AggregateResult> opportunity_data = [
+            SELECT  
+            SUM(Amount__c) amount, 
+            calendar_month(Inserting_Date__c) month,
+            calendar_year(Inserting_Date__c) year
+            FROM Opportunity_Dashboard__c 
+            WHERE 
+            Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
+            AND Opportunity_Forecast_Category__c = 'Pipeline'
+            AND Opportunity_StageName__c = 'Pre-Order'
+            AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+            AND Amount__c != null
+            AND Opportunity__r.ownerId =:UserInfo.getUserId()       
+            GROUP BY calendar_year(Inserting_Date__c), calendar_month(Inserting_Date__c)
+        ];
+        system.debug(JSON.serialize(opportunity_data));
+        
+        return opportunity_data;
+    }
+
+    @RemoteAction
+    @ReadOnly
+    global static List<AggregateResult> Company_Total_Negotiation_Pipeline_Last_12_Months() {
+        /*****************************************************************************************************
+        *   @dashboard name  : Negotiation Pipeline Last 12 Months
+        *   @chart name      : Company_Total_Pipeline_SMD_USA
+        *   @description     : Preparing data for frontend rendering
+        *   @author          : Marian Lyzhychka ©Peeklogic
+        *****************************************************************************************************/
+
+        Map<string, integer> Last12MonthsList_CombinedMap = Last12MonthsList_CombinedMap();
+        
+        List<AggregateResult> opportunity_data = [
+            SELECT  
+            SUM(Amount__c) amount, 
+            calendar_month(Inserting_Date__c) month,
+            calendar_year(Inserting_Date__c) year
+            FROM Opportunity_Dashboard__c 
+            WHERE 
+            Month_Year__c IN:Last12MonthsList_CombinedMap.keySet()
+            AND Opportunity_Forecast_Category__c = 'Pipeline'
+            AND Opportunity_StageName__c = 'Negotiation'
+            AND Opportunity_GL_Var_1__r.Name = 'Seawin USA'
+            AND Amount__c != null
+            AND Opportunity__r.ownerId =:UserInfo.getUserId()       
+            GROUP BY calendar_year(Inserting_Date__c), calendar_month(Inserting_Date__c)
+        ];
+        system.debug(JSON.serialize(opportunity_data));
+        
+        return opportunity_data;
     }
 
     public SalesDashboardController() {

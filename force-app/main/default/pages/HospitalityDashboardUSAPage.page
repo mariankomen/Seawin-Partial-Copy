@@ -865,7 +865,6 @@
         </div>
 
         
-        <!-- END Spec Rep 3 row -->
     <!-- New Graphs 25.07.22 -->
 
 
@@ -1403,7 +1402,7 @@
             monthlySalesLastTwelveMonths.series[monthlySalesLastTwelveMonths.series.length - 1].remove();
 
         }
-        </script>
+    </script>
         <script>
         /* ----------------------- Current Sales Contest YTD --------------------------- */
 
@@ -2418,7 +2417,7 @@
             return year_month_obj;
         }
         
-        var DataArray = new Array();
+        var dataArray = new Array();
 
         Visualforce.remoting.timeout = 120000;
 
@@ -2959,24 +2958,24 @@
     <script>
         /* ------------------- Newly Submitted Opportunities Last 12 Months ------------------------ */
         var NewlySubmittedOpportunitiesDataCountPerMonth = new Array();
-        var NewlySubmittedOpportunitiesData = new Array();
-        var NewlySubmittedOpportunitiesCategories = new Array();
+        var NewlySubmittedOpportunitiesDataHosp = new Array();
+        var NewlySubmittedOpportunitiesCategoriesHosp = new Array();
 
         
-        function NewlySubmittedOpportunities() {
+        function NewlySubmittedOpportunitiesHosp() {
             
             for (var i = 11; i >= 0; i--) {
 
                 if(typeof NewlySubmittedOpportunitiesDataCountPerMonth[11-i] === 'undefined') {
                     NewlySubmittedOpportunitiesDataCountPerMonth[11-i] = 0;
                 }
-                NewlySubmittedOpportunitiesCategories.push(Last12MonthsCategories[i]+ 
+                NewlySubmittedOpportunitiesCategoriesHosp.push(Last12MonthsCategories[i]+ 
                                                            ' ('+NewlySubmittedOpportunitiesDataCountPerMonth[11-i]+')');
             }
         }
 
         var mainArray = new Array(); 
-        var DataArray = new Array();
+        var dataArray = new Array();
         var subArray = new Array();
 
         Visualforce.remoting.timeout = 120000;
@@ -2988,7 +2987,7 @@
                 if (event.status) {
                     for (var key in result) {
 
-                        DataArray = new Array();
+                        dataArray = new Array();
 
                         mainArray = new Array(); 
 
@@ -3001,7 +3000,7 @@
                             if(amount != ""){
                                 amount = parseInt(amount);
                                 subArray.push(item.valueindex, item.amount);
-                                DataArray.push(subArray);
+                                dataArray.push(subArray);
                                 if(typeof NewlySubmittedOpportunitiesDataCountPerMonth[item.valueindex] === 'undefined') {
                                     NewlySubmittedOpportunitiesDataCountPerMonth[item.valueindex] = amount;
                                 }
@@ -3011,21 +3010,21 @@
                             }
                         }
 
-                        MainArray = {name:"newlySubmittedData", data:DataArray};
-                        NewlySubmittedOpportunitiesData.push(MainArray);
+                        MainArray = {name:"newlySubmittedData", data:dataArray};
+                        NewlySubmittedOpportunitiesDataHosp.push(MainArray);
                     }
                     
-                    NewlySubmittedOpportunities();
+                    NewlySubmittedOpportunitiesHosp();
                     let setted_month = []
-                    NewlySubmittedOpportunitiesData[0].data.forEach(el => setted_month.push(el[0]))
+                    NewlySubmittedOpportunitiesDataHosp[0].data.forEach(el => setted_month.push(el[0]))
 
                     for(let i = 0; i<12; i++){
                         if(!setted_month.includes(i)){
-                            NewlySubmittedOpportunitiesData[0].data.push([i, 0])
+                            NewlySubmittedOpportunitiesDataHosp[0].data.push([i, 0])
                         }
                     }
-                    NewlySubmittedOpportunitiesData[0].data.sort((a, b) => b[0] - a[0]).reverse()
-                    RenderNewlySubmittedOpportunitiesLast12Months(NewlySubmittedOpportunitiesData);
+                    NewlySubmittedOpportunitiesDataHosp[0].data.sort((a, b) => b[0] - a[0]).reverse()
+                    RenderNewlySubmittedOpportunitiesLast12Months(NewlySubmittedOpportunitiesDataHosp);
                 } else if (event.type === 'exception') {
                     
                         console.log('Exception has occured in Newly Submitted Opportunities Last 12 Months...');
@@ -3039,7 +3038,7 @@
             {escape: true}
         ); 
 
-        function RenderNewlySubmittedOpportunitiesLast12Months(NewlySubmittedOpportunitiesData){
+        function RenderNewlySubmittedOpportunitiesLast12Months(NewlySubmittedOpportunitiesDataHosp){
 
             var NewlySubmittedOpportunitiesLastTwelveMonths = Highcharts.chart('newlysubmittedopportunities', {
 
@@ -3063,7 +3062,7 @@
                     text: ''
                 },
                 xAxis: {
-                    categories: NewlySubmittedOpportunitiesCategories,
+                    categories: NewlySubmittedOpportunitiesCategoriesHosp,
                     min: 0,
                     max: 11
                 },
@@ -3121,7 +3120,7 @@
                         }
                     }
                 },
-                series: NewlySubmittedOpportunitiesData
+                series: NewlySubmittedOpportunitiesDataHosp
             });
 
             //For redraw the chart to add colors to the legend symbols
@@ -3486,22 +3485,22 @@
         </script>
     <script>
         /* ---------------------- Lost Opportunities Last 12 Months ------------------------ */
-        var LostOpptysDataCountPerMonth = new Array();
-        var LostOpptysData = new Array();
-        var LostOpptysCategories = new Array();
+        var LostOpptysDataCountPerMonthHosp = new Array();
+        var LostOpptysDataHosp = new Array();
+        var LostOpptysCategoriesHosp = new Array();
         
-        function LostOpportunities() {
+        function LostOpportunitiesHosp() {
             
             for (var i = 11; i >= 0; i--) {
-                if(typeof LostOpptysDataCountPerMonth[11-i] === 'undefined') {
-                    LostOpptysDataCountPerMonth[11-i] = 0;
+                if(typeof LostOpptysDataCountPerMonthHosp[11-i] === 'undefined') {
+                    LostOpptysDataCountPerMonthHosp[11-i] = 0;
                 }
-                LostOpptysCategories.push(Last12MonthsCategories[i]+ 
-                ' ('+LostOpptysDataCountPerMonth[11-i]+')');
+                LostOpptysCategoriesHosp.push(Last12MonthsCategories[i]+ 
+                ' ('+LostOpptysDataCountPerMonthHosp[11-i]+')');
             }
         }
         
-        var dataArray = new Array();
+        var dataArrayHosp = new Array();
 
         Visualforce.remoting.timeout = 120000;
 
@@ -3523,31 +3522,31 @@
                             if(amount != ""){
                                 amount = parseInt(amount);
                                 subArray.push(item.valueindex, item.amount);
-                                dataArray.push(subArray);
-                                if(typeof LostOpptysDataCountPerMonth[item.valueindex] === 'undefined') {
-                                    LostOpptysDataCountPerMonth[item.valueindex] = amount;
+                                dataArrayHosp.push(subArray);
+                                if(typeof LostOpptysDataCountPerMonthHosp[item.valueindex] === 'undefined') {
+                                    LostOpptysDataCountPerMonthHosp[item.valueindex] = amount;
                                 }
                                 else{
-                                    LostOpptysDataCountPerMonth[item.valueindex] += amount;
+                                    LostOpptysDataCountPerMonthHosp[item.valueindex] += amount;
                                 }
                             }
                         }
                     }
 
-                    var mainArray = {name:"lostOpportunities", data:dataArray};
-                    LostOpptysData.push(mainArray);
+                    var mainArray = {name:"lostOpportunities", data:dataArrayHosp};
+                    LostOpptysDataHosp.push(mainArray);
 
-                    LostOpportunities();
+                    LostOpportunitiesHosp();
                     let setted_month = []
-                    LostOpptysData[0].data.forEach(el => setted_month.push(el[0]))
+                    LostOpptysDataHosp[0].data.forEach(el => setted_month.push(el[0]))
 
                     for(let i = 0; i<12; i++){
                         if(!setted_month.includes(i)){
-                            LostOpptysData[0].data.push([i, 0])
+                            LostOpptysDataHosp[0].data.push([i, 0])
                         }
                     }
-                    LostOpptysData[0].data.sort((a, b) => b[0] - a[0]).reverse()
-                    RenderChartLostOpportunities(LostOpptysData);
+                    LostOpptysDataHosp[0].data.sort((a, b) => b[0] - a[0]).reverse()
+                    RenderChartLostOpportunitiesHosp(LostOpptysDataHosp);
                 } else if (event.type === 'exception') {
                     
                         console.log('Exception has occured in Lost Opportunities Last 12 Months...');
@@ -3561,7 +3560,7 @@
             {escape: true}
         );
 
-        function RenderChartLostOpportunities(LostOpptysData){
+        function RenderChartLostOpportunitiesHosp(LostOpptysDataHosp){
         
             var LostOpportunitiesLastTwelveMonths = Highcharts.chart('lostopportunities', {
                 credits: {
@@ -3582,7 +3581,7 @@
                     text: ''
                 },
                 xAxis: {
-                    categories: LostOpptysCategories,
+                    categories: LostOpptysCategoriesHosp,
                     min:0,
                     max:11
                 },
@@ -3644,7 +3643,7 @@
                         }
                     }
                 },
-                series: LostOpptysData
+                series: LostOpptysDataHosp
             });
 
             //For redraw the chart to add colors to the legend symbols
@@ -4484,135 +4483,135 @@
         </script>
     <script>
         /* ------------------- Negotiation Win Rate ----------------------- */
-    var NegWinRateData = new Array();
-    var NegWinRateCategories = new Array();
-    var midArray;
+        var NegWinRateData = new Array();
+        var NegWinRateCategories = new Array();
+        var midArray;
 
-    var mainArray = new Array(); 
+        var mainArray = new Array(); 
 
-    Visualforce.remoting.timeout = 120000;
+        Visualforce.remoting.timeout = 120000;
 
-    Visualforce.remoting.Manager.invokeAction(
-    '{!$RemoteAction.HospitalityDashboardUSAController.Negotiation_WinRate}',
-        function(result, event){
+        Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.HospitalityDashboardUSAController.Negotiation_WinRate}',
+            function(result, event){
 
-            if (event.status) {
-                for (var key in result) {
+                if (event.status) {
+                    for (var key in result) {
 
-                    mainArray = new Array();
+                        mainArray = new Array();
 
-                    result[key].forEach(buildarray);
+                        result[key].forEach(buildarray);
+                        
+                        function buildarray(item, index) {
+
+                            var subArray = new Array();
+                            subArray.push(item.valueindex, item.amount);
+                            mainArray.push(subArray);
+                        }
+
+                        NegWinRateCategories.push(key);
+                        midArray = {name:key.split(',')[0], data:mainArray, custom:key};      
+                        NegWinRateData.push(midArray);
+
+                    }
+
+                    NegWinRateCategories = NegWinRateCategories.filter(onlyUnique);
+
+                    NegWinRateCategories.sort();
+
+                    RenderChartNegotiationWinRate(NegWinRateData);
+                } else if (event.type === 'exception') {
                     
-                    function buildarray(item, index) {
-
-                        var subArray = new Array();
-                        subArray.push(item.valueindex, item.amount);
-                        mainArray.push(subArray);
-                    }
-
-                    NegWinRateCategories.push(key);
-                    midArray = {name:key.split(',')[0], data:mainArray, custom:key};      
-                    NegWinRateData.push(midArray);
-
+                        console.log('Exception has occured in Negotiation Win Rate...');
+                        console.log(event.message);
+                        console.log(event.where);
+                } else {
+                        console.log('Error occured in Negotiation Win Rate...');
+                        console.log(event.message);
                 }
+            }, 
+            {escape: true}
+        );
 
-                NegWinRateCategories = NegWinRateCategories.filter(onlyUnique);
-
-                NegWinRateCategories.sort();
-
-                RenderChartNegotiationWinRate(NegWinRateData);
-            } else if (event.type === 'exception') {
-                
-                    console.log('Exception has occured in Negotiation Win Rate...');
-                    console.log(event.message);
-                    console.log(event.where);
-            } else {
-                    console.log('Error occured in Negotiation Win Rate...');
-                    console.log(event.message);
-            }
-        }, 
-        {escape: true}
-    );
-
-    function RenderChartNegotiationWinRate(NegWinRateData){
-    
-        var NeglectedWinRateSMD = Highcharts.chart('Neg_Win_Rate_SMD', {
-            credits:{
-                enabled: false
-            },
-            chart: {
-                type: 'bar',
-                events: {
-                    click: function(event) {
-                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Neg_Win_Rate_SMD&title=Negotiation Win Rate&click=chart';
-                        url += '&duration=&str=';
-                        url += '&dashboard=SMD_USA';
-                        window.open(url, '_blank');
-                    }
-                }
-            },
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'top',
-                floating: false,
-                enabled: true,
-                labelFormatter: function () {
-                    this.color = getRepsColor(this.name);
-                    return '<span style="color: '+this.color+'"></span>' + this.name;
-                }         
-            },
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            xAxis: {
-                categories: NegWinRateCategories,
-                crosshair: false,
-                min: 0
-            },
-            yAxis: {
-                min: 0,
-                allowDecimals: false,
-                title: {
-                    text: 'Rate (%)'
-                }
-            },
-            tooltip: {
-                formatter: function(){
-                    return '<span style="color:'+this.series.color+'; font-weight: bold">'+ this.x 
-                    + '</span><br/>Win Rate: '+this.y+'%';
+        function RenderChartNegotiationWinRate(NegWinRateData){
+        
+            var NeglectedWinRateSMD = Highcharts.chart('Neg_Win_Rate_SMD', {
+                credits:{
+                    enabled: false
                 },
-                shared: false
-            },
-            plotOptions: {
-                series: {
-                    stacking: 'normal',
-                    minPointLength: 5,
-                    cursor: 'pointer',
+                chart: {
+                    type: 'bar',
                     events: {
-                        click: function(event) { 
-                            
-                            var category = event.point.category;
-                            // var duration = this.userOptions.name;
-                            
-                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Neg_Win_Rate_SMD&title=Negotiation Win Rate&click=bar';
-                            url += '&duration=&year=&str='+category;
+                        click: function(event) {
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Neg_Win_Rate_SMD&title=Negotiation Win Rate&click=chart';
+                            url += '&duration=&str=';
                             url += '&dashboard=SMD_USA';
                             window.open(url, '_blank');
-                            
                         }
                     }
-                }
-            },
-            series: NegWinRateData
-        });
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'top',
+                    floating: false,
+                    enabled: true,
+                    labelFormatter: function () {
+                        this.color = getRepsColor(this.name);
+                        return '<span style="color: '+this.color+'"></span>' + this.name;
+                    }         
+                },
+                title: {
+                    text: ''
+                },
+                subtitle: {
+                    text: ''
+                },
+                xAxis: {
+                    categories: NegWinRateCategories,
+                    crosshair: false,
+                    min: 0
+                },
+                yAxis: {
+                    min: 0,
+                    allowDecimals: false,
+                    title: {
+                        text: 'Rate (%)'
+                    }
+                },
+                tooltip: {
+                    formatter: function(){
+                        return '<span style="color:'+this.series.color+'; font-weight: bold">'+ this.x 
+                        + '</span><br/>Win Rate: '+this.y+'%';
+                    },
+                    shared: false
+                },
+                plotOptions: {
+                    series: {
+                        stacking: 'normal',
+                        minPointLength: 5,
+                        cursor: 'pointer',
+                        events: {
+                            click: function(event) { 
+                                
+                                var category = event.point.category;
+                                // var duration = this.userOptions.name;
+                                
+                                var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Neg_Win_Rate_SMD&title=Negotiation Win Rate&click=bar';
+                                url += '&duration=&year=&str='+category;
+                                url += '&dashboard=SMD_USA';
+                                window.open(url, '_blank');
+                                
+                            }
+                        }
+                    }
+                },
+                series: NegWinRateData
+            });
 
-        //For redraw the chart to add colors to the legend symbols
-        NeglectedWinRateSMD.addSeries({"data":[]});
-        NeglectedWinRateSMD.series[NeglectedWinRateSMD.series.length - 1].remove();
+            //For redraw the chart to add colors to the legend symbols
+            NeglectedWinRateSMD.addSeries({"data":[]});
+            NeglectedWinRateSMD.series[NeglectedWinRateSMD.series.length - 1].remove();
 
     }
 
@@ -5641,7 +5640,7 @@
             return year_month_obj;
         }
         
-        var DataArray = new Array();
+        var dataArray = new Array();
 
         Visualforce.remoting.timeout = 120000;
 
@@ -6210,7 +6209,7 @@
             return year_month_obj;
         }
         
-        var DataArray = new Array();
+        var dataArray = new Array();
 
         Visualforce.remoting.timeout = 120000;
 

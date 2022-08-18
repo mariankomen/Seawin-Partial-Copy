@@ -10,7 +10,7 @@ trigger BeforeOpportunityTrigger on Opportunity (before insert, before update) {
         // run the handler to update Leadsource upon contact change on opportunity
         NullifyTemporaryValues.Nullify(Trigger.new);
         OpportunityContactChangeHandler.runHandler(Trigger.old, Trigger.new);
-        OpportunityContactChangeHandler.handleChangeSpecified(Trigger.new);
+        OpportunityContactChangeHandler.handleChangeSpecified(Trigger.newMap, Trigger.oldMap);
 
         // CommissionFieldsReplicateHandler.CopyNewValuesOpportunity(Trigger.old, Trigger.new);
     }

@@ -42,7 +42,8 @@ public class PurchaseOrderShipmentHandler {
                 if(poim.AcctSeedERP__Purchase_Order_Line__r.AcctSeedERP__Purchase_Order__r.AcctSeedERP__Type__c == 'Drop Shipment'){
                     List<PO_Shipment__c> po_ship = [SELECT Id, 
                                                             Status__c, 
-                                                            Purchase_Order__c 
+                                                            Purchase_Order__c,
+                                                            Tracking_Number__c 
                                                     FROM PO_Shipment__c 
                                                     WHERE Purchase_Order__c=:poim.AcctSeedERP__Purchase_Order_Line__r.AcctSeedERP__Purchase_Order__c
                                                     AND Status__c = 'Shipped'];
@@ -121,25 +122,25 @@ public class PurchaseOrderShipmentHandler {
                         for(PO_Shipment_Line__c posl: already_received){
                             already_received_map.put(posl.Purchase_Order_Line__c, posl);
                         }
-                        AcctSeedERP__Shipment__c so_ship = [SELECT Id, 
+                        List<AcctSeedERP__Shipment__c> so_ship = [SELECT Id, 
                                                                     AcctSeedERP__Status__c,
                                                                     AcctSeedERP__Sales_Order__c 
                                                                     FROM AcctSeedERP__Shipment__c
                                                                     WHERE AcctSeedERP__Sales_Order__c=:poim.AcctSeedERP__Purchase_Order_Line__r.Sales_Order_Line__r.AcctSeedERP__Sales_Order__c
-                                                                    AND AcctSeedERP__Status__c='Shipped' LIMIT 1];
+                                                                    AND AcctSeedERP__Status__c='Shipped'];
 
                         List<AcctSeedERP__Shipment_Line__c> sales_order_ship_lines = new List<AcctSeedERP__Shipment_Line__c>();    
                         Map<Id, AcctSeedERP__Shipment_Line__c> so_already_received_map = new Map<Id, AcctSeedERP__Shipment_Line__c>();
 
                         AcctSeedERP__Shipment__c so_shipment_ex = new AcctSeedERP__Shipment__c(); //use it if po has shipment but so no
 
-                        if(so_ship != null){
+                        if(!so_ship.isEmpty()){
                             sales_order_ship_lines = [SELECT Id, 
                                                     AcctSeedERP__Shipment__c, 
                                                     AcctSeedERP__Quantity_Shipped__c,
                                                     AcctSeedERP__Sales_Order_Line__c
                                             FROM AcctSeedERP__Shipment_Line__c
-                                            WHERE AcctSeedERP__Shipment__c=: so_ship.Id];
+                                            WHERE AcctSeedERP__Shipment__c=: so_ship[0].Id];
 
                             for(AcctSeedERP__Shipment_Line__c sline: sales_order_ship_lines){
                                 so_already_received_map.put(sline.AcctSeedERP__Sales_Order_Line__c, sline);

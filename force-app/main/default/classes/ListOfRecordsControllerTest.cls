@@ -2603,6 +2603,259 @@ public class ListOfRecordsControllerTest {
 		
 	}
 	
+	@isTEst static void Sales_Reps_Total_Pipeline_Manuf_USATest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Sales_Reps_Total_Pipeline_Manuf_USA');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Sales_Forecast_Pipeline_Manuf_SMDTest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Sales_Forecast_Pipeline_Manuf_SMD');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Company_Total_Pipeline_Specified_SMD_USATest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Company_Total_Pipeline_Specified_SMD_USATest');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Pipeline_By_Specified_SMD_USATest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Pipeline_By_Specified_SMD_USA');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Newly_Submitted_Opportunities_Last_12_Months_SpecifiedTest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Newly_Submitted_Opportunities_Last_12_Months_Specified');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Lost_Opportunities_SpecifiedTest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Lost_Opportunities_Specified');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Win_Rate_SpecifiedTest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Win_Rate_Specified');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Company_Total_Pipeline_Referral_SMD_USATest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Company_Total_Pipeline_Referral_SMD_USA');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Referral_Pipeline_Last_12_Monthtest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Referral_Pipeline_Last_12_Month');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Newly_Submitted_Referral_Opportunities_Last_12_MonthTest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Newly_Submitted_Referral_Opportunities_Last_12_Month');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Lost_Opportunities_ReferrallTest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Lost_Opportunities_Referrall');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	@isTEst static void Win_Rate_ReferrallTest(){
+		
+		Test.startTest();
+		ApexPages.currentPage().getParameters().put('chart', 'Lost_Opportunities_Referrall');
+		ApexPages.currentPage().getParameters().put('Title', 'Example');
+		ApexPages.currentPage().getParameters().put('dashboard', 'SMD_USA');
+		ApexPages.currentPage().getParameters().put('click', 'chart');
+		ListOfRecordsController sdc = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'bar');
+		ListOfRecordsController sdc2 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'legend');
+		ListOfRecordsController sdc3 = new ListOfRecordsController();
+
+		ApexPages.currentPage().getParameters().put('click', 'left');
+		ListOfRecordsController sdc4 = new ListOfRecordsController();
+
+		Test.stopTest();
+		
+	}
+	
 	@isTEst static void Loss_Reasons_SMD_CHK(){
 		
 		Test.startTest();

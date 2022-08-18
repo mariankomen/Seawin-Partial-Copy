@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sort</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>Sort</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>true</requireRowSelection>
+    <url>var url = &apos;{!IF(ISBLANK(User.ContactId),&quot;&quot;,&quot;/sales&quot;)}&apos;;
+if({!Opportunity.Sent_for_Approval__c} &amp;&amp; &quot;{!$User.Alias}&quot; != &quot;mashr&quot; &amp;&amp; &quot;{!$User.Alias}&quot; != &quot;gshilman&quot;){
+
+alert(&quot;Locked Opportunity, pending Approval.&quot;);
+
+}else{
+window.location.href = url+&quot;/apex/OpportunityProductsSortPage?oppId={!Opportunity.Id}&amp;recordType=opo&quot;;
+}</url>
+</WebLink>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Quote_Vanities_Kitchens__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>Mostly for outside sales reps, do need to quote vanities and kitchens line?</description>
+    <externalId>false</externalId>
+    <inlineHelpText>DO we quote vanities and kitchens?</inlineHelpText>
+    <label>Vanities &amp; Kitchens</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

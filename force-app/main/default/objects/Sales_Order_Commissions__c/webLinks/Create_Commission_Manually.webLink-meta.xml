@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Create_Commission_Manually</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>Create Commission Manually</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>false</requireRowSelection>
+    <url>var nam = &quot;{!$Profile.Name}&quot;;
+
+if(nam.includes(&quot;Inside Sales&quot;)){
+
+alert(&quot;Insufficient Privileges. Please contact your administrator.&quot;);
+
+}else{
+
+var url = &apos;{!$User.ContactId}&apos; == &apos;&apos; ? &apos;&apos; : &apos;/sales&apos;;
+var so_or_opp = &apos;{!Opportunity.Id}&apos; == &apos;&apos; ? &apos;salesOrderId={!AcctSeedERP__Sales_Order__c.Id}&apos; : &apos;salesOrderId={!Opportunity.Id}&apos;
+window.location.href = url + &apos;/apex/CreateManualCommissionPage?&apos;+so_or_opp;
+
+
+}</url>
+</WebLink>

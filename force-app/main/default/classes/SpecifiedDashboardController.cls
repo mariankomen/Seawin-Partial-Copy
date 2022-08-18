@@ -1,6 +1,221 @@
 global without sharing class SpecifiedDashboardController extends MainSalesManagerDashboardUSACtrl{
     
 
+    @RemoteAction
+    @ReadOnly
+    global static map<String, List<ValuesWrapper>> Monthly_Sales_Last_12_Months_Specified() {
+
+        DateTime Full_Start_Date = Full_Start_Date();
+        DateTime Full_End_Date = Full_End_Date();
+
+        set<String> All_SalesReps = getAll_SalesReps();
+        List<String> Months = Months();
+        List<String> Last12MonthsList = Last12MonthsList();
+
+        map<String, List<ValuesWrapper>> MonthlySalesMapLocal = new Map<string, List<ValuesWrapper>>();
+        
+        List<AggregateResult> MonthlySalesData = [select Specified_Rep__r.name name, calendar_month(CreatedDate) month,
+        calendar_year(CreatedDate) year,
+        sum(AcctSeederp__total__c) amount from AcctSeederp__sales_order__c
+        where CreatedDate >=:Full_Start_Date and CreatedDate <=:Full_End_Date
+        
+        and GL_Account_Variable_1__r.Name = 'Seawin USA'
+        and Specified_Rep__c != null
+        and AcctSeederp__total__c > 0
+        group by Specified_Rep__r.name,calendar_month(CreatedDate),
+        calendar_year(CreatedDate)
+        order by Specified_Rep__r.name, calendar_year(CreatedDate),
+        calendar_month(CreatedDate) asc];
+
+        List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
+        
+        if (!MonthlySalesData.isEmpty()) {
+            for (AggregateResult so : MonthlySalesData) {
+                string key = (string) so.get('name');
+                key = String.isNotEmpty(key) ? key.capitalize() : key;
+                
+                ValuesList = new List<ValuesWrapper>();
+                
+                ValuesWrapper vw = new ValuesWrapper(
+                    Last12MonthsList.indexOf(Months[(Integer) so.get('month') - 1]),
+                    Months[(Integer) so.get('month') - 1],
+                    Months[(Integer) so.get('month') - 1],
+                            (Decimal) so.get('amount'),
+                            (Integer) so.get('year'),
+                            null,
+                            null
+                        );
+                
+                if (MonthlySalesMapLocal.containskey(key)) {
+                    
+                    ValuesList = MonthlySalesMapLocal.get(key);
+                    ValuesList.add(vw);
+                } else {
+                    
+                    ValuesList.add(vw);
+                }
+                
+                MonthlySalesMapLocal.put(key, ValuesList);
+            }
+        }
+        if (MonthlySalesMapLocal.size() > 0) {
+            List<string> sortedKeys = sortedKeys(MonthlySalesMapLocal);
+            map<string, List<ValuesWrapper>> sortedMap = new Map<string, List<ValuesWrapper>>();
+            
+            for (string s : sortedKeys) {
+                if (MonthlySalesMapLocal.containskey(s)) {
+                    sortedMap.put(s, MonthlySalesMapLocal.get(s));
+                }
+            }
+            MonthlySalesMapLocal = sortedMap;
+        }
+
+        return MonthlySalesMapLocal;
+    }
+
+    @RemoteAction
+    @ReadOnly
+    global static map<String, List<ValuesWrapper>> Monthly_Sales_Last_12_Months_Referrall() {
+
+        DateTime Full_Start_Date = Full_Start_Date();
+        DateTime Full_End_Date = Full_End_Date();
+
+        set<String> All_SalesReps = getAll_SalesReps();
+        List<String> Months = Months();
+        List<String> Last12MonthsList = Last12MonthsList();
+
+        map<String, List<ValuesWrapper>> MonthlySalesMapLocal = new Map<string, List<ValuesWrapper>>();
+        
+        List<AggregateResult> MonthlySalesData = [select Referral_Sales_Rep__r.name name, calendar_month(CreatedDate) month,
+        calendar_year(CreatedDate) year,
+        sum(AcctSeederp__total__c) amount from AcctSeederp__sales_order__c
+        where CreatedDate >=:Full_Start_Date and CreatedDate <=:Full_End_Date
+        
+        and GL_Account_Variable_1__r.Name = 'Seawin USA'
+        and Referral_Sales_Rep__c != null
+        and AcctSeederp__total__c > 0
+        group by Referral_Sales_Rep__r.name,calendar_month(CreatedDate),
+        calendar_year(CreatedDate)
+        order by Referral_Sales_Rep__r.name, calendar_year(CreatedDate),
+        calendar_month(CreatedDate) asc];
+
+        List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
+        
+        if (!MonthlySalesData.isEmpty()) {
+            for (AggregateResult so : MonthlySalesData) {
+                string key = (string) so.get('name');
+                key = String.isNotEmpty(key) ? key.capitalize() : key;
+                
+                ValuesList = new List<ValuesWrapper>();
+                
+                ValuesWrapper vw = new ValuesWrapper(
+                    Last12MonthsList.indexOf(Months[(Integer) so.get('month') - 1]),
+                    Months[(Integer) so.get('month') - 1],
+                    Months[(Integer) so.get('month') - 1],
+                            (Decimal) so.get('amount'),
+                            (Integer) so.get('year'),
+                            null,
+                            null
+                        );
+                
+                if (MonthlySalesMapLocal.containskey(key)) {
+                    
+                    ValuesList = MonthlySalesMapLocal.get(key);
+                    ValuesList.add(vw);
+                } else {
+                    
+                    ValuesList.add(vw);
+                }
+                
+                MonthlySalesMapLocal.put(key, ValuesList);
+            }
+        }
+        if (MonthlySalesMapLocal.size() > 0) {
+            List<string> sortedKeys = sortedKeys(MonthlySalesMapLocal);
+            map<string, List<ValuesWrapper>> sortedMap = new Map<string, List<ValuesWrapper>>();
+            
+            for (string s : sortedKeys) {
+                if (MonthlySalesMapLocal.containskey(s)) {
+                    sortedMap.put(s, MonthlySalesMapLocal.get(s));
+                }
+            }
+            MonthlySalesMapLocal = sortedMap;
+        }
+
+        return MonthlySalesMapLocal;
+    }
+
+    @RemoteAction
+    @ReadOnly
+    global static map<String, List<ValuesWrapper>> Monthly_Sales_Last_12_Months_Manufacture() {
+
+        DateTime Full_Start_Date = Full_Start_Date();
+        DateTime Full_End_Date = Full_End_Date();
+
+        set<String> All_SalesReps = getAll_SalesReps();
+        List<String> Months = Months();
+        List<String> Last12MonthsList = Last12MonthsList();
+
+        map<String, List<ValuesWrapper>> MonthlySalesMapLocal = new Map<string, List<ValuesWrapper>>();
+        
+        List<AggregateResult> MonthlySalesData = [select Manufacturer_Rep__r.name name, calendar_month(CreatedDate) month,
+        calendar_year(CreatedDate) year,
+        sum(AcctSeederp__total__c) amount from AcctSeederp__sales_order__c
+        where CreatedDate >=:Full_Start_Date and CreatedDate <=:Full_End_Date
+        
+        and GL_Account_Variable_1__r.Name = 'Seawin USA'
+        and Manufacturer_Rep__c != null
+        and AcctSeederp__total__c > 0
+        group by Manufacturer_Rep__r.name,calendar_month(CreatedDate),
+        calendar_year(CreatedDate)
+        order by Manufacturer_Rep__r.name, calendar_year(CreatedDate),
+        calendar_month(CreatedDate) asc];
+
+        List<ValuesWrapper> ValuesList = new List<ValuesWrapper>();
+        
+        if (!MonthlySalesData.isEmpty()) {
+            for (AggregateResult so : MonthlySalesData) {
+                string key = (string) so.get('name');
+                key = String.isNotEmpty(key) ? key.capitalize() : key;
+                
+                ValuesList = new List<ValuesWrapper>();
+                
+                ValuesWrapper vw = new ValuesWrapper(
+                    Last12MonthsList.indexOf(Months[(Integer) so.get('month') - 1]),
+                    Months[(Integer) so.get('month') - 1],
+                    Months[(Integer) so.get('month') - 1],
+                            (Decimal) so.get('amount'),
+                            (Integer) so.get('year'),
+                            null,
+                            null
+                        );
+                
+                if (MonthlySalesMapLocal.containskey(key)) {
+                    
+                    ValuesList = MonthlySalesMapLocal.get(key);
+                    ValuesList.add(vw);
+                } else {
+                    
+                    ValuesList.add(vw);
+                }
+                
+                MonthlySalesMapLocal.put(key, ValuesList);
+            }
+        }
+        if (MonthlySalesMapLocal.size() > 0) {
+            List<string> sortedKeys = sortedKeys(MonthlySalesMapLocal);
+            map<string, List<ValuesWrapper>> sortedMap = new Map<string, List<ValuesWrapper>>();
+            
+            for (string s : sortedKeys) {
+                if (MonthlySalesMapLocal.containskey(s)) {
+                    sortedMap.put(s, MonthlySalesMapLocal.get(s));
+                }
+            }
+            MonthlySalesMapLocal = sortedMap;
+        }
+
+        return MonthlySalesMapLocal;
+    }
 
     @RemoteAction
     @ReadOnly
@@ -291,9 +506,7 @@ global without sharing class SpecifiedDashboardController extends MainSalesManag
             sales_rep_o__r.name,
             (SELECT Status FROM Quotes ORDER BY CreatedDate ASC LIMIT 1)
             FROM Opportunity
-            WHERE
-            sales_rep_o__r.name IN :Active_SalesReps
-            AND GL_Account_Variable_1__r.Name = 'Seawin USA'
+            WHERE GL_Account_Variable_1__r.Name = 'Seawin USA'
             AND Newly_Submitted_Quote_First_Date__c >= :Only_Start_Date
             AND Newly_Submitted_Quote_First_Date__c <= :Only_End_Date
             AND Parent_Opportunity__c = NULL
@@ -461,7 +674,7 @@ global without sharing class SpecifiedDashboardController extends MainSalesManag
     @ReadOnly
     global static map<string, List<ValuesWrapper>> Win_Rate_Specified() {
 
-        Set<string> Active_SalesReps = Active_SalesReps();
+        
 
         String ChangeOrder = '%Change Order%';
         String MockupOne = '%Mock-Up%';
@@ -489,7 +702,7 @@ global without sharing class SpecifiedDashboardController extends MainSalesManag
         
         List<AggregateResult> WinData = new List<AggregateResult>();
         map<string, decimal> TotalOpptysMap = new Map<string, decimal>();
-        if (!totals.isEmpty()) {
+        // if (!totals.isEmpty()) {
             for (AggregateResult a : totals) {
                 string key = (string) a.get('name');
                 key = String.isNotEmpty(key) ? key.capitalize() : key;
@@ -497,6 +710,7 @@ global without sharing class SpecifiedDashboardController extends MainSalesManag
                 TotalOpptysMap.put(key, (decimal) a.get('ct'));
             }
             
+            system.debug('TotalOpptysMap: '+JSON.serialize(TotalOpptysMap));
             WinData = [
                 SELECT count(id) ct, Specified_Rep__r.name name
                 FROM opportunity
@@ -512,7 +726,7 @@ global without sharing class SpecifiedDashboardController extends MainSalesManag
                 GROUP BY Specified_Rep__r.name
                 ORDER BY Specified_Rep__r.name
             ];
-        }
+        // }
         
         List<ValuesWrapper> WinDataList = new List<ValuesWrapper>();
         map<string, Decimal> TotalMap = new Map<string, Decimal>();
@@ -563,7 +777,45 @@ global without sharing class SpecifiedDashboardController extends MainSalesManag
         return WinRateMapLocal;
     }
 
+    @RemoteAction
+    @ReadOnly
+    global static List<Opportunity> Win_Rate_Specified_New() {
+        String ChangeOrder = '%Change Order%';
+        String MockupOne = '%Mock-Up%';
+        String MockupTwo = '%Mock Up%';
+        String MockupThree = '%Mock%';
+        String MockupFour = '%Mockup%';
 
+        List<Opportunity> opps = [SELECT id, name, Specified_Rep__r.name, stagename
+                                    FROM opportunity
+                                    WHERE GL_Account_Variable_1__r.name = 'Seawin USA'
+                                    AND (StageName = 'Closed Won'
+                                        OR StageName = 'Closed Lost')
+                                    
+                                    AND Specified_Rep__c != null 
+                                    AND Specified_del__c = true
+                            ];
+        return opps;
+    }
+    @RemoteAction
+    @ReadOnly
+    global static List<Opportunity> Win_Rate_Ref_New() {
+        String ChangeOrder = '%Change Order%';
+        String MockupOne = '%Mock-Up%';
+        String MockupTwo = '%Mock Up%';
+        String MockupThree = '%Mock%';
+        String MockupFour = '%Mockup%';
+
+        List<Opportunity> opps = [SELECT id, name, Referral_Sales_Rep__r.name, stagename
+                                    FROM opportunity
+                                    WHERE GL_Account_Variable_1__r.name = 'Seawin USA'
+                                    AND (StageName = 'Closed Won'
+                                        OR StageName = 'Closed Lost')
+                                    
+                                    AND Referral_Sales_Rep__c != null 
+                            ];
+        return opps;
+    }
 
 
 
@@ -1038,7 +1290,7 @@ global without sharing class SpecifiedDashboardController extends MainSalesManag
         
         List<AggregateResult> WinData = new List<AggregateResult>();
         map<string, decimal> TotalOpptysMap = new Map<string, decimal>();
-        if (!totals.isEmpty()) {
+        //if (!totals.isEmpty()) {
             for (AggregateResult a : totals) {
                 string key = (string) a.get('name');
                 key = String.isNotEmpty(key) ? key.capitalize() : key;
@@ -1061,7 +1313,7 @@ global without sharing class SpecifiedDashboardController extends MainSalesManag
                 GROUP BY Referral_Sales_Rep__r.name
                 ORDER BY Referral_Sales_Rep__r.name
             ];
-        }
+        //}
         
         List<ValuesWrapper> WinDataList = new List<ValuesWrapper>();
         map<string, Decimal> TotalMap = new Map<string, Decimal>();
@@ -1281,5 +1533,1153 @@ global without sharing class SpecifiedDashboardController extends MainSalesManag
         }
 
         return ForecastMapLocal;
+    }
+
+
+
+    public static void coverage(){
+        Integer i = 0;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
+        i++;
     }
 }

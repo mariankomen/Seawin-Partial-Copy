@@ -102,7 +102,7 @@ public class AfterSalesOrderTriggerHandler {
 
         if(!cashReceipts.isEmpty()){
 
-            CalculateCommissionsHandler.Start(cashReceipts);
+            CalculateCommissionsHandler.calculateCommissionsCashReceipts(cashReceipts, new Map<Id, List<String>>());
         }
 
         List<AcctSeed__Billing_Credit_Memo__c> memoReceipts = [select id,AcctSeed__Billing_Invoice__c 
@@ -111,7 +111,7 @@ public class AfterSalesOrderTriggerHandler {
 
         if(!memoReceipts.isEmpty()){
 
-            CalculateCommissionsHandler.Start(memoReceipts);
+            CalculateCommissionsHandler.calculateCommissionsCreditMemo(memoReceipts, new Map<Id, List<String>>());
         }
     }
 

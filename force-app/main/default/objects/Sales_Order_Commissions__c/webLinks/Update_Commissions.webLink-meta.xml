@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Update_Commissions</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>Update Commissions</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>false</requireRowSelection>
+    <url>{!REQUIRESCRIPT(&quot;/soap/ajax/30.0/connection.js&quot;)} 
+{!REQUIRESCRIPT(&quot;/soap/ajax/30.0/apex.js&quot;)}
+{!REQUIRESCRIPT(&quot;https://code.jquery.com/jquery-3.5.1.min.js&quot;)}
+
+var query
+var query_so = &quot;Select Id from Sales_Order_Commissions__c where Sales_Order__c = &apos;{!AcctSeedERP__Sales_Order__c.Id}&apos; Limit 1&quot;; 
+var query_opp = &quot;Select Id from Sales_Order_Commissions__c where Opportunity__c = &apos;{!Opportunity.Id}&apos; Limit 1&quot;; 
+if(&apos;{!AcctSeedERP__Sales_Order__c.Id}&apos; == &apos;&apos;){
+ query = query_opp;
+}else{
+ query = query_so;
+}
+        
+var result = sforce.connection.query(query); 
+var records = result.getArray(&quot;records&quot;); 
+
+if(records.length &lt; 1) {
+  alert(&apos;No sales order commissions exist.&apos;)
+}else{
+
+var secquery = &quot;Select Id from AcctSeed__Billing_Line__c where AcctSeed__Billing__r.AcctSeedERP__Sales_Order__c = &apos;{!AcctSeedERP__Sales_Order__c.Id}&apos; and AcctSeed__Product__r.Commissionable_Product__c = true Limit 1&quot;; 
+        
+var secresult = sforce.connection.query(secquery); 
+var secrecords = secresult.getArray(&quot;records&quot;); 
+
+if(secrecords.length &lt; 1) {
+  alert(&apos;There are no commissionable products found on any billing.&apos;)
+}else{
+
+// js for dialog
+if($(&quot;#dialogcss&quot;).length &lt; 1){
+
+  var hd = &apos;&lt;link rel=&quot;stylesheet&quot; id=&quot;dialogcss&quot; href=&quot;http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css&quot; type=&quot;text/css&quot; /&gt;&apos;;
+  $(&quot;head&quot;).append(hd);
+}
+
+if($(&quot;#dialogjs&quot;).length &lt; 1){
+
+var js = &apos;&lt;script type=&quot;text/javascript&quot; id=&quot;dialogjs&quot; src=&quot;https://code.jquery.com/ui/1.12.1/jquery-ui.js&quot;&gt;&lt;/script&gt;&apos;;
+
+$(&quot;head&quot;).append(js);
+
+}
+
+if($(&quot;#dialog&quot;).length &lt; 1){
+
+  var div = &quot;&lt;div id=&apos;dialog&apos;&gt;&lt;/div&gt;&quot;;
+
+  $(&quot;body&quot;).append(div);
+
+}
+
+setTimeout(function(){
+     
+       $(&quot;#dialog&quot;).dialog({
+        title: &quot;Update Sales Order Commissions!&quot;,
+        minWidth: &quot;auto&quot;,
+        minHeight:&quot;auto&quot;,
+        resizable: false,
+	dialogClass: &apos;success-dialog&apos;,
+        open: function() {
+           
+           var markup = &apos;This will update sales order commissions related to this sales order for any recent changes such as commission rate changes or product made commissionable or non-commissionable, do you want to proceed?&apos;;
+           $(this).html(markup);
+           $(&apos;.ui-dialog :button&apos;).blur();
+        },
+        buttons: [
+            {
+                 text: &quot;Yes&quot;,
+                 click: function() {
+                  
+                    var url = &quot;{!$User.ContactId}&quot; == &quot;&quot; ? &quot;&quot; : &quot;/sales&quot;;
+
+                    url += &quot;/apex/UpdateCommissionsPage?salesorderid=&quot;;
+
+												        if(&apos;{!AcctSeedERP__Sales_Order__c.Id}&apos; != &apos;&apos;){
+                        url += &apos;{!AcctSeedERP__Sales_Order__c.Id}&apos;
+                    }else{
+                        url += &apos;{!Opportunity.Id}&apos;
+                    }
+                    window.location.href = url;
+
+                   $( this ).dialog( &quot;close&quot; );
+                 }
+            },
+            {
+                 text: &quot;No&quot;,
+                 click: function() {
+                   
+                   $( this ).dialog( &quot;close&quot; );
+                 }
+            }
+        ]
+     });
+}, 300);
+}
+}</url>
+</WebLink>

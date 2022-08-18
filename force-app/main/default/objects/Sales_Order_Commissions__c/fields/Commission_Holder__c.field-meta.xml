@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Commission_Holder__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(!ISBLANK(Owner__c), 
+
+HYPERLINK(&apos;/&apos;+Owner__c, Owner__r.FirstName + IF(Owner__r.MiddleName != &apos;&apos;,&apos; &apos; + Owner__r.MiddleName + &apos; &apos;, &apos; &apos;) + Owner__r.LastName, &apos;_blank&apos;),
+
+IF(!ISBLANK(Referral_Sales_Rep__c), HYPERLINK(&apos;/&apos;+Referral_Sales_Rep__c, Referral_Sales_Rep__r.FirstName &amp; &apos; &apos; &amp; Referral_Sales_Rep__r.LastName, &apos;_blank&apos;),
+
+IF(!ISBLANK(Specified_Rep__c), HYPERLINK(&apos;/&apos;+Specified_Rep__c, Specified_Rep__r.Name, &apos;_blank&apos;),  
+
+IF(!ISBLANK(Manufacturer_Rep__c), HYPERLINK(&apos;/&apos;+Manufacturer_Rep__c, Manufacturer_Rep__r.Name, &apos;_blank&apos;), 
+
+IF(!ISBLANK(Sales_Rep_Company_Name__c), HYPERLINK(&apos;/&apos;+Sales_Rep_Company_Name__c, Sales_Rep_Company_Name__r.Name, &apos;_blank&apos;), &apos;&apos;)))))</formula>
+    <label>Commission Holder</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

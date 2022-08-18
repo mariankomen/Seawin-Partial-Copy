@@ -48,22 +48,18 @@ public without sharing class CalculateCommissionsPageCtrl {
         }else{
                 Boolean success;
                 
-                if(isSalesOrder){
-                    success = CalculateCommissionsHandler.PartialCommissions(soId); // this method will create either all commissions or which are missing
-                }else if(!isSalesOrder){
-                    success = CalculateCommissionsHandler.PartialCommissionsOpportunity(soId); // this method will create either all commissions or which are missing
-                }
+                CalculateCommissionsHandler.updateExistingCommissions(soId); // this method will create either all commissions or which are missing
 
 
-                ApexPages.Message myMsg;
-                if(success == true){
-                    myMsg = new ApexPages.message(ApexPages.Severity.Confirm, 'Commissions were created successfully.' );
-                    NoDataExists = true;
-                } else {
-                    NoDataExists = true;
-                    myMsg = new ApexPages.message(ApexPages.Severity.Info, 'All commissions already have been created.' );
-                } 
-                ApexPages.addMessage(myMsg);
+                // ApexPages.Message myMsg;
+                // if(success == true){
+                //     myMsg = new ApexPages.message(ApexPages.Severity.Confirm, 'Commissions were created successfully.' );
+                //     NoDataExists = true;
+                // } else {
+                //     NoDataExists = true;
+                //     myMsg = new ApexPages.message(ApexPages.Severity.Info, 'All commissions already have been created.' );
+                // } 
+                // ApexPages.addMessage(myMsg);
 
         }
 

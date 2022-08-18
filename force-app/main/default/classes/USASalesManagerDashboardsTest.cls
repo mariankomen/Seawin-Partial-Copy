@@ -966,27 +966,45 @@ public class USASalesManagerDashboardsTest {
         HospitalityDashboardUSAController.Pipeline_Last_12_Months_By_Lead_Source();
 
 
-        HospitalityDashboardUSAController.Company_Total_Pre_Order_Pipeline_Last_12_Months();
-        HospitalityDashboardUSAController.Sales_Reps_Total_Pipeline_Pre_Order_Last_12_Months();
-        HospitalityDashboardUSAController.Pipeline_Pre_Order_Last_12_Months_By_Lead_Source();
-        HospitalityDashboardUSAController.Company_Total_Negotiation_Pipeline_Last_12_Months();
-        HospitalityDashboardUSAController.Sales_Reps_Total_Pipeline_Negotiation_Last_12_Months();
-        HospitalityDashboardUSAController.Pipeline_Negotiation_Last_12_Months_By_Lead_Source();
-        HospitalityDashboardUSAController.Specififed_Reps_Total_Pipeline_Pre_Order_Last_12_Months();
-        HospitalityDashboardUSAController.Specififed_Reps_Sales_Last_12_Months();
-        HospitalityDashboardUSAController.Sales_Forecast_Pipeline_Spicified();
-        HospitalityDashboardUSAController.Refferal_Reps_Sales_Last_12_Months();
-        HospitalityDashboardUSAController.Refferral_Reps_Total_Pipeline_Pre_Order_Last_12_Months();
-        HospitalityDashboardUSAController.Sales_Forecast_Pipeline_Refferrall();
-        HospitalityDashboardUSAController.Manuf_Reps_Sales_Last_12_Months();
-        HospitalityDashboardUSAController.Manuf_Reps_Total_Pipeline_Pre_Order_Last_12_Months();
-        HospitalityDashboardUSAController.Sales_Forecast_Pipeline_Manuf();
+        
 
         Test.stopTest();
         HospitalityDashboardUSAController.neglectedWrapper negl = new HospitalityDashboardUSAController.neglectedWrapper(1,1,1,1,'test');
 
     }
 
+    @isTest static void specified_dashboards(){
+        Test.startTest();
+
+        HospitalityDashboardUSAController.Company_Total_Pre_Order_Pipeline_Last_12_Months();
+        HospitalityDashboardUSAController.Sales_Reps_Total_Pipeline_Pre_Order_Last_12_Months();
+        HospitalityDashboardUSAController.Pipeline_Pre_Order_Last_12_Months_By_Lead_Source();
+        HospitalityDashboardUSAController.Company_Total_Negotiation_Pipeline_Last_12_Months();
+        HospitalityDashboardUSAController.Sales_Reps_Total_Pipeline_Negotiation_Last_12_Months();
+        HospitalityDashboardUSAController.Pipeline_Negotiation_Last_12_Months_By_Lead_Source();
+
+        SpecifiedDashboardController.Specififed_Reps_Total_Pipeline_Pre_Order_Last_12_Months();
+        SpecifiedDashboardController.Specififed_Reps_Sales_Last_12_Months();
+        SpecifiedDashboardController.Sales_Forecast_Pipeline_Spicified();
+        SpecifiedDashboardController.Refferal_Reps_Sales_Last_12_Months();
+        SpecifiedDashboardController.Refferral_Reps_Total_Pipeline_Pre_Order_Last_12_Months();
+        SpecifiedDashboardController.Sales_Forecast_Pipeline_Refferrall();
+        SpecifiedDashboardController.Manuf_Reps_Sales_Last_12_Months();
+        SpecifiedDashboardController.Manuf_Reps_Total_Pipeline_Pre_Order_Last_12_Months();
+        SpecifiedDashboardController.Sales_Forecast_Pipeline_Manuf();
+        SpecifiedDashboardController.Company_Total_Pipeline_Last_12_Months_Specified();
+        SpecifiedDashboardController.Specififed_Reps_Total_Pipeline_Last_12_Months();
+        SpecifiedDashboardController.Newly_Submitted_Opportunities_By_Specified_Rep();
+        SpecifiedDashboardController.Lost_Specified_Opportunities();
+        SpecifiedDashboardController.Win_Rate_Specified();
+        SpecifiedDashboardController.Company_Total_Pipeline_Last_12_Months_Referral();
+        SpecifiedDashboardController.Referral_Reps_Total_Pipeline_Last_12_Months();
+        SpecifiedDashboardController.Newly_Submitted_Opportunities_By_Referrall_Rep();
+        SpecifiedDashboardController.Lost_Referrall_Opportunities();
+        SpecifiedDashboardController.Win_Rate_Referral();
+        SpecifiedDashboardController.coverage();
+        Test.stopTest();
+    }
     @isTest static void negleged_opp_helper_Test(){
         Test.startTest();
         ListOfRecordsHelper.negleged_opp_helper();

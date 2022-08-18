@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>List_Image__c</fullName>
+    <externalId>false</externalId>
+    <formula>if(
+
+LEN(AlternateImageURL_Trunc__c)!=0, IMAGE(AlternateImageURL_Trunc__c,&quot;Image&quot;,-1,164),
+if(
+LEN(Product__r.Product_Image_Short_URL__c)=0,&quot;&quot;, IMAGE(Product__r.Product_Image_Short_URL__c,&quot;Image&quot;, -1, 164)
+
+)
+
+)</formula>
+    <label>Image</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

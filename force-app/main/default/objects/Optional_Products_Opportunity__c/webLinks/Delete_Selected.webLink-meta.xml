@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Delete_Selected</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>Delete Selected</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>true</requireRowSelection>
+    <url>var url = &apos;{!IF(ISBLANK(User.ContactId),&quot;&quot;,&quot;/sales&quot;)}&apos;;
+if(confirm(&quot;Are you sure?&quot;)){
+if({!Opportunity.Sent_for_Approval__c} &amp;&amp; &quot;{!$User.Alias}&quot; != &quot;mashr&quot; &amp;&amp; &quot;{!$User.Alias}&quot; != &quot;gshilman&quot;){
+
+alert(&quot;Locked Opportunity, pending Approval.&quot;);
+
+}else{
+
+var olis = {!GETRECORDIDS($ObjectType.Optional_Products_Opportunity__c)}
+if(olis.length &lt; 1) {
+alert(&apos;No records have been selected to delete!&apos;)
+
+}
+else if(&quot;{!Opportunity.TotalBills__c}&quot; &gt; &quot;0&quot;){
+alert(&quot;Opportunity Product cannot be deleted, as billing has already been done.&quot;);
+}
+else if(&quot;{!Opportunity.TotalSalesOrderInOpp__c}&quot; &gt; &quot;0&quot;){
+alert(&quot;Won Opportunity with Sales Order cannot be edited.&quot;);
+}
+else{
+
+var add = &quot;&quot;;
+for(var i = 0; i &lt; olis.length; i++){
+
+if(i == 0){
+add += &apos;id&apos; + i +&apos;=&apos;+ olis[i];
+}else{
+add += &apos;&amp;id&apos;+ i +&apos;=&apos;+ olis[i];
+}
+}
+
+var total = olis.length;
+
+url += &apos;/apex/DeleteLineItemPage?id={!Opportunity.Id}&amp;linesType=ooli&amp;count=&apos; +total+ &apos;&amp;&apos;+ add;
+
+window.location.href = url;
+
+}
+}
+}</url>
+</WebLink>

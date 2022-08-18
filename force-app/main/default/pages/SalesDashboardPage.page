@@ -384,7 +384,32 @@
                 </form>
             </div>
         </div>
-        
+
+        <div class="individualPalette listViewportWrapper float-full">
+            <div class="listViewport Custom29Block">
+                <form>
+                    <div class="topNav primaryPalette">
+                        <div class="controls">
+                            <h2 class="title">Active Opportunities by Stage<span style="position: relative;left: 10px; bottom: 5px;">
+                                <img src="/s.gif" alt="Help" class="helpIcon" title="This chart shows data to date from opportunities having record type Seawin USA Hospitality, Stage is not equal to Closed Won/Closed Lost/Not Qualified for all Sales reps who are in Seawin USA jurisdiction."/></span></h2>
+                            <div class="filterLinks"></div>
+                            <span class="divisionLabel"></span>
+                            <div class="topNavTab"></div>
+                            <div class="clearingBox"></div>
+                            <apex:outputPanel >
+                                <div style="text-align: center">
+                                    <div id="activeopportunitiesbystage" class="emptySpace">
+                                        <div class="spinnerBg" />
+                                        <div class="spinner" />
+                                    </div>
+                                </div>
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="individualPalette listViewportWrapper float-left-half">
             <div class="listViewport Custom29Block">
                 <form>
@@ -537,32 +562,9 @@
             </div>
         </div>
         
-        <div class="individualPalette listViewportWrapper float-left-half">
-            <div class="listViewport Custom29Block">
-                <form>
-                    <div class="topNav primaryPalette">
-                        <div class="controls">
-                            <h2 class="title">Active Opportunities by Stage<span style="position: relative;left: 10px; bottom: 5px;">
-                                <img src="/s.gif" alt="Help" class="helpIcon" title="This chart shows data to date from opportunities having record type Seawin USA Hospitality, Stage is not equal to Closed Won/Closed Lost/Not Qualified for all Sales reps who are in Seawin USA jurisdiction."/></span></h2>
-                            <div class="filterLinks"></div>
-                            <span class="divisionLabel"></span>
-                            <div class="topNavTab"></div>
-                            <div class="clearingBox"></div>
-                            <apex:outputPanel >
-                                <div style="text-align: center">
-                                    <div id="activeopportunitiesbystage" class="emptySpace">
-                                        <div class="spinnerBg" />
-                                        <div class="spinner" />
-                                    </div>
-                                </div>
-                            </apex:outputPanel>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
         
-        <div class="individualPalette listViewportWrapper float-right-half">
+        
+        <div class="individualPalette listViewportWrapper float-full">
             <div class="listViewport Custom29Block">
                 <form>
                     <div class="topNav primaryPalette">
@@ -587,6 +589,57 @@
             </div>
         </div>
         
+        <div class="individualPalette listViewportWrapper float-left-half">
+            <div class="listViewport Custom29Block">
+                <form>
+                    <div class="topNav primaryPalette">
+                        <div class="controls">
+                            <h2 class="title">Pre-Order Pipeline Last 12 Months<span style="position: relative;left: 10px; bottom: 5px;">
+                                <img src="/s.gif" alt="Help" class="helpIcon" 
+                                     title="This chart will show statistics about loss reasons of Closed Lost opportunities whose stage is Closed Lost and Closed Date is for the last 12 months including the current month, for all Sales reps in the Seawin USA jurisdiction, Opportunity Parent equal to null, record type equals Seawin USA Hospitality, GL Account Variable 1 belongs to Seawin USA."/></span></h2>
+                            <div class="filterLinks"></div>
+                            <span class="divisionLabel"></span>
+                            <div class="topNavTab"></div>
+                            <div class="clearingBox"></div>
+                            <apex:outputPanel >
+                                <div style="text-align: center">
+                                    <div id="preorderpipeline" class="emptySpace">
+                                        <div class="spinnerBg" />
+                                        <div class="spinner" />
+                                    </div>
+                                </div>
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="individualPalette listViewportWrapper float-right-half">
+            <div class="listViewport Custom29Block">
+                <form>
+                    <div class="topNav primaryPalette">
+                        <div class="controls">
+                            <h2 class="title">Negotiation Pipeline Last 12 Months<span style="position: relative;left: 10px; bottom: 5px;">
+                                <img src="/s.gif" alt="Help" class="helpIcon" 
+                                     title="This chart will show statistics about loss reasons of Closed Lost opportunities whose stage is Closed Lost and Closed Date is for the last 12 months including the current month, for all Sales reps in the Seawin USA jurisdiction, Opportunity Parent equal to null, record type equals Seawin USA Hospitality, GL Account Variable 1 belongs to Seawin USA."/></span></h2>
+                            <div class="filterLinks"></div>
+                            <span class="divisionLabel"></span>
+                            <div class="topNavTab"></div>
+                            <div class="clearingBox"></div>
+                            <apex:outputPanel >
+                                <div style="text-align: center">
+                                    <div id="negotiationpipeline" class="emptySpace">
+                                        <div class="spinnerBg" />
+                                        <div class="spinner" />
+                                    </div>
+                                </div>
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
         <apex:outputText value="." style="color:#f7f7f7;"></apex:outputText>
         <br/>
         <br/>
@@ -2948,4 +3001,386 @@
         });
     }
     </script>
+
+
+<script>
+    /* ---------------------- Pre-Order Pipeline Last 12 Months ---------------------- */
+    var CompanyTotalPipelineData = new Array();
+
+    //Calculate map of last 12 year-month
+    function getMapLast12Month(){
+        let date = new Date();
+        date.setDate(1);
+        let year_month_obj = {};
+        for(let month = 1; month <= 12; month++){
+            let index = 12 - month;
+            let iteration_month = date.getMonth() + 1;
+            let iteration_year = date.getFullYear();
+
+            year_month_obj[index] = {
+                month: iteration_month,
+                year: iteration_year
+            }
+            //month_year_map[month] = year_month_obj;
+            date.setMonth(date.getMonth() - 1);
+        }
+
+        return year_month_obj;
+    }
+    
+    var dataArray = new Array();
+
+    Visualforce.remoting.timeout = 120000;
+
+    Visualforce.remoting.Manager.invokeAction(
+    '{!$RemoteAction.SalesDashboardController.Company_Total_Pre_Order_Pipeline_Last_12_Months_Sales}',
+        function(result, event){
+
+            if (event.status) {
+                const month_year_map = getMapLast12Month();
+
+                const dashboard_arr = []
+                const month_amount = []
+                result.forEach(el => {
+                    for(let char in month_year_map){
+                        if(el.year == month_year_map[char].year && el.month == month_year_map[char].month){
+                            month_amount.push([char, el.amount])
+                        }
+                    }
+                })
+                let setted_month = []
+                month_amount.forEach(el => {
+                    setted_month.push(el[0])
+                })
+
+                for(let i = 0; i<12; i++){
+                    if(!setted_month.includes(i.toString())){
+                        month_amount.push([i.toString(), 0])
+                    }
+                }
+                month_amount.sort((a, b) => b[0] - a[0]).reverse()
+                dashboard_arr.push({
+                    name: 'companydata',
+                    data: month_amount
+                })
+                RenderCompanyTotalPreorderPipelineLast12Months(dashboard_arr);
+            } else if (event.type === 'exception') {
+                
+                    console.log('Exception has occured in Company Total Pipeline Last 12 Months...');
+                    console.log(event.message);
+                    console.log(event.where);
+            } else {
+                console.log('Error occured in Pre-Order Pipeline Last 12 Months...');
+                console.log(event.message);
+            }
+        }, 
+        {escape: true}
+    );
+
+    function RenderCompanyTotalPreorderPipelineLast12Months(CompanyTotalPipelineData){
+    
+        Highcharts.chart('preorderpipeline', {
+            credits: {
+                enabled: false
+            },
+            title: {
+                text: ''
+            },
+            chart: {
+                events: {
+                    click: function(event) {
+                        var chartName = "Pre-Order Pipeline Last 12 Months";
+                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_PreOrder_Pipeline_SMD_USA_Sales&title='+encodeURI(chartName)+'&click=chart';
+                        url += '&duration=&str=';
+                        url += '&dashboard=SMD_USA';
+                        window.open(url, '_blank');
+                    }
+                }
+            },
+            subtitle: {
+                text: ''
+            },
+            
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Amount ($)'
+                },
+                allowDecimals: false
+            },
+            
+            xAxis: {
+                min: 0,
+                categories: Last12MonthsReverseCategories,
+                max:11
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b style="color: '+this.color+'; font-weight:bold">' + 
+                        this.x + '</b><br> Amount: '+ this.y.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                        });
+                }
+            },
+            
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                enabled: false
+            },
+            
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: false
+                    }
+                },
+                series: {
+                    label: {
+                        connectorAllowed: false
+                    },
+                    marker: {
+                        enabled: true
+                    },
+                    stickyTracking: false,
+                    cursor: 'pointer',
+                    events: {
+                        legendItemClick: function(event) {
+
+                            var chartName = "Company Total Pipeline Last 12 Months";
+                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_PreOrder_Pipeline_SMD_USA_Sales&title='+encodeURI(chartName)+'&click=legend';
+                        url += '&duration=&str='+event.target.userOptions.name+'&year=';
+                            url += '&dashboard=SMD_USA';
+                            window.open(url, '_blank');
+                            event.preventDefault();
+                            
+                        },
+                        click: function(event) {
+                            var d = new Date();
+
+                            var MonthArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+                            
+                            var CategArray = event.point.category.split(" ");
+                            var CurrentMonth = parseInt(d.getMonth()) + 1;
+                            
+                            var YearIndex = (CategArray[1]).replace("'", "");
+                            
+                            var month = parseInt(MonthArray.indexOf(CategArray[0]) + 1);
+                            let full_year = '20'
+                            // var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                            var year = full_year + YearIndex
+                            console.log('YearIndex: ',YearIndex)
+                            console.log('full_year: ',full_year)
+                            console.log('year: ',year)
+                            var duration = '';
+
+                            var chartName = "Pre-Order Pipeline Last 12 Months";
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_PreOrder_Pipeline_SMD_USA_Sales&title='+encodeURI(chartName)+'&click=point';
+                            url += '&duration='+duration+'&month='+month+'&year='+year+'&str='+
+                                event.point.series.userOptions.name;
+                            url += '&dashboard=SMD_USA';
+                            window.open(url, '_blank');
+                        }
+                    }
+                }
+            },
+            
+            series: CompanyTotalPipelineData
+            
+        });
+    }
+</script>
+
+<script>
+    /* ---------------------- Negotiation Pipeline Last 12 Months ---------------------- */
+    var CompanyTotalPipelineData = new Array();
+
+    //Calculate map of last 12 year-month
+    function getMapLast12Month(){
+        let date = new Date();
+        date.setDate(1);
+        let year_month_obj = {};
+        for(let month = 1; month <= 12; month++){
+            let index = 12 - month;
+            let iteration_month = date.getMonth() + 1;
+            let iteration_year = date.getFullYear();
+
+            year_month_obj[index] = {
+                month: iteration_month,
+                year: iteration_year
+            }
+            //month_year_map[month] = year_month_obj;
+            date.setMonth(date.getMonth() - 1);
+        }
+
+        return year_month_obj;
+    }
+    
+    var dataArray = new Array();
+
+    Visualforce.remoting.timeout = 120000;
+
+    Visualforce.remoting.Manager.invokeAction(
+    '{!$RemoteAction.SalesDashboardController.Company_Total_Negotiation_Pipeline_Last_12_Months}',
+        function(result, event){
+
+            if (event.status) {
+                const month_year_map = getMapLast12Month();
+
+                const dashboard_arr = []
+                const month_amount = []
+                result.forEach(el => {
+                    for(let char in month_year_map){
+                        if(el.year == month_year_map[char].year && el.month == month_year_map[char].month){
+                            month_amount.push([char, el.amount])
+                        }
+                    }
+                })
+                let setted_month = []
+                month_amount.forEach(el => {
+                    setted_month.push(el[0])
+                })
+
+                for(let i = 0; i<12; i++){
+                    if(!setted_month.includes(i.toString())){
+                        month_amount.push([i.toString(), 0])
+                    }
+                }
+                month_amount.sort((a, b) => b[0] - a[0]).reverse()
+                dashboard_arr.push({
+                    name: 'companydata',
+                    data: month_amount
+                })
+                RenderCompanyTotalNegotiationPipelineLast12Months(dashboard_arr);
+            } else if (event.type === 'exception') {
+                
+                    console.log('Exception has occured in Company Total Pipeline Last 12 Months...');
+                    console.log(event.message);
+                    console.log(event.where);
+            } else {
+                console.log('Error occured in Negotiation Pipeline Last 12 Months...');
+                console.log(event.message);
+            }
+        }, 
+        {escape: true}
+    );
+
+    function RenderCompanyTotalNegotiationPipelineLast12Months(CompanyTotalPipelineData){
+    
+        Highcharts.chart('negotiationpipeline', {
+            credits: {
+                enabled: false
+            },
+            title: {
+                text: ''
+            },
+            chart: {
+                events: {
+                    click: function(event) {
+                        var chartName = "Negotiation Pipeline Last 12 Months";
+                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Negotiation_Pipeline_SMD_USA_Sales&title='+encodeURI(chartName)+'&click=chart';
+                        url += '&duration=&str=';
+                        url += '&dashboard=SMD_USA';
+                        window.open(url, '_blank');
+                    }
+                }
+            },
+            subtitle: {
+                text: ''
+            },
+            
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Amount ($)'
+                },
+                allowDecimals: false
+            },
+            
+            xAxis: {
+                min: 0,
+                categories: Last12MonthsReverseCategories,
+                max:11
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b style="color: '+this.color+'; font-weight:bold">' + 
+                        this.x + '</b><br> Amount: '+ this.y.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                        });
+                }
+            },
+            
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                enabled: false
+            },
+            
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: false
+                    }
+                },
+                series: {
+                    label: {
+                        connectorAllowed: false
+                    },
+                    marker: {
+                        enabled: true
+                    },
+                    stickyTracking: false,
+                    cursor: 'pointer',
+                    events: {
+                        legendItemClick: function(event) {
+
+                            var chartName = "Negotiation Pipeline Last 12 Months";
+                        var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Negotiation_Pipeline_SMD_USA_Sales&title='+encodeURI(chartName)+'&click=legend';
+                        url += '&duration=&str='+event.target.userOptions.name+'&year=';
+                            url += '&dashboard=SMD_USA';
+                            window.open(url, '_blank');
+                            event.preventDefault();
+                            
+                        },
+                        click: function(event) {
+                            var d = new Date();
+
+                            var MonthArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+                            
+                            var CategArray = event.point.category.split(" ");
+                            var CurrentMonth = parseInt(d.getMonth()) + 1;
+                            
+                            var YearIndex = (CategArray[1]).replace("'", "");
+                            
+                            var month = parseInt(MonthArray.indexOf(CategArray[0]) + 1);
+                            let full_year = '20'
+                            // var year = parseInt(YearIndex) == 21 ? d.getFullYear() : parseInt(YearIndex) == 20 ? d.getFullYear() - 1 : d.getFullYear() + 1;
+                            var year = full_year + YearIndex
+                            console.log('YearIndex: ',YearIndex)
+                            console.log('full_year: ',full_year)
+                            console.log('year: ',year)
+                            var duration = '';
+
+                            var chartName = "Negotiation Pipeline Last 12 Months";
+                            var url = '{!communityUrl}/apex/ListOfRecordsPage?chart=Company_Negotiation_Pipeline_SMD_USA_Sales&title='+encodeURI(chartName)+'&click=point';
+                            url += '&duration='+duration+'&month='+month+'&year='+year+'&str='+
+                                event.point.series.userOptions.name;
+                            url += '&dashboard=SMD_USA';
+                            window.open(url, '_blank');
+                        }
+                    }
+                }
+            },
+            
+            series: CompanyTotalPipelineData
+            
+        });
+    }
+</script>
+
 </apex:page>

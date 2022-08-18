@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Role__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(!ISBLANK(Owner__c), &apos;Owner&apos;,
+IF(!ISBLANK(Referral_Sales_Rep__c), &apos;Referral Sales Rep&apos;,
+		IF(!ISBLANK(Manufacturer_Rep__c), &apos;Manufacturer Rep&apos;, 
+IF(!ISBLANK(Specified_Rep__c), &apos;Specified Rep&apos;,
+IF(!ISBLANK(Sales_Rep_Company_Name__c), &apos;Sales Rep Company&apos;, &apos;&apos;)))))</formula>
+    <label>Role</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

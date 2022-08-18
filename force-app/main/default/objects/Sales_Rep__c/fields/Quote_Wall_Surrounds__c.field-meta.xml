@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Quote_Wall_Surrounds__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>Mostly for outside sales reps, do need to quote wall surrounds line?</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Do we quote wall surrounds?</inlineHelpText>
+    <label>Wall Surrounds</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

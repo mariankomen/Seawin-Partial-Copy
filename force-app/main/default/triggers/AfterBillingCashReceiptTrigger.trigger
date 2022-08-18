@@ -2,7 +2,7 @@ trigger AfterBillingCashReceiptTrigger on AcctSeed__Billing_Cash_Receipt__c (aft
     
     if(Trigger.IsAfter && Trigger.IsInsert){
 
-        CalculateCommissionsHandler.Start(Trigger.new);
+        CalculateCommissionsHandler.calculateCommissionsCashReceipts(Trigger.new, new Map<Id, List<String>>());
     }else if(Trigger.IsBefore && Trigger.IsDelete){
 
         CalculateCommissionsHandler.DeleteCommissions(Trigger.oldMap.keySet(), false); // false says its not a billing credit memo

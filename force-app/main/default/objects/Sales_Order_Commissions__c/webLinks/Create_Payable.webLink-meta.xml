@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Create_Payable</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>Create Payable</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>true</requireRowSelection>
+    <url>{!REQUIRESCRIPT(&quot;/soap/ajax/41.0/connection.js&quot;)}
+{!REQUIRESCRIPT(&quot;/soap/ajax/41.0/apex.js&quot;)}
+
+var commissions = {!GETRECORDIDS($ObjectType.Sales_Order_Commissions__c)}
+if(commissions.length &lt; 1) {
+  alert(&apos;No sales order commissions have been selected.&apos;)
+}else{
+  var add = &quot;&quot;;
+  for(var i = 0; i &lt; commissions.length; i++){
+
+     if(i == 0){
+        add += &apos;id&apos; + i +&apos;=&apos;+ commissions[i]; 
+     }else{
+        add += &apos;&amp;id&apos;+ i +&apos;=&apos;+ commissions[i];
+     }
+  }
+
+  var total = commissions.length;
+
+  var url = &apos;/apex/CommissionsPayablePage?id={!AcctSeedERP__Sales_Order__c.Id}&amp;count=&apos; +total+ &apos;&amp;&apos;+ add;
+
+  window.location.href = url;
+
+}</url>
+</WebLink>

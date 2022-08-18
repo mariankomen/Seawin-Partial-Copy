@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Transfer_to_Line_Items</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>Transfer to Line Items</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>true</requireRowSelection>
+    <url>var url = &apos;{!IF(ISBLANK(User.ContactId),&quot;&quot;,&quot;/sales&quot;)}&apos;;
+var opqs = {!GETRECORDIDS($ObjectType.Optional_Products_Quote__c)} 
+if(opqs.length &lt; 1) { 
+alert(&apos;No records have been selected to transfer!&apos;) 
+}
+else if(&quot;{!$User.Transfer_to_Line_Items__c}&quot; == &apos;false&apos;){
+alert(&quot;Insufficient Privileges, you are not allowed to make these changes. Please contact your administrator.&quot;);
+}
+else{ 
+
+var add = &quot;&quot;; 
+for(var i = 0; i &lt; opqs.length; i++){ 
+if(i == 0){ 
+add += &apos;id&apos; + i +&apos;=&apos;+ opqs[i]; 
+}else{ 
+add += &apos;&amp;id&apos;+ i +&apos;=&apos;+ opqs[i]; 
+} 
+} 
+
+var total = opqs.length; 
+
+url += &apos;/apex/TransferRelatedListProductsQuoteVF?id={!Quote.Id}&amp;count=&apos; +total+ &apos;&amp;&apos;+ add; 
+
+window.location.href = url; 
+
+}</url>
+</WebLink>

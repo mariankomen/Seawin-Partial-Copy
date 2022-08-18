@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Allow_Product_Description_Change</fullName>
+    <active>true</active>
+    <description>Do not allow to change size and description.</description>
+    <errorConditionFormula>AND(NOT(ISNEW()),
+				OR(ISCHANGED(Item_Description__c), ISCHANGED(Size__c)),  
+				NOT(Product__r.Allow_Product_Description_Change__c))</errorConditionFormula>
+    <errorMessage>You can&apos;t update, please check the &apos;Allow Product Description Change&apos; in Product to update the field(s).</errorMessage>
+</ValidationRule>

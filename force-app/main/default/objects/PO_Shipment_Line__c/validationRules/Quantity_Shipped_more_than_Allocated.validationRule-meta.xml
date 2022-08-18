@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Quantity_Shipped_more_than_Allocated</fullName>
+    <active>false</active>
+    <description>The quantity shipped cannot be more than quantity allocated on the related sales order.</description>
+    <errorConditionFormula>IF( Quantity_Shipped__c &gt;  Sales_Order_Line__r.AcctSeedERP__Quantity_Allocated__c, True, False)</errorConditionFormula>
+    <errorMessage>The quantity shipped cannot be more than the quantity allocated on the related sales order.</errorMessage>
+</ValidationRule>

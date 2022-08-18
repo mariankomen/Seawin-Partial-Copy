@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AlternateImageURL_Trunc__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF( CONTAINS(AlternateImageURL__c, &quot;/servlet&quot;), 
+		IF(ISBLANK($User.ContactId),&quot;&quot;,&quot;/sales&quot; )&amp;MID(AlternateImageURL__c, FIND( &apos;/servlet&apos;, AlternateImageURL__c), 
+																																																(LEN(AlternateImageURL__c) - FIND( &apos;/servlet&apos;, AlternateImageURL__c) +1)),
+		AlternateImageURL__c)</formula>
+    <label>AlternateImageURL_Trunc</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

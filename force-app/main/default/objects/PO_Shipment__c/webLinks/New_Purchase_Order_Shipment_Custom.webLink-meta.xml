@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>New_Purchase_Order_Shipment_Custom</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>New Purchase Order Shipment</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>false</requireRowSelection>
+    <url>var communityURL = &quot;{!IF(NOT(ISBLANK($User.ContactId)), &apos;/sales&apos;, &apos;&apos;)}&quot;;
+
+var url = communityURL + &quot;/a1e/e?CF00N1I00000NdjhE={!AcctSeedERP__Purchase_Order__c.Name}&amp;CF00N1I00000NdjhE_lkid={!AcctSeedERP__Purchase_Order__c.Id}&amp;CF00N1I00000NdjhT={!AcctSeedERP__Purchase_Order__c.Sales_Order__c}&amp;CF00N1I00000NdjhT_lkid={!AcctSeedERP__Purchase_Order__c.Sales_OrderId__c}&amp;retURL=/apex/PurchaseOrderPage?id=a151I000005mirmQAA&amp;sfdc.override=1&quot;;
+
+window.location.href = url;</url>
+</WebLink>

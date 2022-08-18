@@ -53,11 +53,19 @@ public class OpportunityContactChangeHandler {
     }
 
 
-    public static void handleChangeSpecified(List<Opportunity> opportunities){
+    public static void handleChangeSpecified(Map<Id, Opportunity> opportunities_new, Map<Id, Opportunity> opportunities_old){
 
-        for(Opportunity opp: opportunities){
-            if(opp.Specified_Rep__c == null && opp.Referral_Sales_Rep__c == null) opp.Specified_del__c = false;
+        // for(Opportunity opp: opportunities){
+        //     if(opp.Specified_Rep__c == null && opp.Referral_Sales_Rep__c == null) opp.Specified_del__c = false;
+        // }
+
+        for(Id opp: opportunities_new.keySet()){
+            if(opportunities_new.get(opp).Specified_Rep__c == null 
+            && opportunities_old.get(opp).Specified_Rep__c != null 
+            && opportunities_new.get(opp).Referral_Sales_Rep__c == null){
+
+                opportunities_new.get(opp).Specified_del__c = false;
+            }
         }
-
     }
 }
